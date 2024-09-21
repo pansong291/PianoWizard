@@ -22,6 +22,12 @@
             android:text="申请文件读写权限" />
 
         <Button
+            android:id="@+id/btn_main_accessibility_perm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="申请无障碍权限" />
+
+        <Button
             android:id="@+id/btn_main_show_win"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

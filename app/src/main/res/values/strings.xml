@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Piano Wizard</string>
+    <string name="accessibility_description">Simulate clicking the screen to realize automatically playing musical instruments.</string>
+    <string name="accessibility_title">Auto Piano Playing</string>
 </resources>

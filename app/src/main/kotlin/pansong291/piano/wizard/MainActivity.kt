@@ -1,6 +1,11 @@
 package pansong291.piano.wizard
 
+import android.accessibilityservice.AccessibilityService
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
+import android.text.TextUtils
 import android.view.Gravity
 import android.widget.Button
 import android.widget.ImageView
@@ -17,6 +22,7 @@ import com.hjq.window.draggable.SpringBackDraggable
 
 class MainActivity : AppCompatActivity() {
     private lateinit var btnFilePerm: Button
+    private lateinit var btnAccessibilityPerm: Button
     private lateinit var btnShowWin: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,6 +30,7 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
         btnFilePerm = findViewById(R.id.btn_main_file_perm)
+        btnAccessibilityPerm = findViewById(R.id.btn_main_accessibility_perm)
         btnShowWin = findViewById(R.id.btn_main_show_win)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -42,6 +49,13 @@ class MainActivity : AppCompatActivity() {
                         Toaster.show("获取文件读写权限失败")
                     }
                 })
+        }
+        btnAccessibilityPerm.setOnClickListener {
+            if (isAccessibilitySettingsOn(this, ClickAccessibilityService::class.java)) {
+                Toaster.show("无障碍已开启！")
+            } else {
+                startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+            }
         }
         btnShowWin.setOnClickListener {
             EasyWindow.with(this).apply {
@@ -66,5 +80,37 @@ class MainActivity : AppCompatActivity() {
                     })
             }.show()
         }
+    }
+
+    private fun isAccessibilitySettingsOn(
+        mContext: Context,
+        clazz: Class<out AccessibilityService>
+    ): Boolean {
+        try {
+            if (
+                Settings.Secure.getInt(
+                    mContext.applicationContext.contentResolver,
+                    Settings.Secure.ACCESSIBILITY_ENABLED
+                ) == 1
+            ) {
+                Settings.Secure.getString(
+                    mContext.applicationContext.contentResolver,
+                    Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+                )?.let {
+                    val service = mContext.packageName + "/" + clazz.canonicalName
+                    TextUtils.SimpleStringSplitter(':').apply {
+                        setString(it)
+                        while (hasNext()) {
+                            if (next().equals(service, ignoreCase = true)) {
+                                return true
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (e: Settings.SettingNotFoundException) {
+            e.printStackTrace()
+        }
+        return false
     }
 }
