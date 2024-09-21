@@ -44,6 +44,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.getactivity.xxpermissions)
     implementation(libs.getactivity.toaster)
+    implementation(libs.getactivity.easywindow)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

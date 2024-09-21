@@ -11,6 +11,7 @@ activity = "1.8.0"
 constraintlayout = "2.1.4"
 xxpermissions = "20.0"
 toaster = "12.6"
+easywindow = "10.62"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -23,6 +24,7 @@ androidx-activity = { group = "androidx.activity", name = "activity", version.re
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 getactivity-xxpermissions = { group = "com.github.getActivity", name = "XXPermissions", version.ref = "xxpermissions" }
 getactivity-toaster = { group = "com.github.getActivity", name = "Toaster", version.ref = "toaster" }
+getactivity-easywindow = { group = "com.github.getActivity", name = "EasyWindow", version.ref = "easywindow" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
