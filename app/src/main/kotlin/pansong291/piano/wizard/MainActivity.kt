@@ -10,6 +10,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.hjq.permissions.OnPermissionCallback
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
+import com.hjq.toast.Toaster
 
 class MainActivity : AppCompatActivity() {
     private lateinit var btnMain: Button
@@ -29,11 +30,11 @@ class MainActivity : AppCompatActivity() {
                 .permission(Permission.MANAGE_EXTERNAL_STORAGE)
                 .request(object : OnPermissionCallback {
                     override fun onGranted(permissions: MutableList<String>, allGranted: Boolean) {
-                        Toast.makeText(this@MainActivity, "获取文件读写权限成功", Toast.LENGTH_SHORT).show()
+                        Toaster.show("获取文件读写权限成功")
                     }
 
                     override fun onDenied(permissions: MutableList<String>, doNotAskAgain: Boolean) {
-                        Toast.makeText(this@MainActivity, "获取文件读写权限失败", Toast.LENGTH_SHORT).show()
+                        Toaster.show("获取文件读写权限失败")
                     }
                 })
         }
