@@ -41,11 +41,23 @@ object BlackToastStyle {
         // 设置 Z 轴阴影
         textView.z = getTranslationZ(context)
 
-        val linerLayout = LinearLayout(context)
-        linerLayout.setPadding(0, 96, 0, 96)
-        linerLayout.addView(textView)
+        return LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            val wp = getWrapperPadding(context)
+            setPadding(0, wp, 0, wp)
+            addView(textView)
+        }
+    }
 
-        return linerLayout
+    private fun getWrapperPadding(context: Context): Int {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            48f, context.resources.displayMetrics
+        ).toInt()
     }
 
     private fun getTextSize(context: Context): Float {
