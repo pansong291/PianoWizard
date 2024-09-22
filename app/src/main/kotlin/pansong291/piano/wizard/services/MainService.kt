@@ -2,6 +2,7 @@ package pansong291.piano.wizard.services
 
 import android.app.Service
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Point
 import android.os.IBinder
 import android.view.Gravity
@@ -9,21 +10,37 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.hjq.toast.Toaster
 import com.hjq.window.EasyWindow
 import com.hjq.window.draggable.SpringBackDraggable
 import pansong291.piano.wizard.R
+import pansong291.piano.wizard.entity.KeyLayout
 import pansong291.piano.wizard.views.KeysLayoutView
 
 class MainService : Service() {
+    private lateinit var sharedPreferences: SharedPreferences
     private lateinit var controllerWindow: EasyWindow<*>
     private lateinit var layoutWindow: EasyWindow<*>
     private lateinit var keysLayoutView: KeysLayoutView
-    private val points = mutableListOf<Point>()
+    private lateinit var keyLayouts: List<KeyLayout>
+    private var currentLayout: KeyLayout? = null
+
+    companion object {
+        private const val SHARED_PREFERENCES_NAME = "piano_wizard"
+        private const val KEY_KEY_LAYOUTS = "key_layouts"
+    }
 
     override fun onBind(p0: Intent?): IBinder? = null
 
     override fun onCreate() {
         super.onCreate()
+        sharedPreferences = getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE)
+        keyLayouts = Gson().fromJson(
+            sharedPreferences.getString(KEY_KEY_LAYOUTS, null),
+            TypeToken.getArray(KeyLayout::class.java).type
+        ) ?: emptyList()
         keysLayoutView = KeysLayoutView(application)
         controllerWindow = EasyWindow.with(application).apply {
             setContentView(R.layout.win_controller)
@@ -98,6 +115,13 @@ class MainService : Service() {
 
     private fun setupKeysLayoutController() {
         controllerWindow.apply {
+            // 选择布局
+            setOnClickListener(
+                R.id.btn_choose_key_layout,
+                EasyWindow.OnClickListener { _, _: Button ->
+                    // TODO 使用 EasyWindow 封装为 Dialog、Toast
+                }
+            )
             // 重置指示器
             setOnClickListener(
                 R.id.btn_reset_indicator,
@@ -118,28 +142,42 @@ class MainService : Service() {
             setOnClickListener(
                 R.id.cb_enable_semitone,
                 EasyWindow.OnClickListener { _, view: CheckBox ->
-                    // TODO
+                    withCurrentLayout {
+                        it.semitone = view.isChecked
+                    }
                 }
             )
             // 移除点位
             setOnClickListener(
                 R.id.btn_point_remove,
                 EasyWindow.OnClickListener { _, _: Button ->
-                    if (points.isEmpty()) return@OnClickListener
-                    val last = points.removeLast()
-                    keysLayoutView.setIndicator(last)
-                    keysLayoutView.setPoints(points)
+                    withCurrentLayout {
+                        if (it.points.isEmpty()) return@withCurrentLayout
+                        val mPoints = it.points.toMutableList()
+                        val last = mPoints.removeLast()
+                        it.points = mPoints
+                        keysLayoutView.setIndicator(last)
+                        keysLayoutView.setPoints(mPoints)
+                    }
                 }
             )
             // 增加点位
             setOnClickListener(
                 R.id.btn_point_add,
                 EasyWindow.OnClickListener { _, _: Button ->
-                    points.add(Point(keysLayoutView.getIndicator()))
-                    keysLayoutView.setPoints(points)
+                    withCurrentLayout {
+                        val mPoints = it.points.toMutableList()
+                        mPoints.add(Point(keysLayoutView.getIndicator()))
+                        it.points = mPoints
+                        keysLayoutView.setPoints(mPoints)
+                    }
                 }
             )
         }
+    }
+
+    private fun withCurrentLayout(block: (c: KeyLayout) -> Unit) {
+        currentLayout?.also(block) ?: Toaster.show("当前布局为空，请先选择一个布局。")
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

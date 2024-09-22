@@ -13,6 +13,7 @@ xxpermissions = "20.0"
 toaster = "12.6"
 easywindow = "10.62"
 eventbus = "3.3.1"
+gson = "2.11.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -27,6 +28,7 @@ getactivity-xxpermissions = { group = "com.github.getActivity", name = "XXPermis
 getactivity-toaster = { group = "com.github.getActivity", name = "Toaster", version.ref = "toaster" }
 getactivity-easywindow = { group = "com.github.getActivity", name = "EasyWindow", version.ref = "easywindow" }
 greenrobot-eventbus = { group = "org.greenrobot", name = "eventbus", version.ref = "eventbus" }
+google-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

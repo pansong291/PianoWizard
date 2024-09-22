@@ -46,6 +46,7 @@ dependencies {
     implementation(libs.getactivity.toaster)
     implementation(libs.getactivity.easywindow)
     implementation(libs.greenrobot.eventbus)
+    implementation(libs.google.gson)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
