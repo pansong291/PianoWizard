@@ -1,4 +1,4 @@
-package pansong291.piano.wizard
+package pansong291.piano.wizard.services
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.GestureDescription

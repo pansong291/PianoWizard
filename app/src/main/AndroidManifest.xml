@@ -28,8 +28,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service android:name=".services.MainService" />
         <service
-            android:name=".ClickAccessibilityService"
+            android:name=".services.ClickAccessibilityService"
             android:enabled="true"
             android:exported="true"
             android:label="@string/accessibility_title"

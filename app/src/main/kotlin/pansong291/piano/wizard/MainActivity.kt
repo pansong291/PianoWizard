@@ -6,9 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
 import android.text.TextUtils
-import android.view.Gravity
 import android.widget.Button
-import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -16,12 +14,12 @@ import androidx.core.view.WindowInsetsCompat
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
 import com.hjq.toast.Toaster
-import com.hjq.window.EasyWindow
-import com.hjq.window.draggable.SpringBackDraggable
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import pansong291.piano.wizard.events.AccessibilityConnectedEvent
+import pansong291.piano.wizard.services.ClickAccessibilityService
+import pansong291.piano.wizard.services.MainService
 
 
 class MainActivity : AppCompatActivity() {
@@ -62,27 +60,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
         btnStart.setOnClickListener {
-            EasyWindow.with(application).apply {
-                setContentView(R.layout.win_sample)
-                // 设置成可拖拽的
-                setDraggable(SpringBackDraggable())
-                setGravity(Gravity.CENTER_VERTICAL or Gravity.START)
-                // 设置动画样式
-                setAnimStyle(android.R.style.Animation_Translucent)
-                // 设置外层是否能被触摸
-                // setOutsideTouchable(false)
-                // 设置窗口背景阴影强度
-                setBackgroundDimAmount(0.5f)
-                setImageDrawable(android.R.id.icon, R.mipmap.ic_launcher)
-                setOnClickListener(
-                    android.R.id.icon,
-                    EasyWindow.OnClickListener<ImageView?> { easyWindow: EasyWindow<*>, view: ImageView? ->
-                        // 点击这个 View 后消失
-                        easyWindow.cancel()
-                        // 跳转到某个Activity
-                        // easyWindow.startActivity(intent);
-                    })
-            }.show()
+            startService(Intent(this, MainService::class.java))
         }
     }
 
