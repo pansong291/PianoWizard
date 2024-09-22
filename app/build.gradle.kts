@@ -45,6 +45,7 @@ dependencies {
     implementation(libs.getactivity.xxpermissions)
     implementation(libs.getactivity.toaster)
     implementation(libs.getactivity.easywindow)
+    implementation(libs.greenrobot.eventbus)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

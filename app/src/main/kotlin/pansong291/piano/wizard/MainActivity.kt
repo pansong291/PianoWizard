@@ -15,8 +15,14 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
+import com.hjq.toast.Toaster
 import com.hjq.window.EasyWindow
 import com.hjq.window.draggable.SpringBackDraggable
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
+import pansong291.piano.wizard.events.AccessibilityConnectedEvent
+
 
 class MainActivity : AppCompatActivity() {
     private lateinit var btnFilePerm: Button
@@ -28,6 +34,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
+        EventBus.getDefault().register(this)
         btnFilePerm = findViewById(R.id.btn_main_file_perm)
         btnAccessibilityPerm = findViewById(R.id.btn_main_accessibility_perm)
         btnWinPerm = findViewById(R.id.btn_main_win_perm)
@@ -82,6 +89,17 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         updatePermState(7)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: AccessibilityConnectedEvent?) {
+        Toaster.show("无障碍已启用")
+        updatePermState(4)
+    }
+
+    override fun onDestroy() {
+        EventBus.getDefault().unregister(this)
+        super.onDestroy()
     }
 
     private fun updatePermState(flags: Int, success: Boolean? = null) {

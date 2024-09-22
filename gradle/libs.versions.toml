@@ -12,6 +12,7 @@ constraintlayout = "2.1.4"
 xxpermissions = "20.0"
 toaster = "12.6"
 easywindow = "10.62"
+eventbus = "3.3.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -25,6 +26,7 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 getactivity-xxpermissions = { group = "com.github.getActivity", name = "XXPermissions", version.ref = "xxpermissions" }
 getactivity-toaster = { group = "com.github.getActivity", name = "Toaster", version.ref = "toaster" }
 getactivity-easywindow = { group = "com.github.getActivity", name = "EasyWindow", version.ref = "easywindow" }
+greenrobot-eventbus = { group = "org.greenrobot", name = "eventbus", version.ref = "eventbus" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

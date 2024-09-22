@@ -6,12 +6,15 @@ import android.content.Intent
 import android.graphics.Path
 import android.graphics.PointF
 import android.view.accessibility.AccessibilityEvent
+import org.greenrobot.eventbus.EventBus
+import pansong291.piano.wizard.events.AccessibilityConnectedEvent
 
 class ClickAccessibilityService : AccessibilityService() {
     var serviceEnabled = false
 
     override fun onServiceConnected() {
         super.onServiceConnected()
+        EventBus.getDefault().post(AccessibilityConnectedEvent())
         serviceEnabled = true
         Thread {
             Thread.sleep(7000)
