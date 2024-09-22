@@ -13,17 +13,16 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.hjq.permissions.OnPermissionCallback
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
-import com.hjq.toast.Toaster
 import com.hjq.window.EasyWindow
 import com.hjq.window.draggable.SpringBackDraggable
 
 class MainActivity : AppCompatActivity() {
     private lateinit var btnFilePerm: Button
+    private lateinit var btnWinPerm: Button
     private lateinit var btnAccessibilityPerm: Button
-    private lateinit var btnShowWin: Button
+    private lateinit var btnStart: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +30,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         btnFilePerm = findViewById(R.id.btn_main_file_perm)
         btnAccessibilityPerm = findViewById(R.id.btn_main_accessibility_perm)
-        btnShowWin = findViewById(R.id.btn_main_show_win)
+        btnWinPerm = findViewById(R.id.btn_main_win_perm)
+        btnStart = findViewById(R.id.btn_main_start)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -40,25 +40,22 @@ class MainActivity : AppCompatActivity() {
         btnFilePerm.setOnClickListener {
             XXPermissions.with(this)
                 .permission(Permission.MANAGE_EXTERNAL_STORAGE)
-                .request(object : OnPermissionCallback {
-                    override fun onGranted(permissions: MutableList<String>, allGranted: Boolean) {
-                        Toaster.show("获取文件读写权限成功")
-                    }
-
-                    override fun onDenied(permissions: MutableList<String>, doNotAskAgain: Boolean) {
-                        Toaster.show("获取文件读写权限失败")
-                    }
-                })
+                .request { _, _ -> updatePermState(1, true) }
+        }
+        btnWinPerm.setOnClickListener {
+            XXPermissions.with(this)
+                .permission(Permission.SYSTEM_ALERT_WINDOW)
+                .request { _, _ -> updatePermState(2, true) }
         }
         btnAccessibilityPerm.setOnClickListener {
             if (isAccessibilitySettingsOn(this, ClickAccessibilityService::class.java)) {
-                Toaster.show("无障碍已开启！")
+                updatePermState(4, true)
             } else {
                 startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
             }
         }
-        btnShowWin.setOnClickListener {
-            EasyWindow.with(this).apply {
+        btnStart.setOnClickListener {
+            EasyWindow.with(application).apply {
                 setContentView(R.layout.win_sample)
                 // 设置成可拖拽的
                 setDraggable(SpringBackDraggable())
@@ -80,6 +77,37 @@ class MainActivity : AppCompatActivity() {
                     })
             }.show()
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        updatePermState(7)
+    }
+
+    private fun updatePermState(flags: Int, success: Boolean? = null) {
+        if (flags and 1 == 1) btnFilePerm.text = getString(
+            R.string.btn_req_file_perm, getOnOffString(
+                success ?: XXPermissions.isGranted(this, Permission.MANAGE_EXTERNAL_STORAGE)
+            )
+        )
+        if (flags and 2 == 2) btnWinPerm.text = getString(
+            R.string.btn_req_win_perm, getOnOffString(
+                success ?: XXPermissions.isGranted(this, Permission.SYSTEM_ALERT_WINDOW)
+            )
+        )
+        if (flags and 4 == 4) btnAccessibilityPerm.text = getString(
+            R.string.btn_req_accessibility_perm, getOnOffString(
+                success ?: isAccessibilitySettingsOn(
+                    this,
+                    ClickAccessibilityService::class.java
+                )
+            )
+        )
+    }
+
+    private fun getOnOffString(b: Boolean): String {
+        if (b) return getString(R.string.common_on)
+        return getString(R.string.common_off)
     }
 
     private fun isAccessibilitySettingsOn(

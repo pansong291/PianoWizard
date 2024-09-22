@@ -1,37 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/btn_main_file_perm"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="申请文件读写权限" />
+            android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/btn_main_accessibility_perm"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="申请无障碍权限" />
+            android:layout_height="wrap_content" />
 
         <Button
-            android:id="@+id/btn_main_show_win"
+            android:id="@+id/btn_main_win_perm"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="显示悬浮窗" />
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <Button
+        android:id="@+id/btn_main_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_start" />
+
+</LinearLayout>
