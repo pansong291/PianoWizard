@@ -22,8 +22,6 @@
 
 # getactivity.xxpermissions
 -keep class com.hjq.permissions.** {*;}
-# getactivity.toaster
--keep class com.hjq.toast.** {*;}
 # getactivity.easywindow
 -keep class com.hjq.window.** {*;}
 

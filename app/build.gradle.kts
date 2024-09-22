@@ -43,7 +43,6 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.getactivity.xxpermissions)
-    implementation(libs.getactivity.toaster)
     implementation(libs.getactivity.easywindow)
     implementation(libs.greenrobot.eventbus)
     implementation(libs.google.gson)

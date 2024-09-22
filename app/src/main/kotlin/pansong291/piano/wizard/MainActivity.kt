@@ -13,13 +13,13 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
-import com.hjq.toast.Toaster
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import pansong291.piano.wizard.events.AccessibilityConnectedEvent
 import pansong291.piano.wizard.services.ClickAccessibilityService
 import pansong291.piano.wizard.services.MainService
+import pansong291.piano.wizard.toast.Toaster
 
 
 class MainActivity : AppCompatActivity() {

@@ -16,4 +16,5 @@
     <string name="display_number">显示序号</string>
     <string name="reset_indicator">重置指示器</string>
     <string name="semitone">半音</string>
+    <string name="layout_empty_warn">当前布局为空，请先选择一个布局。</string>
 </resources>

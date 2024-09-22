@@ -15,4 +15,5 @@
     <string name="display_number">Display number</string>
     <string name="reset_indicator">Reset indicator</string>
     <string name="semitone">Semitone</string>
+    <string name="layout_empty_warn">The current layout is empty. Please select a layout first.</string>
 </resources>

@@ -12,11 +12,11 @@ import android.widget.Button
 import android.widget.CheckBox
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.hjq.toast.Toaster
 import com.hjq.window.EasyWindow
 import com.hjq.window.draggable.SpringBackDraggable
 import pansong291.piano.wizard.R
 import pansong291.piano.wizard.entity.KeyLayout
+import pansong291.piano.wizard.toast.Toaster
 import pansong291.piano.wizard.views.KeysLayoutView
 
 class MainService : Service() {
@@ -119,7 +119,7 @@ class MainService : Service() {
             setOnClickListener(
                 R.id.btn_choose_key_layout,
                 EasyWindow.OnClickListener { _, _: Button ->
-                    // TODO 使用 EasyWindow 封装为 Dialog、Toast
+                    // TODO 使用 EasyWindow 封装为 Dialog
                 }
             )
             // 重置指示器
@@ -177,7 +177,7 @@ class MainService : Service() {
     }
 
     private fun withCurrentLayout(block: (c: KeyLayout) -> Unit) {
-        currentLayout?.also(block) ?: Toaster.show("当前布局为空，请先选择一个布局。")
+        currentLayout?.also(block) ?: Toaster.show(R.string.layout_empty_warn)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
