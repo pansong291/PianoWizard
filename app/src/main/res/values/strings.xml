@@ -8,4 +8,11 @@
     <string name="common_on">On</string>
     <string name="common_off">Off</string>
     <string name="btn_start">Start</string>
+    <string name="key_layout">Layout</string>
+    <string name="music_score">Score</string>
+    <string name="expand">Expand</string>
+    <string name="collapse">Collapse</string>
+    <string name="display_number">Display number</string>
+    <string name="reset_indicator">Reset indicator</string>
+    <string name="semitone">Semitone</string>
 </resources>
