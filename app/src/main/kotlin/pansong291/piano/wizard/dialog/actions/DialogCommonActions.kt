@@ -10,7 +10,7 @@ object DialogCommonActions {
         val actions = View.inflate(
             dialog.getAppContext(),
             R.layout.dialog_actions_common,
-            dialog.getActions()
+            dialog.getActionsWrapper()
         )
         // 操作区：取消和确定按钮
         val cancel = actions.findViewById<Button>(android.R.id.button1)

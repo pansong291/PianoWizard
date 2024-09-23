@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_vertical"
-    android:orientation="horizontal">
+    android:gravity="center_vertical|left"
+    android:orientation="horizontal"
+    tools:ignore="RtlHardcoded">
 
     <Button
         android:id="@+id/btn_create"
@@ -15,9 +17,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
+        android:gravity="center_vertical|right"
         android:orientation="horizontal">
-
+        <!--  FIXME 上面的 right 和根的 left 需要经过反向布局测试  -->
         <Button
             android:id="@+id/btn_delete"
             style="@style/DialogButtonStyle"
@@ -28,12 +30,13 @@
         <Button
             android:id="@+id/btn_rename"
             style="@style/DialogButtonStyle"
+            android:layout_marginHorizontal="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/rename" />
 
         <Button
-            android:id="@android:id/button1"
+            android:id="@android:id/primary"
             style="@style/DialogButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

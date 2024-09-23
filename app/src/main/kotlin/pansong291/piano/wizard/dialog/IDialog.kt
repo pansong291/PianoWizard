@@ -6,9 +6,9 @@ import android.widget.LinearLayout
 interface IDialog {
     fun getAppContext(): Application
 
-    fun getMainContent(): LinearLayout
+    fun getContentWrapper(): LinearLayout
 
-    fun getActions(): LinearLayout
+    fun getActionsWrapper(): LinearLayout
 
     fun setOutsideCloseable(b: Boolean)
 

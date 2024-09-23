@@ -9,6 +9,7 @@ import android.graphics.Point
 import android.graphics.PointF
 import android.view.MotionEvent
 import android.view.View
+import pansong291.piano.wizard.ViewUtil
 
 @SuppressLint("ClickableViewAccessibility")
 class KeysLayoutView(context: Context) : View(context) {
@@ -18,6 +19,9 @@ class KeysLayoutView(context: Context) : View(context) {
     private val indicatorPaint = Paint()
     private val pointPaint = Paint()
     private val numPaint = Paint()
+    private val largeRadius = ViewUtil.dpToPx(context, 18f)
+    private val mediumRadius = ViewUtil.dpToPx(context, 8f)
+    private val smallRadius = ViewUtil.dpToPx(context, 5f)
     private val textCenterY: Float
     private val touchStart = PointF()
     private val indicatorStart = Point()
@@ -25,11 +29,11 @@ class KeysLayoutView(context: Context) : View(context) {
     init {
         indicatorPaint.color = Color.RED
         indicatorPaint.style = Paint.Style.STROKE
-        indicatorPaint.strokeWidth = 1f
+        indicatorPaint.strokeWidth = ViewUtil.dpToPx(context, 1f)
         pointPaint.color = Color.WHITE
         pointPaint.style = Paint.Style.FILL
         numPaint.color = Color.BLACK
-        numPaint.textSize = 48f
+        numPaint.textSize = ViewUtil.spToPx(context, 18f)
         numPaint.isFakeBoldText = true
         numPaint.textAlign = Paint.Align.CENTER
         // 计算文字高度中心点的偏移
@@ -63,11 +67,11 @@ class KeysLayoutView(context: Context) : View(context) {
             val pfx = p.x.toFloat()
             val pfy = p.y.toFloat()
             if (showNum) {
-                canvas.drawCircle(pfx, pfy, 40f, pointPaint)
+                canvas.drawCircle(pfx, pfy, largeRadius, pointPaint)
                 canvas.drawText((i + 1).toString(), pfx, pfy - textCenterY, numPaint)
             } else {
-                canvas.drawCircle(pfx, pfy, 15f, pointPaint)
-                canvas.drawCircle(pfx, pfy, 10f, numPaint)
+                canvas.drawCircle(pfx, pfy, mediumRadius, pointPaint)
+                canvas.drawCircle(pfx, pfy, smallRadius, numPaint)
             }
         }
         canvas.drawLine(0f, fy, width.toFloat(), fy, indicatorPaint)

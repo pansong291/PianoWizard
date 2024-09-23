@@ -25,7 +25,7 @@ class FileChooseDialog(application: Application) : BaseDialog(application) {
         val content = View.inflate(
             application,
             R.layout.dialog_content_file_choose,
-            getMainContent()
+            getContentWrapper()
         )
         // 主内容：一个回退按钮和文件列表
         val backwardItem = content.findViewById<TextView>(android.R.id.undo)

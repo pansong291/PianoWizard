@@ -1,8 +1,11 @@
 package pansong291.piano.wizard.dialog
 
 import android.app.Application
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.EditText
 import android.widget.LinearLayout
+import pansong291.piano.wizard.ViewUtil
 import pansong291.piano.wizard.dialog.actions.DialogCommonActions
 
 class TextInputDialog(application: Application) : BaseDialog(application) {
@@ -10,13 +13,20 @@ class TextInputDialog(application: Application) : BaseDialog(application) {
     private var listener: OnOkClickListener? = null
 
     init {
+        dialog.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
         val wrap = LinearLayout(application)
-        wrap.setPadding(16, 0, 16, 0)
+        val hPadding = ViewUtil.dpToPx(application, 16f).toInt()
+        wrap.setPadding(hPadding, 0, hPadding, 0)
         wrap.addView(textInput)
-        getMainContent().addView(wrap)
+        textInput.layoutParams = LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        getContentWrapper().addView(wrap)
         DialogCommonActions.loadIn(this) { ok, _ ->
             ok.setOnClickListener {
                 listener?.onOk(textInput.text)
+                destroy()
             }
         }
     }
@@ -25,8 +35,16 @@ class TextInputDialog(application: Application) : BaseDialog(application) {
         textInput.setText(text)
     }
 
-    fun setOnOkClickListener(listener: OnOkClickListener) {
-        this.listener = listener
+    fun setHint(text: CharSequence) {
+        textInput.hint = text
+    }
+
+    fun setHint(id: Int) {
+        textInput.setHint(id)
+    }
+
+    fun setOnOkClickListener(l: OnOkClickListener) {
+        listener = l
     }
 
     fun interface OnOkClickListener {

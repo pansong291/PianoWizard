@@ -1,6 +1,8 @@
 package pansong291.piano.wizard.dialog.contents
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,12 +10,13 @@ import android.widget.CheckedTextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
+import pansong291.piano.wizard.ViewUtil
 import pansong291.piano.wizard.dialog.IDialog
 
 object DialogRadioListContent {
     fun loadIn(dialog: IDialog, data: List<String>, default: Int?): Adapter {
         val content = FastScrollRecyclerView(dialog.getAppContext())
-        dialog.getMainContent().addView(content)
+        dialog.getContentWrapper().addView(content)
         content.layoutManager = LinearLayoutManager(dialog.getAppContext()).apply {
             orientation = LinearLayoutManager.VERTICAL
         }
@@ -26,10 +29,18 @@ object DialogRadioListContent {
 
     class Adapter(
         private val context: Context,
-        private val data: List<String>,
+        private var data: List<String>,
         default: Int?
     ) : RecyclerView.Adapter<ViewHolder>() {
-        private var selectedPosition = default?.takeIf { it < data.size } ?: -1
+        private var selectedPosition = checkPosition(default)
+        private val padding = ViewUtil.dpToPx(context, 16f).toInt()
+
+        @SuppressLint("NotifyDataSetChanged")
+        fun reload(data: List<String>, default: Int?) {
+            this.data = data
+            selectedPosition = checkPosition(default)
+            notifyDataSetChanged()
+        }
 
         fun getSelectedPosition() = selectedPosition
 
@@ -38,9 +49,16 @@ object DialogRadioListContent {
             return data[selectedPosition]
         }
 
+        private fun checkPosition(p: Int?): Int {
+            return p?.takeIf { it < data.size && it >= 0 } ?: -1
+        }
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val root = LayoutInflater.from(context)
                 .inflate(android.R.layout.select_dialog_singlechoice, parent, false)
+            root.setPadding(padding, 0, padding, 0)
+            val txt = root.findViewById<CheckedTextView>(android.R.id.text1)
+            txt.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
             return ViewHolder(root)
         }
 

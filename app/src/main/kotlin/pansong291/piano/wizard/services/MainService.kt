@@ -18,6 +18,7 @@ import pansong291.piano.wizard.R
 import pansong291.piano.wizard.consts.StringConst
 import pansong291.piano.wizard.dialog.FileChooseDialog
 import pansong291.piano.wizard.dialog.KeyLayoutListDialog
+import pansong291.piano.wizard.dialog.TextInputDialog
 import pansong291.piano.wizard.entity.KeyLayout
 import pansong291.piano.wizard.toast.Toaster
 import pansong291.piano.wizard.views.KeysLayoutView
@@ -131,12 +132,37 @@ class MainService : Service() {
             setOnClickListener(
                 R.id.btn_choose_key_layout,
                 EasyWindow.OnClickListener { _, _: Button ->
-                    // TODO 使用 EasyWindow 封装为 Dialog
                     KeyLayoutListDialog(
                         application,
                         keyLayouts,
                         keyLayouts.indexOf(currentLayout)
-                    ).show()
+                    ).apply {
+                        setOnActionListener { index, actionId ->
+                            when (actionId) {
+                                R.id.btn_create -> {
+                                    TextInputDialog(application).apply {
+                                        setOnOkClickListener {
+                                            if (it.isEmpty()) return@setOnOkClickListener
+                                            KeyLayout().apply {
+                                                name = it.toString()
+                                                currentLayout = this
+                                                keyLayouts += this
+                                                reloadData(keyLayouts, keyLayouts.size - 1)
+                                            }
+                                        }
+                                    }.show()
+                                }
+
+                                R.id.btn_delete -> {}
+                                R.id.btn_rename -> {}
+                                android.R.id.primary -> {
+                                    // TODO 显示名称
+                                    currentLayout = keyLayouts[index]
+                                    destroy()
+                                }
+                            }
+                        }
+                    }.show()
                 }
             )
             // 重置指示器
