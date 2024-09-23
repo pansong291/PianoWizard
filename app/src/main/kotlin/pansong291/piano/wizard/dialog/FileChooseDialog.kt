@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
 import pansong291.piano.wizard.R
 import pansong291.piano.wizard.dialog.actions.DialogCommonActions
 import pansong291.piano.wizard.toast.Toaster
@@ -28,7 +29,7 @@ class FileChooseDialog(application: Application) : BaseDialog(application) {
         )
         // 主内容：一个回退按钮和文件列表
         val backwardItem = content.findViewById<TextView>(android.R.id.undo)
-        val recyclerView = content.findViewById<RecyclerView>(android.R.id.list)
+        val recyclerView = content.findViewById<FastScrollRecyclerView>(android.R.id.list)
         val adapter = FileListAdapter(basePath, fileFilter)
         adapter.setOnItemClickListener { info, _ ->
             if (info.icon == R.drawable.outline_folder_24) {

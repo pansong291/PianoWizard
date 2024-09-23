@@ -46,6 +46,7 @@ dependencies {
     implementation(libs.getactivity.easywindow)
     implementation(libs.greenrobot.eventbus)
     implementation(libs.google.gson)
+    implementation(libs.simplecityapps.recyclerview.fastscroll)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

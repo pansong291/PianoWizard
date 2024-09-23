@@ -24,6 +24,8 @@
 -keep class com.hjq.permissions.** {*;}
 # getactivity.easywindow
 -keep class com.hjq.window.** {*;}
+# simplecityapps.recyclerview.fastscroll
+-keep class com.simplecityapps.** {*;}
 
 -keepattributes *Annotation*
 -keepclassmembers class * {

@@ -11,5 +11,7 @@
     android:paddingRight="16dp"
     android:focusable="true"
     android:clickable="true"
+    android:maxLines="1"
+    android:ellipsize="middle"
     android:background="?android:attr/selectableItemBackground"
     app:drawableStartCompat="@drawable/outline_folder_open_24" />
