@@ -36,12 +36,12 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.cardview)
     implementation(libs.getactivity.xxpermissions)
     implementation(libs.getactivity.easywindow)
     implementation(libs.greenrobot.eventbus)

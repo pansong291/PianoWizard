@@ -12,7 +12,7 @@
 
         <Button
             android:id="@+id/btn_collapse"
-            style="@style/SmallButtonStyle"
+            style="@style/WindowButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -20,7 +20,7 @@
 
         <Button
             android:id="@+id/btn_controller_switch"
-            style="@style/SmallButtonStyle"
+            style="@style/WindowButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -40,14 +40,15 @@
             android:orientation="vertical">
 
             <Button
-                android:id="@+id/button3"
-                style="@style/SmallButtonStyle"
+                android:id="@+id/btn_choose_music"
+                style="@style/WindowButtonStyle"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:text="@string/select_music" />
 
             <Button
-                android:id="@+id/button4"
-                style="@style/SmallButtonStyle"
+                android:id="@+id/btn_modulation"
+                style="@style/WindowButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
@@ -59,7 +60,7 @@
 
                 <Button
                     android:id="@+id/tone_minus_1"
-                    style="@style/SmallButtonStyle"
+                    style="@style/WindowButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -67,7 +68,7 @@
 
                 <Button
                     android:id="@+id/tone_plus_1"
-                    style="@style/SmallButtonStyle"
+                    style="@style/WindowButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -75,13 +76,14 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/tone_wrapper_7"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
                 <Button
                     android:id="@+id/tone_minus_7"
-                    style="@style/SmallButtonStyle"
+                    style="@style/WindowButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -89,7 +91,7 @@
 
                 <Button
                     android:id="@+id/tone_plus_7"
-                    style="@style/SmallButtonStyle"
+                    style="@style/WindowButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -105,14 +107,8 @@
             android:orientation="vertical">
 
             <Button
-                android:id="@+id/btn_choose_key_layout"
-                style="@style/SmallButtonStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <Button
                 android:id="@+id/btn_reset_indicator"
-                style="@style/SmallButtonStyle"
+                style="@style/WindowButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/reset_indicator" />
@@ -123,6 +119,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/display_number" />
+
+            <Button
+                android:id="@+id/btn_choose_key_layout"
+                style="@style/WindowButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/select_layout" />
 
             <CheckBox
                 android:id="@+id/cb_enable_semitone"
@@ -138,7 +141,7 @@
 
                 <Button
                     android:id="@+id/btn_point_remove"
-                    style="@style/SmallButtonStyle"
+                    style="@style/WindowButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -146,7 +149,7 @@
 
                 <Button
                     android:id="@+id/btn_point_add"
-                    style="@style/SmallButtonStyle"
+                    style="@style/WindowButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

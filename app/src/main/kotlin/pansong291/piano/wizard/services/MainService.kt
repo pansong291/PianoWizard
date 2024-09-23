@@ -15,9 +15,13 @@ import com.google.gson.reflect.TypeToken
 import com.hjq.window.EasyWindow
 import com.hjq.window.draggable.SpringBackDraggable
 import pansong291.piano.wizard.R
+import pansong291.piano.wizard.consts.StringConst
+import pansong291.piano.wizard.dialog.FileChooseDialog
+import pansong291.piano.wizard.dialog.KeyLayoutListDialog
 import pansong291.piano.wizard.entity.KeyLayout
 import pansong291.piano.wizard.toast.Toaster
 import pansong291.piano.wizard.views.KeysLayoutView
+import java.io.FileFilter
 
 class MainService : Service() {
     private lateinit var sharedPreferences: SharedPreferences
@@ -27,18 +31,13 @@ class MainService : Service() {
     private lateinit var keyLayouts: List<KeyLayout>
     private var currentLayout: KeyLayout? = null
 
-    companion object {
-        private const val SHARED_PREFERENCES_NAME = "piano_wizard"
-        private const val KEY_KEY_LAYOUTS = "key_layouts"
-    }
-
     override fun onBind(p0: Intent?): IBinder? = null
 
     override fun onCreate() {
         super.onCreate()
-        sharedPreferences = getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE)
+        sharedPreferences = getSharedPreferences(StringConst.SHARED_PREFERENCES_NAME, MODE_PRIVATE)
         keyLayouts = Gson().fromJson(
-            sharedPreferences.getString(KEY_KEY_LAYOUTS, null),
+            sharedPreferences.getString(StringConst.SP_DATA_KEY_KEY_LAYOUTS, null),
             TypeToken.getArray(KeyLayout::class.java).type
         ) ?: emptyList()
         keysLayoutView = KeysLayoutView(application)
@@ -109,6 +108,18 @@ class MainService : Service() {
 
     private fun setupMusicScoreController() {
         controllerWindow.apply {
+            // 选择乐谱
+            setOnClickListener(
+                R.id.btn_choose_music,
+                EasyWindow.OnClickListener { _, _: Button ->
+                    FileChooseDialog(application).apply {
+                        fileFilter = FileFilter {
+                            it.isDirectory || it.name.endsWith(StringConst.MUSIC_NOTATION_FILE_EXT)
+                        }
+                        show()
+                    }
+                }
+            )
             // TODO
         }
     }
@@ -120,6 +131,11 @@ class MainService : Service() {
                 R.id.btn_choose_key_layout,
                 EasyWindow.OnClickListener { _, _: Button ->
                     // TODO 使用 EasyWindow 封装为 Dialog
+                    KeyLayoutListDialog(
+                        application,
+                        keyLayouts,
+                        keyLayouts.indexOf(currentLayout)
+                    ).show()
                 }
             )
             // 重置指示器

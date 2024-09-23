@@ -9,11 +9,20 @@
     <string name="common_off">Off</string>
     <string name="btn_start">Start</string>
     <string name="key_layout">Layout</string>
-    <string name="music_score">Score</string>
+    <string name="music_score">Music</string>
     <string name="expand">Expand</string>
     <string name="collapse">Collapse</string>
     <string name="display_number">Display number</string>
     <string name="reset_indicator">Reset indicator</string>
     <string name="semitone">Semitone</string>
     <string name="layout_empty_warn">The current layout is empty. Please select a layout first.</string>
+    <string name="folder">FOLDER</string>
+    <string name="file">FILE</string>
+    <string name="select_layout">Select layout</string>
+    <string name="select_music">Select music</string>
+    <string name="modulation">Modulation: %s</string>
+    <string name="path_backward" translatable="false">../</string>
+    <string name="delete">Delete</string>
+    <string name="create">Create</string>
+    <string name="rename">Rename</string>
 </resources>
