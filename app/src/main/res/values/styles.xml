@@ -12,6 +12,12 @@
         <item name="android:background">@drawable/ripple_with_corner</item>
         <item name="android:textColor">@android:color/black</item>
         <item name="android:textAllCaps">false</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:minWidth">0dp</item>
     </style>
 
     <!--  复选框  -->

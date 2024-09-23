@@ -19,7 +19,7 @@ object Toaster {
     private val HANDLER = Handler(Looper.getMainLooper())
     private var mToastReference: WeakReference<IToast>? = null
 
-    fun init(application: Application) {
+    fun initialize(application: Application) {
         sApplication = application
     }
 

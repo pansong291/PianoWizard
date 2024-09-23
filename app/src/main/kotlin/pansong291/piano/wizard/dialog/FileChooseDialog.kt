@@ -1,10 +1,13 @@
 package pansong291.piano.wizard.dialog
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.os.Environment
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import pansong291.piano.wizard.R
@@ -13,13 +16,16 @@ import pansong291.piano.wizard.toast.Toaster
 import java.io.File
 import java.io.FileFilter
 
-class FileChooseDialog(val application: Application) : BaseDialog(application) {
+class FileChooseDialog(application: Application) : BaseDialog(application) {
     var basePath: String = Environment.getExternalStorageDirectory().path
     var fileFilter: FileFilter = FileFilter { true }
 
     init {
-        val content = View.inflate(application, R.layout.dialog_content_file_choose, null)
-        dialog.contentView.findViewById<ViewGroup>(android.R.id.content).addView(content)
+        val content = View.inflate(
+            application,
+            R.layout.dialog_content_file_choose,
+            getMainContent()
+        )
         // 主内容：一个回退按钮和文件列表
         val backwardItem = content.findViewById<TextView>(android.R.id.undo)
         val recyclerView = content.findViewById<RecyclerView>(android.R.id.list)
@@ -29,7 +35,7 @@ class FileChooseDialog(val application: Application) : BaseDialog(application) {
                 adapter.forwardFolder(info.name)
             } else {
                 Toaster.show(info.name)
-                dialog.cancel()
+                dialog.recycle()
             }
         }
         recyclerView.layoutManager = LinearLayoutManager(application).apply {
@@ -37,12 +43,8 @@ class FileChooseDialog(val application: Application) : BaseDialog(application) {
         }
         recyclerView.adapter = adapter
         backwardItem.text = application.getString(R.string.path_backward)
-        backwardItem.isClickable = true
-        /*val typedValue = TypedValue()
-        application.getTheme().resolveAttribute(android.R.attr.selectableItemBackground, typedValue, true)
-        backwardItem.setBackgroundResource(typedValue.resourceId)*/
         backwardItem.setOnClickListener { adapter.backwardFolder() }
-        DialogCommonActions.loadIn(dialog) { ok, _ ->
+        DialogCommonActions.loadIn(this) { ok, _ ->
             // 确定按钮
             ok.setOnClickListener {
                 Toaster.show(adapter.getPath())
@@ -55,7 +57,7 @@ class FileChooseDialog(val application: Application) : BaseDialog(application) {
         var name: String = ""
     }
 
-    inner class FileViewHolder(val textView: TextView) : RecyclerView.ViewHolder(textView)
+    inner class FileViewHolder(val textView: AppCompatTextView) : RecyclerView.ViewHolder(textView)
 
     fun interface FileItemClickListener {
         fun onItemClick(info: FileInfo, position: Int)
@@ -76,7 +78,7 @@ class FileChooseDialog(val application: Application) : BaseDialog(application) {
 
         fun backwardFolder() {
             val cur = File(path)
-            if (Environment.getExternalStorageDirectory() == cur.parentFile) return
+            if (Environment.getExternalStorageDirectory() == cur) return
             loadFileList(cur.parentFile)
             cur.parent?.let { path = it }
         }
@@ -91,6 +93,7 @@ class FileChooseDialog(val application: Application) : BaseDialog(application) {
             itemClickListener = listener
         }
 
+        @SuppressLint("NotifyDataSetChanged")
         private fun loadFileList(folder: File?) {
             fileList = (folder ?: File(path)).listFiles(filter)?.map {
                 FileInfo().apply {
@@ -98,12 +101,19 @@ class FileChooseDialog(val application: Application) : BaseDialog(application) {
                     else R.drawable.outline_file_24
                     name = it.name
                 }
+            }?.sortedWith { p, q ->
+                when (p.icon) {
+                    q.icon -> p.name.compareTo(q.name)
+                    R.drawable.outline_folder_24 -> -1
+                    else -> 1
+                }
             } ?: emptyList()
             notifyDataSetChanged()
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FileViewHolder {
-            val view = View.inflate(application, R.layout.list_item_file, null) as TextView
+            val view = LayoutInflater.from(application)
+                .inflate(R.layout.list_item_file, parent, false) as AppCompatTextView
             return FileViewHolder(view)
         }
 

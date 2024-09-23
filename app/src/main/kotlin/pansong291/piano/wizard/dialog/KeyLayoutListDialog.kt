@@ -5,12 +5,13 @@ import pansong291.piano.wizard.dialog.contents.DialogRadioListContent
 import pansong291.piano.wizard.entity.KeyLayout
 
 class KeyLayoutListDialog(
-    val application: Application,
+    application: Application,
     val data: List<KeyLayout>,
     val default: Int? = null
 ) : BaseDialog(application) {
     init {
-        val adapter = DialogRadioListContent.loadIn(dialog, data.map { it.name }, default)
+        setOutsideCloseable(true)
+        val adapter = DialogRadioListContent.loadIn(this, data.map { it.name }, default)
     }
 
     fun update(index: Int, keyLayout: KeyLayout) {}

@@ -1,41 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@android:id/mask"
+    android:focusable="true"
+    android:clickable="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:orientation="vertical"
-    android:padding="48dp"
-    android:background="#70000000">
+    android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:focusable="true"
+        android:clickable="true"
         app:cardBackgroundColor="@android:color/white"
-        app:cardCornerRadius="4dp"
+        android:layout_margin="48dp"
+        app:cardCornerRadius="5dp"
         app:cardElevation="16dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:paddingVertical="16dp">
+            android:orientation="vertical">
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@android:id/title"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:drawablePadding="8dp"
                 android:gravity="center_vertical|start"
+                android:paddingTop="16dp"
                 android:paddingHorizontal="16dp"
+                android:paddingBottom="8dp"
                 android:text="@android:string/dialog_alert_title"
                 android:textColor="@android:color/black"
-                app:drawableStartCompat="@drawable/outline_info_24" />
+                android:textSize="18sp"
+                app:drawableStartCompat="@drawable/outline_info_32" />
 
             <LinearLayout
                 android:id="@android:id/content"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 android:orientation="vertical" />
 
             <LinearLayout
@@ -43,8 +50,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingHorizontal="16dp" />
+                android:padding="16dp" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
-
 </LinearLayout>

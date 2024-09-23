@@ -1,21 +1,22 @@
 package pansong291.piano.wizard.dialog.contents
 
 import android.content.Context
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckedTextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.hjq.window.EasyWindow
+import pansong291.piano.wizard.dialog.IDialog
 
 object DialogRadioListContent {
-    fun loadIn(dialog: EasyWindow<*>, data: List<String>, default: Int?): Adapter {
-        val content = RecyclerView(dialog.context)
-        dialog.contentView = content
-        content.layoutManager = LinearLayoutManager(dialog.context).apply {
+    fun loadIn(dialog: IDialog, data: List<String>, default: Int?): Adapter {
+        val content = RecyclerView(dialog.getAppContext())
+        dialog.getMainContent().addView(content)
+        content.layoutManager = LinearLayoutManager(dialog.getAppContext()).apply {
             orientation = LinearLayoutManager.VERTICAL
         }
-        return Adapter(dialog.context, data, default).also {
+        return Adapter(dialog.getAppContext(), data, default).also {
             content.adapter = it
         }
     }
@@ -37,7 +38,8 @@ object DialogRadioListContent {
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val root = View.inflate(context, android.R.layout.select_dialog_singlechoice, null)
+            val root = LayoutInflater.from(context)
+                .inflate(android.R.layout.select_dialog_singlechoice, parent, false)
             return ViewHolder(root)
         }
 

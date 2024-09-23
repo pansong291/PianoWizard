@@ -100,6 +100,7 @@ class MainService : Service() {
         setupKeysLayoutController()
         layoutWindow = EasyWindow.with(application).apply {
             setContentView(keysLayoutView)
+            setOutsideTouchable(false)
             setWidth(ViewGroup.LayoutParams.MATCH_PARENT)
             setHeight(ViewGroup.LayoutParams.MATCH_PARENT)
             windowVisibility = View.GONE

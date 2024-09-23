@@ -7,6 +7,6 @@ class PianoWizardApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         // 初始化 Toaster 框架
-        Toaster.init(this)
+        Toaster.initialize(this)
     }
 }
