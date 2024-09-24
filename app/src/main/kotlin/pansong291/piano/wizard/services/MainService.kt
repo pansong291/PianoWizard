@@ -30,6 +30,8 @@ class MainService : Service() {
     private lateinit var controllerWindow: EasyWindow<*>
     private lateinit var layoutWindow: EasyWindow<*>
     private lateinit var keysLayoutView: KeysLayoutView
+    private lateinit var btnChooseLayout: Button
+    private lateinit var cbSemitone: CheckBox
     private lateinit var keyLayouts: List<KeyLayout>
     private var currentLayout: KeyLayout? = null
 
@@ -40,11 +42,13 @@ class MainService : Service() {
         sharedPreferences = getSharedPreferences(StringConst.SHARED_PREFERENCES_NAME, MODE_PRIVATE)
         keyLayouts = Gson().fromJson(
             sharedPreferences.getString(StringConst.SP_DATA_KEY_KEY_LAYOUTS, null),
-            TypeToken.getArray(KeyLayout::class.java).type
+            object : TypeToken<List<KeyLayout>>() {}.type
         ) ?: emptyList()
         keysLayoutView = KeysLayoutView(application)
         controllerWindow = EasyWindow.with(application).apply {
             setContentView(R.layout.win_controller)
+            btnChooseLayout = contentView.findViewById(R.id.btn_choose_key_layout)
+            cbSemitone = contentView.findViewById(R.id.cb_enable_semitone)
             // 设置成可拖拽的
             setDraggable(SpringBackDraggable())
             // 设置靠左上
@@ -57,7 +61,9 @@ class MainService : Service() {
             // 初始隐藏布局控制器
             setVisibility(R.id.key_layout_controller_wrapper, View.GONE)
             // 初始勾选显示序号
-            (findViewById<CheckBox>(R.id.cb_display_number) as CheckBox).isChecked = true
+            contentView.findViewById<CheckBox>(R.id.cb_display_number).isChecked = true
+            // 初始化布局
+            keyLayouts.firstOrNull()?.let { updateCurrentLayout(it) }
             // 展开、收起 长按
             setOnLongClickListener(
                 R.id.btn_collapse,
@@ -94,6 +100,10 @@ class MainService : Service() {
                         ms.visibility = View.GONE
                         layoutWindow.windowVisibility = View.VISIBLE
                         view.text = getString(R.string.music_score)
+                        if (keysLayoutView.getIndicator() == Point()) {
+                            // 重置指示器
+                            keysLayoutView.resetIndicator()
+                        }
                     }
                 }
             )
@@ -105,7 +115,6 @@ class MainService : Service() {
             setOutsideTouchable(false)
             setWidth(ViewGroup.LayoutParams.MATCH_PARENT)
             setHeight(ViewGroup.LayoutParams.MATCH_PARENT)
-            keysLayoutView.resetIndicator() // FIXME 似乎未生效
             windowVisibility = View.GONE
         }
     }
@@ -117,11 +126,12 @@ class MainService : Service() {
                 R.id.btn_choose_music,
                 EasyWindow.OnClickListener { _, _: Button ->
                     val fcd = FileChooseDialog(application)
+                    fcd.setTitle(R.string.select_music)
                     fcd.fileFilter = FileFilter {
                         it.isDirectory || it.name.endsWith(StringConst.MUSIC_NOTATION_FILE_EXT)
                     }
-                    fcd.onFileChose = FileChooseDialog.OnFileChoseListener { path, file ->
-                        if (file == null) return@OnFileChoseListener
+                    fcd.onFileChose = onFileChose@{ path, file ->
+                        if (file == null) return@onFileChose
                     }
                     fcd.show()
                 }
@@ -140,7 +150,7 @@ class MainService : Service() {
                     keyLayouts,
                     keyLayouts.indexOf(currentLayout)
                 )
-                klld.onAction = KeyLayoutListDialog.OnActionListener { index, actionId ->
+                klld.onAction = onAction@{ index, actionId ->
                     // 保存
                     if (actionId == R.id.btn_save) {
                         sharedPreferences.edit().putString(
@@ -154,23 +164,22 @@ class MainService : Service() {
                         val tid = TextInputDialog(application)
                         tid.setIcon(R.drawable.outline_add_32)
                         tid.setTitle(R.string.create)
-                        tid.onTextConfirmed = TextInputDialog.OnTextConfirmedListener {
+                        tid.onTextConfirmed = onTextConfirmed@{
                             if (it.isEmpty()) {
                                 Toaster.show(R.string.require_name_message)
-                                return@OnTextConfirmedListener
+                                return@onTextConfirmed
                             }
                             val kl = KeyLayout()
                             kl.name = it.toString()
-                            currentLayout = kl
                             keyLayouts += kl
-                            klld.reloadData(keyLayouts, keyLayouts.size - 1)
-                            btn.text = kl.name
+                            klld.reloadData(keyLayouts, null)
+                            tid.destroy()
                         }
                         tid.show()
-                        return@OnActionListener
+                        return@onAction
                     }
                     val kl = if (index >= 0) keyLayouts[index]
-                    else return@OnActionListener
+                    else return@onAction
                     when (actionId) {
                         // 删除所选布局
                         R.id.btn_delete -> {
@@ -178,18 +187,13 @@ class MainService : Service() {
                             md.setIcon(R.drawable.outline_delete_forever_32)
                             md.setTitle(R.string.delete)
                             md.setText(getString(R.string.delete_confirm_message, kl.name))
-                            md.onOkClick = MessageDialog.OnOkClickListener {
+                            md.onOkClick = {
                                 keyLayouts = keyLayouts.filter { it != kl }
+                                // 清空所选项
+                                klld.reloadData(keyLayouts, -1)
                                 // 如果所选布局是当前布局
-                                if (currentLayout == kl) {
-                                    currentLayout = null
-                                    btn.setText(R.string.select_layout)
-                                    // 清空所选项
-                                    klld.reloadData(keyLayouts, -1)
-                                } else {
-                                    // 不更新所选项
-                                    klld.reloadData(keyLayouts, null)
-                                }
+                                if (currentLayout == kl) updateCurrentLayout(null)
+                                md.destroy()
                             }
                             md.show()
                         }
@@ -200,23 +204,23 @@ class MainService : Service() {
                             tid.setIcon(R.drawable.outline_drive_file_rename_outline_32)
                             tid.setTitle(R.string.rename)
                             tid.setText(kl.name)
-                            tid.onTextConfirmed = TextInputDialog.OnTextConfirmedListener {
+                            tid.onTextConfirmed = onTextConfirmed@{
                                 if (it.isEmpty()) {
                                     Toaster.show(R.string.require_name_message)
-                                    return@OnTextConfirmedListener
+                                    return@onTextConfirmed
                                 }
                                 kl.name = it.toString()
                                 klld.reloadData(keyLayouts, null)
                                 // 如果所选布局是当前布局，则更新按钮文案
                                 if (currentLayout == kl) btn.text = kl.name
+                                tid.destroy()
                             }
                             tid.show()
                         }
 
                         // 将所选布局设为当前布局
                         android.R.id.primary -> {
-                            currentLayout = kl
-                            btn.text = kl.name
+                            updateCurrentLayout(kl)
                             klld.destroy()
                         }
                     }
@@ -276,6 +280,18 @@ class MainService : Service() {
                     }
                 }
             )
+        }
+    }
+
+    private fun updateCurrentLayout(kl: KeyLayout?) {
+        currentLayout = kl
+        kl?.also {
+            btnChooseLayout.text = it.name
+            cbSemitone.isChecked = it.semitone
+            keysLayoutView.setPoints(it.points)
+        } ?: run {
+            btnChooseLayout.setText(R.string.select_layout)
+            keysLayoutView.setPoints(emptyList())
         }
     }
 

@@ -32,12 +32,12 @@
     <!--  对话框图标按钮  -->
     <style name="DialogImageButtonStyle" parent="Widget.AppCompat.Button.Small">
         <item name="android:background">@drawable/ripple_with_corner</item>
-        <item name="android:padding">8dp</item>
         <item name="android:minHeight">0dp</item>
         <item name="android:minWidth">0dp</item>
         <item name="android:gravity">center</item>
-        <item name="android:layout_width">24dp</item>
-        <item name="android:layout_height">24dp</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">40dp</item>
     </style>
 
     <!--  复选框  -->

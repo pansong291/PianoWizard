@@ -4,7 +4,7 @@ import android.app.Application
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import androidx.appcompat.widget.AppCompatTextView
+import android.widget.TextView
 import com.hjq.window.EasyWindow
 import pansong291.piano.wizard.R
 
@@ -23,43 +23,48 @@ abstract class BaseDialog(val application: Application) : IDialog {
         setContentView(R.layout.dialog_base)
     }
 
-    override fun getAppContext(): Application {
+    init {
+        // 点击遮罩关闭对话框
+        setOutsideCloseable(true)
+    }
+
+    final override fun getAppContext(): Application {
         return application
     }
 
-    override fun findContentWrapper(): LinearLayout {
+    final override fun findContentWrapper(): LinearLayout {
         return dialog.contentView.findViewById(android.R.id.content)
     }
 
-    override fun findActionsWrapper(): LinearLayout {
+    final override fun findActionsWrapper(): LinearLayout {
         return dialog.contentView.findViewById(android.R.id.extractArea)
     }
 
-    override fun setOutsideCloseable(b: Boolean) {
+    final override fun setOutsideCloseable(b: Boolean) {
         if (!b) return
         dialog.contentView.findViewById<ViewGroup>(android.R.id.mask).setOnClickListener {
             destroy()
         }
     }
 
-    override fun setTitle(text: CharSequence) {
+    final override fun setTitle(text: CharSequence) {
         dialog.setText(android.R.id.title, text)
     }
 
-    override fun setTitle(id: Int) {
+    final override fun setTitle(id: Int) {
         dialog.setText(android.R.id.title, id)
     }
 
-    override fun setIcon(id: Int) {
-        dialog.findViewById<AppCompatTextView>(android.R.id.title)
+    final override fun setIcon(id: Int) {
+        dialog.findViewById<TextView>(android.R.id.title)
             .setCompoundDrawablesRelativeWithIntrinsicBounds(id, 0, 0, 0)
     }
 
-    override fun show() {
+    final override fun show() {
         dialog.show()
     }
 
-    override fun destroy() {
+    final override fun destroy() {
         dialog.recycle()
     }
 }

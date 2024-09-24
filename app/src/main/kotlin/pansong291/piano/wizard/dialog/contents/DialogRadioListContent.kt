@@ -13,7 +13,7 @@ import pansong291.piano.wizard.R
 import pansong291.piano.wizard.dialog.IDialog
 
 object DialogRadioListContent {
-    fun loadIn(dialog: IDialog, data: List<String>, default: Int?): Adapter {
+    fun loadIn(dialog: IDialog, data: List<String>, default: Int): Adapter {
         val content = FastScrollRecyclerView(dialog.getAppContext())
         dialog.findContentWrapper().addView(content)
         content.layoutManager = LinearLayoutManager(dialog.getAppContext()).apply {
@@ -29,18 +29,19 @@ object DialogRadioListContent {
     class Adapter(
         private val context: Context,
         private var data: List<String>,
-        default: Int?
+        default: Int
     ) : RecyclerView.Adapter<ViewHolder>() {
         private var selectedPosition = checkPosition(default)
         private var lastChecked: RadioButton? = null
+        var onItemSelected: (p: Int) -> Unit = {}
 
         /**
-         * @param selected 选择项。为 null 则不更新
+         * @param selected 选择项。为 null 则保持原来的选择项
          */
         @SuppressLint("NotifyDataSetChanged")
         fun reload(data: List<String>, selected: Int?) {
             this.data = data
-            selected?.let { selectedPosition = checkPosition(it) }
+            selectedPosition = checkPosition(selected ?: selectedPosition)
             notifyDataSetChanged()
         }
 
@@ -51,8 +52,8 @@ object DialogRadioListContent {
             return data[selectedPosition]
         }
 
-        private fun checkPosition(p: Int?): Int {
-            return p?.takeIf { it < data.size && it >= 0 } ?: -1
+        private fun checkPosition(p: Int): Int {
+            return p.takeIf { it < data.size && it >= 0 } ?: -1
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -71,6 +72,7 @@ object DialogRadioListContent {
             holder.itemView.setOnClickListener {
                 if (selectedPosition == holder.adapterPosition) return@setOnClickListener
                 selectedPosition = holder.adapterPosition
+                onItemSelected.invoke(selectedPosition)
                 radio.isChecked = true
                 lastChecked?.let { it.isChecked = false }
                 lastChecked = radio
