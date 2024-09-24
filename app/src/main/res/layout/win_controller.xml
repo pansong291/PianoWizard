@@ -2,8 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="#99000000">
+    android:background="#99000000"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -107,6 +107,13 @@
             android:orientation="vertical">
 
             <Button
+                android:id="@+id/btn_choose_key_layout"
+                style="@style/WindowButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/select_layout" />
+
+            <Button
                 android:id="@+id/btn_reset_indicator"
                 style="@style/WindowButtonStyle"
                 android:layout_width="match_parent"
@@ -119,13 +126,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/display_number" />
-
-            <Button
-                android:id="@+id/btn_choose_key_layout"
-                style="@style/WindowButtonStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/select_layout" />
 
             <CheckBox
                 android:id="@+id/cb_enable_semitone"
@@ -155,8 +155,6 @@
                     android:layout_weight="1"
                     android:text="+" />
             </LinearLayout>
-
         </LinearLayout>
-
     </LinearLayout>
 </LinearLayout>

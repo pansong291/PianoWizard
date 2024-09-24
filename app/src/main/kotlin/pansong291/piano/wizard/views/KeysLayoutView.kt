@@ -20,8 +20,8 @@ class KeysLayoutView(context: Context) : View(context) {
     private val pointPaint = Paint()
     private val numPaint = Paint()
     private val largeRadius = ViewUtil.dpToPx(context, 18f)
-    private val mediumRadius = ViewUtil.dpToPx(context, 8f)
-    private val smallRadius = ViewUtil.dpToPx(context, 5f)
+    private val mediumRadius = ViewUtil.dpToPx(context, 6f)
+    private val smallRadius = ViewUtil.dpToPx(context, 4f)
     private val textCenterY: Float
     private val touchStart = PointF()
     private val indicatorStart = Point()

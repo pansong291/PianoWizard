@@ -6,15 +6,15 @@ import android.widget.LinearLayout
 interface IDialog {
     fun getAppContext(): Application
 
-    fun getContentWrapper(): LinearLayout
+    fun findContentWrapper(): LinearLayout
 
-    fun getActionsWrapper(): LinearLayout
+    fun findActionsWrapper(): LinearLayout
 
     fun setOutsideCloseable(b: Boolean)
 
     fun setTitle(text: CharSequence)
 
-    fun setText(id: Int)
+    fun setTitle(id: Int)
 
     fun setIcon(id: Int)
 

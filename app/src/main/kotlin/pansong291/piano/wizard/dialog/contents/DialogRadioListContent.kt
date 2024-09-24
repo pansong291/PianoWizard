@@ -2,21 +2,20 @@ package pansong291.piano.wizard.dialog.contents
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckedTextView
+import android.widget.RadioButton
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
-import pansong291.piano.wizard.ViewUtil
+import pansong291.piano.wizard.R
 import pansong291.piano.wizard.dialog.IDialog
 
 object DialogRadioListContent {
     fun loadIn(dialog: IDialog, data: List<String>, default: Int?): Adapter {
         val content = FastScrollRecyclerView(dialog.getAppContext())
-        dialog.getContentWrapper().addView(content)
+        dialog.findContentWrapper().addView(content)
         content.layoutManager = LinearLayoutManager(dialog.getAppContext()).apply {
             orientation = LinearLayoutManager.VERTICAL
         }
@@ -33,12 +32,15 @@ object DialogRadioListContent {
         default: Int?
     ) : RecyclerView.Adapter<ViewHolder>() {
         private var selectedPosition = checkPosition(default)
-        private val padding = ViewUtil.dpToPx(context, 16f).toInt()
+        private var lastChecked: RadioButton? = null
 
+        /**
+         * @param selected 选择项。为 null 则不更新
+         */
         @SuppressLint("NotifyDataSetChanged")
-        fun reload(data: List<String>, default: Int?) {
+        fun reload(data: List<String>, selected: Int?) {
             this.data = data
-            selectedPosition = checkPosition(default)
+            selected?.let { selectedPosition = checkPosition(it) }
             notifyDataSetChanged()
         }
 
@@ -55,24 +57,23 @@ object DialogRadioListContent {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val root = LayoutInflater.from(context)
-                .inflate(android.R.layout.select_dialog_singlechoice, parent, false)
-            root.setPadding(padding, 0, padding, 0)
-            val txt = root.findViewById<CheckedTextView>(android.R.id.text1)
-            txt.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+                .inflate(R.layout.list_item_radio, parent, false)
             return ViewHolder(root)
         }
 
         override fun getItemCount(): Int = data.size
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val txt = holder.itemView.findViewById<CheckedTextView>(android.R.id.text1)
-            txt.text = data[position]
-            txt.isChecked = selectedPosition == position
-            txt.setOnClickListener {
-                val oldPosition = selectedPosition
+            val radio = holder.itemView.findViewById<RadioButton>(android.R.id.checkbox)
+            radio.text = data[position]
+            radio.isChecked = selectedPosition == position
+            if (radio.isChecked) lastChecked = radio
+            holder.itemView.setOnClickListener {
+                if (selectedPosition == holder.adapterPosition) return@setOnClickListener
                 selectedPosition = holder.adapterPosition
-                if (oldPosition >= 0) notifyItemChanged(oldPosition)
-                if (selectedPosition >= 0) notifyItemChanged(selectedPosition)
+                radio.isChecked = true
+                lastChecked?.let { it.isChecked = false }
+                lastChecked = radio
             }
         }
     }

@@ -25,4 +25,8 @@
     <string name="delete">Delete</string>
     <string name="create">Create</string>
     <string name="rename">Rename</string>
+    <string name="delete_confirm_message">Are you sure you want to delete \"%s\"?</string>
+    <string name="require_name_message">Please enter a name.</string>
+    <string name="save">Save</string>
+    <string name="save_all_layouts_message">All layouts have been saved.</string>
 </resources>

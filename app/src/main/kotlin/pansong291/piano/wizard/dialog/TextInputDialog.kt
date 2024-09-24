@@ -10,23 +10,22 @@ import pansong291.piano.wizard.dialog.actions.DialogCommonActions
 
 class TextInputDialog(application: Application) : BaseDialog(application) {
     private val textInput = EditText(application)
-    private var listener: OnOkClickListener? = null
+    var onTextConfirmed: OnTextConfirmedListener? = null
 
     init {
         dialog.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
-        val wrap = LinearLayout(application)
-        val hPadding = ViewUtil.dpToPx(application, 16f).toInt()
-        wrap.setPadding(hPadding, 0, hPadding, 0)
-        wrap.addView(textInput)
+        val horizontalMargin = ViewUtil.dpToPx(application, 16f).toInt()
         textInput.layoutParams = LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-        getContentWrapper().addView(wrap)
+        ).apply {
+            marginStart = horizontalMargin
+            marginEnd = horizontalMargin
+        }
+        findContentWrapper().addView(textInput)
         DialogCommonActions.loadIn(this) { ok, _ ->
             ok.setOnClickListener {
-                listener?.onOk(textInput.text)
-                destroy()
+                onTextConfirmed?.onTextConfirmed(textInput.text)
             }
         }
     }
@@ -43,11 +42,7 @@ class TextInputDialog(application: Application) : BaseDialog(application) {
         textInput.setHint(id)
     }
 
-    fun setOnOkClickListener(l: OnOkClickListener) {
-        listener = l
-    }
-
-    fun interface OnOkClickListener {
-        fun onOk(text: CharSequence)
+    fun interface OnTextConfirmedListener {
+        fun onTextConfirmed(text: CharSequence)
     }
 }

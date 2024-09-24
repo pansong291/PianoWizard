@@ -2,7 +2,7 @@ package pansong291.piano.wizard.dialog
 
 import android.app.Application
 import android.view.View
-import android.widget.Button
+import android.widget.ImageButton
 import pansong291.piano.wizard.R
 import pansong291.piano.wizard.dialog.contents.DialogRadioListContent
 import pansong291.piano.wizard.entity.KeyLayout
@@ -12,7 +12,7 @@ class KeyLayoutListDialog(
     data: List<KeyLayout>,
     default: Int? = null
 ) : BaseDialog(application) {
-    private var listener: OnActionListener? = null
+    var onAction: OnActionListener? = null
     private val adapter: DialogRadioListContent.Adapter
 
     init {
@@ -22,16 +22,18 @@ class KeyLayoutListDialog(
         val actions = View.inflate(
             application,
             R.layout.dialog_actions_key_layout,
-            getActionsWrapper()
+            findActionsWrapper()
         )
-        // 操作区：新建、删除、重命名、确定按钮
-        val btnCreate = actions.findViewById<Button>(R.id.btn_create)
-        val btnDelete = actions.findViewById<Button>(R.id.btn_delete)
-        val btnRename = actions.findViewById<Button>(R.id.btn_rename)
-        val btnOk = actions.findViewById<Button>(android.R.id.primary)
+        // 操作区：保存、新建、删除、重命名、确定按钮
+        val btnSave = actions.findViewById<ImageButton>(R.id.btn_save)
+        val btnCreate = actions.findViewById<ImageButton>(R.id.btn_create)
+        val btnDelete = actions.findViewById<ImageButton>(R.id.btn_delete)
+        val btnRename = actions.findViewById<ImageButton>(R.id.btn_rename)
+        val btnOk = actions.findViewById<ImageButton>(android.R.id.primary)
         View.OnClickListener {
-            listener?.onAction(adapter.getSelectedPosition(), it.id)
+            onAction?.onAction(adapter.getSelectedPosition(), it.id)
         }.also {
+            btnSave.setOnClickListener(it)
             btnCreate.setOnClickListener(it)
             btnDelete.setOnClickListener(it)
             btnRename.setOnClickListener(it)
@@ -39,12 +41,8 @@ class KeyLayoutListDialog(
         }
     }
 
-    fun reloadData(data: List<KeyLayout>, default: Int?) {
-        adapter.reload(data.map { it.name }, default)
-    }
-
-    fun setOnActionListener(l: OnActionListener) {
-        listener = l
+    fun reloadData(data: List<KeyLayout>, selected: Int?) {
+        adapter.reload(data.map { it.name }, selected)
     }
 
     fun interface OnActionListener {

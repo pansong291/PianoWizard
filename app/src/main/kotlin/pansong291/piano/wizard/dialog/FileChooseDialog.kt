@@ -12,31 +12,31 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
 import pansong291.piano.wizard.R
+import pansong291.piano.wizard.dialog.FileChooseDialog.OnFileItemClickListener
 import pansong291.piano.wizard.dialog.actions.DialogCommonActions
-import pansong291.piano.wizard.toast.Toaster
 import java.io.File
 import java.io.FileFilter
 
 class FileChooseDialog(application: Application) : BaseDialog(application) {
     var basePath: String = Environment.getExternalStorageDirectory().path
     var fileFilter: FileFilter = FileFilter { true }
+    var onFileChose: OnFileChoseListener? = null
 
     init {
         val content = View.inflate(
             application,
             R.layout.dialog_content_file_choose,
-            getContentWrapper()
+            findContentWrapper()
         )
         // 主内容：一个回退按钮和文件列表
         val backwardItem = content.findViewById<TextView>(android.R.id.undo)
         val recyclerView = content.findViewById<FastScrollRecyclerView>(android.R.id.list)
         val adapter = FileListAdapter(basePath, fileFilter)
-        adapter.setOnItemClickListener { info, _ ->
+        adapter.onFileItemClick = OnFileItemClickListener { info, _ ->
             if (info.icon == R.drawable.outline_folder_24) {
                 adapter.forwardFolder(info.name)
             } else {
-                Toaster.show(info.name)
-                dialog.recycle()
+                onFileChose?.onFileChose(adapter.getPath(), info.name)
             }
         }
         recyclerView.layoutManager = LinearLayoutManager(application).apply {
@@ -48,28 +48,33 @@ class FileChooseDialog(application: Application) : BaseDialog(application) {
         DialogCommonActions.loadIn(this) { ok, _ ->
             // 确定按钮
             ok.setOnClickListener {
-                Toaster.show(adapter.getPath())
+                onFileChose?.onFileChose(adapter.getPath(), null)
             }
         }
     }
 
-    inner class FileInfo {
+    fun interface OnFileChoseListener {
+        fun onFileChose(path: String, file: String?)
+    }
+
+    private class FileInfo {
         var icon: Int = 0
         var name: String = ""
     }
 
-    inner class FileViewHolder(val textView: AppCompatTextView) : RecyclerView.ViewHolder(textView)
+    private class FileViewHolder(val textView: AppCompatTextView) :
+        RecyclerView.ViewHolder(textView)
 
-    fun interface FileItemClickListener {
-        fun onItemClick(info: FileInfo, position: Int)
+    private fun interface OnFileItemClickListener {
+        fun onFileItemClick(info: FileInfo, position: Int)
     }
 
-    inner class FileListAdapter(
+    private inner class FileListAdapter(
         private var path: String,
         private val filter: FileFilter
     ) : RecyclerView.Adapter<FileViewHolder>() {
         private lateinit var fileList: List<FileInfo>
-        private var itemClickListener: FileItemClickListener? = null
+        var onFileItemClick: OnFileItemClickListener? = null
 
         init {
             loadFileList(null)
@@ -88,10 +93,6 @@ class FileChooseDialog(application: Application) : BaseDialog(application) {
             val file = File(path, folder)
             loadFileList(file)
             path = file.path
-        }
-
-        fun setOnItemClickListener(listener: FileItemClickListener) {
-            itemClickListener = listener
         }
 
         @SuppressLint("NotifyDataSetChanged")
@@ -127,7 +128,7 @@ class FileChooseDialog(application: Application) : BaseDialog(application) {
             holder.textView.text = item.name
             holder.textView.setCompoundDrawablesRelativeWithIntrinsicBounds(item.icon, 0, 0, 0)
             holder.itemView.setOnClickListener {
-                itemClickListener?.onItemClick(item, position)
+                onFileItemClick?.onFileItemClick(item, position)
             }
         }
     }

@@ -1,45 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_vertical|left"
-    android:orientation="horizontal"
-    tools:ignore="RtlHardcoded">
+    android:gravity="center_vertical|end"
+    android:orientation="horizontal">
 
-    <Button
+    <ImageButton
+        android:id="@+id/btn_save"
+        style="@style/DialogImageButtonStyle"
+        android:contentDescription="@string/save"
+        android:src="@drawable/outline_save_24" />
+
+    <ImageButton
         android:id="@+id/btn_create"
-        style="@style/DialogButtonStyle"
-        android:layout_width="wrap_content"
+        style="@style/DialogImageButtonStyle"
+        android:layout_marginHorizontal="8dp"
+        android:contentDescription="@string/create"
+        android:src="@drawable/outline_add_32" />
+
+    <Space
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/create" />
+        android:layout_weight="1" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical|right"
-        android:orientation="horizontal">
-        <!--  FIXME 上面的 right 和根的 left 需要经过反向布局测试  -->
-        <Button
-            android:id="@+id/btn_delete"
-            style="@style/DialogButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/delete" />
+    <ImageButton
+        android:id="@+id/btn_delete"
+        style="@style/DialogImageButtonStyle"
+        android:contentDescription="@string/delete"
+        android:src="@drawable/outline_delete_forever_32" />
 
-        <Button
-            android:id="@+id/btn_rename"
-            style="@style/DialogButtonStyle"
-            android:layout_marginHorizontal="8dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/rename" />
+    <ImageButton
+        android:id="@+id/btn_rename"
+        style="@style/DialogImageButtonStyle"
+        android:layout_marginHorizontal="8dp"
+        android:contentDescription="@string/rename"
+        android:src="@drawable/outline_drive_file_rename_outline_32" />
 
-        <Button
-            android:id="@android:id/primary"
-            style="@style/DialogButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@android:string/ok" />
-    </LinearLayout>
+    <ImageButton
+        android:id="@android:id/primary"
+        style="@style/DialogImageButtonStyle"
+        android:contentDescription="@android:string/ok"
+        android:src="@drawable/outline_done_24" />
 </LinearLayout>

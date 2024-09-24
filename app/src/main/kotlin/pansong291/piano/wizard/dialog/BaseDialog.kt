@@ -27,11 +27,11 @@ abstract class BaseDialog(val application: Application) : IDialog {
         return application
     }
 
-    override fun getContentWrapper(): LinearLayout {
+    override fun findContentWrapper(): LinearLayout {
         return dialog.contentView.findViewById(android.R.id.content)
     }
 
-    override fun getActionsWrapper(): LinearLayout {
+    override fun findActionsWrapper(): LinearLayout {
         return dialog.contentView.findViewById(android.R.id.extractArea)
     }
 
@@ -46,7 +46,7 @@ abstract class BaseDialog(val application: Application) : IDialog {
         dialog.setText(android.R.id.title, text)
     }
 
-    override fun setText(id: Int) {
+    override fun setTitle(id: Int) {
         dialog.setText(android.R.id.title, id)
     }
 

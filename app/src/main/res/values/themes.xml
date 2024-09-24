@@ -3,7 +3,6 @@
     <style name="Base.Theme.PianoWizard" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
-        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="Theme.PianoWizard" parent="Base.Theme.PianoWizard" />

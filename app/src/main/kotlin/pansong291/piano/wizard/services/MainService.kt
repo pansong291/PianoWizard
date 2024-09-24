@@ -18,6 +18,7 @@ import pansong291.piano.wizard.R
 import pansong291.piano.wizard.consts.StringConst
 import pansong291.piano.wizard.dialog.FileChooseDialog
 import pansong291.piano.wizard.dialog.KeyLayoutListDialog
+import pansong291.piano.wizard.dialog.MessageDialog
 import pansong291.piano.wizard.dialog.TextInputDialog
 import pansong291.piano.wizard.entity.KeyLayout
 import pansong291.piano.wizard.toast.Toaster
@@ -104,6 +105,7 @@ class MainService : Service() {
             setOutsideTouchable(false)
             setWidth(ViewGroup.LayoutParams.MATCH_PARENT)
             setHeight(ViewGroup.LayoutParams.MATCH_PARENT)
+            keysLayoutView.resetIndicator() // FIXME 似乎未生效
             windowVisibility = View.GONE
         }
     }
@@ -114,12 +116,14 @@ class MainService : Service() {
             setOnClickListener(
                 R.id.btn_choose_music,
                 EasyWindow.OnClickListener { _, _: Button ->
-                    FileChooseDialog(application).apply {
-                        fileFilter = FileFilter {
-                            it.isDirectory || it.name.endsWith(StringConst.MUSIC_NOTATION_FILE_EXT)
-                        }
-                        show()
+                    val fcd = FileChooseDialog(application)
+                    fcd.fileFilter = FileFilter {
+                        it.isDirectory || it.name.endsWith(StringConst.MUSIC_NOTATION_FILE_EXT)
                     }
+                    fcd.onFileChose = FileChooseDialog.OnFileChoseListener { path, file ->
+                        if (file == null) return@OnFileChoseListener
+                    }
+                    fcd.show()
                 }
             )
             // TODO
@@ -127,44 +131,100 @@ class MainService : Service() {
     }
 
     private fun setupKeysLayoutController() {
-        controllerWindow.apply {
-            // 选择布局
-            setOnClickListener(
-                R.id.btn_choose_key_layout,
-                EasyWindow.OnClickListener { _, _: Button ->
-                    KeyLayoutListDialog(
-                        application,
-                        keyLayouts,
-                        keyLayouts.indexOf(currentLayout)
-                    ).apply {
-                        setOnActionListener { index, actionId ->
-                            when (actionId) {
-                                R.id.btn_create -> {
-                                    TextInputDialog(application).apply {
-                                        setOnOkClickListener {
-                                            if (it.isEmpty()) return@setOnOkClickListener
-                                            KeyLayout().apply {
-                                                name = it.toString()
-                                                currentLayout = this
-                                                keyLayouts += this
-                                                reloadData(keyLayouts, keyLayouts.size - 1)
-                                            }
-                                        }
-                                    }.show()
-                                }
-
-                                R.id.btn_delete -> {}
-                                R.id.btn_rename -> {}
-                                android.R.id.primary -> {
-                                    // TODO 显示名称
-                                    currentLayout = keyLayouts[index]
-                                    destroy()
+        // 选择布局
+        controllerWindow.setOnClickListener(
+            R.id.btn_choose_key_layout,
+            EasyWindow.OnClickListener { _, btn: Button ->
+                val klld = KeyLayoutListDialog(
+                    application,
+                    keyLayouts,
+                    keyLayouts.indexOf(currentLayout)
+                )
+                klld.onAction = KeyLayoutListDialog.OnActionListener { index, actionId ->
+                    // 保存
+                    if (actionId == R.id.btn_save) {
+                        sharedPreferences.edit().putString(
+                            StringConst.SP_DATA_KEY_KEY_LAYOUTS,
+                            Gson().toJson(keyLayouts)
+                        ).apply()
+                        Toaster.show(R.string.save_all_layouts_message)
+                    }
+                    // 新建布局
+                    else if (actionId == R.id.btn_create) {
+                        val tid = TextInputDialog(application)
+                        tid.setIcon(R.drawable.outline_add_32)
+                        tid.setTitle(R.string.create)
+                        tid.onTextConfirmed = TextInputDialog.OnTextConfirmedListener {
+                            if (it.isEmpty()) {
+                                Toaster.show(R.string.require_name_message)
+                                return@OnTextConfirmedListener
+                            }
+                            val kl = KeyLayout()
+                            kl.name = it.toString()
+                            currentLayout = kl
+                            keyLayouts += kl
+                            klld.reloadData(keyLayouts, keyLayouts.size - 1)
+                            btn.text = kl.name
+                        }
+                        tid.show()
+                        return@OnActionListener
+                    }
+                    val kl = if (index >= 0) keyLayouts[index]
+                    else return@OnActionListener
+                    when (actionId) {
+                        // 删除所选布局
+                        R.id.btn_delete -> {
+                            val md = MessageDialog(application)
+                            md.setIcon(R.drawable.outline_delete_forever_32)
+                            md.setTitle(R.string.delete)
+                            md.setText(getString(R.string.delete_confirm_message, kl.name))
+                            md.onOkClick = MessageDialog.OnOkClickListener {
+                                keyLayouts = keyLayouts.filter { it != kl }
+                                // 如果所选布局是当前布局
+                                if (currentLayout == kl) {
+                                    currentLayout = null
+                                    btn.setText(R.string.select_layout)
+                                    // 清空所选项
+                                    klld.reloadData(keyLayouts, -1)
+                                } else {
+                                    // 不更新所选项
+                                    klld.reloadData(keyLayouts, null)
                                 }
                             }
+                            md.show()
                         }
-                    }.show()
+
+                        // 重命名所选布局
+                        R.id.btn_rename -> {
+                            val tid = TextInputDialog(application)
+                            tid.setIcon(R.drawable.outline_drive_file_rename_outline_32)
+                            tid.setTitle(R.string.rename)
+                            tid.setText(kl.name)
+                            tid.onTextConfirmed = TextInputDialog.OnTextConfirmedListener {
+                                if (it.isEmpty()) {
+                                    Toaster.show(R.string.require_name_message)
+                                    return@OnTextConfirmedListener
+                                }
+                                kl.name = it.toString()
+                                klld.reloadData(keyLayouts, null)
+                                // 如果所选布局是当前布局，则更新按钮文案
+                                if (currentLayout == kl) btn.text = kl.name
+                            }
+                            tid.show()
+                        }
+
+                        // 将所选布局设为当前布局
+                        android.R.id.primary -> {
+                            currentLayout = kl
+                            btn.text = kl.name
+                            klld.destroy()
+                        }
+                    }
                 }
-            )
+                klld.show()
+            }
+        )
+        controllerWindow.apply {
             // 重置指示器
             setOnClickListener(
                 R.id.btn_reset_indicator,
