@@ -7,7 +7,7 @@
     <string name="btn_req_accessibility_perm">Accessibility: %s</string>
     <string name="common_on">On</string>
     <string name="common_off">Off</string>
-    <string name="btn_start">Start</string>
+    <string name="launch">Launch</string>
     <string name="key_layout">Layout</string>
     <string name="music_score">Music</string>
     <string name="expand">Expand</string>
@@ -29,4 +29,5 @@
     <string name="require_name_message">Please enter a name.</string>
     <string name="save">Save</string>
     <string name="save_all_layouts_message">All layouts have been saved.</string>
+    <string name="stop">Stop</string>
 </resources>

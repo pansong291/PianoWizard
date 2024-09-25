@@ -9,6 +9,7 @@ import com.hjq.window.EasyWindow
 import pansong291.piano.wizard.R
 
 abstract class BaseDialog(val application: Application) : IDialog {
+    private var maskCloseable = true
     protected var dialog: EasyWindow<*> = EasyWindow.with(application).apply {
         setAnimStyle(android.R.style.Animation_Dialog)
         // 设置外层是否能被触摸
@@ -21,11 +22,10 @@ abstract class BaseDialog(val application: Application) : IDialog {
         setGravity(Gravity.CENTER)
         // 基本视图
         setContentView(R.layout.dialog_base)
-    }
-
-    init {
         // 点击遮罩关闭对话框
-        setOutsideCloseable(true)
+        contentView.findViewById<ViewGroup>(android.R.id.mask).setOnClickListener {
+            if (maskCloseable) destroy()
+        }
     }
 
     final override fun getAppContext(): Application {
@@ -40,11 +40,8 @@ abstract class BaseDialog(val application: Application) : IDialog {
         return dialog.contentView.findViewById(android.R.id.extractArea)
     }
 
-    final override fun setOutsideCloseable(b: Boolean) {
-        if (!b) return
-        dialog.contentView.findViewById<ViewGroup>(android.R.id.mask).setOnClickListener {
-            destroy()
-        }
+    final override fun setMaskCloseable(b: Boolean) {
+        maskCloseable = b
     }
 
     final override fun setTitle(text: CharSequence) {

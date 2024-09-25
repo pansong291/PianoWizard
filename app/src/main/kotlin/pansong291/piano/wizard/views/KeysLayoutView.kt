@@ -17,14 +17,17 @@ class KeysLayoutView(context: Context) : View(context) {
     private var showNum = true
     private var points: List<Point> = emptyList()
     private var semitone: Boolean = false
-    private val indicator = Point()
+
     private val indicatorPaint = Paint()
     private val textPaint = Paint()
     private val fillPaint = Paint()
     private val strokePaint = Paint()
+
     private val largeRadius = ViewUtil.dpToPx(context, 18f)
     private val smallRadius = ViewUtil.dpToPx(context, 4f)
     private val textCenterY: Float
+
+    private val indicator = Point()
     private val touchStart = PointF()
     private val indicatorStart = Point()
 
@@ -33,10 +36,12 @@ class KeysLayoutView(context: Context) : View(context) {
         indicatorPaint.color = Color.RED
         indicatorPaint.style = Paint.Style.STROKE
         indicatorPaint.strokeWidth = dp1
+
         textPaint.style = Paint.Style.FILL
         textPaint.textSize = ViewUtil.spToPx(context, 18f)
         textPaint.isFakeBoldText = true
         textPaint.textAlign = Paint.Align.CENTER
+
         fillPaint.style = Paint.Style.FILL
         strokePaint.style = Paint.Style.STROKE
         strokePaint.strokeWidth = dp1
@@ -67,6 +72,7 @@ class KeysLayoutView(context: Context) : View(context) {
         canvas.drawARGB(20, 0, 0, 0)
         val fx = indicator.x.toFloat()
         val fy = indicator.y.toFloat()
+        // 绘制全部点位
         points.forEachIndexed { i, p ->
             val pfx = p.x.toFloat()
             val pfy = p.y.toFloat()
@@ -79,6 +85,7 @@ class KeysLayoutView(context: Context) : View(context) {
                 canvas.drawCircle(pfx, pfy, smallRadius, strokePaint)
             }
         }
+        // 绘制指示器
         canvas.drawLine(0f, fy, width.toFloat(), fy, indicatorPaint)
         canvas.drawLine(fx, 0f, fx, height.toFloat(), indicatorPaint)
     }

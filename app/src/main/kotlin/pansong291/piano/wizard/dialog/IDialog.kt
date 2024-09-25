@@ -10,7 +10,7 @@ interface IDialog {
 
     fun findActionsWrapper(): LinearLayout
 
-    fun setOutsideCloseable(b: Boolean)
+    fun setMaskCloseable(b: Boolean)
 
     fun setTitle(text: CharSequence)
 

@@ -25,6 +25,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/key_layout" />
+
+        <Button
+            android:id="@+id/btn_stop_music"
+            style="@style/WindowButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/stop" />
     </LinearLayout>
 
     <LinearLayout

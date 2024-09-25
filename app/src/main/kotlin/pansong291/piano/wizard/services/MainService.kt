@@ -27,12 +27,40 @@ import java.io.FileFilter
 
 class MainService : Service() {
     private lateinit var sharedPreferences: SharedPreferences
+
+    /**
+     * 控制器窗口
+     */
     private lateinit var controllerWindow: EasyWindow<*>
+
+    /**
+     * 布局窗口
+     */
     private lateinit var layoutWindow: EasyWindow<*>
+
+    /**
+     * 布局视图
+     */
     private lateinit var keysLayoutView: KeysLayoutView
+
+    /**
+     * 选择布局按钮
+     */
     private lateinit var btnChooseLayout: Button
+
+    /**
+     * 半音复选框
+     */
     private lateinit var cbSemitone: CheckBox
+
+    /**
+     * 全部布局
+     */
     private lateinit var keyLayouts: List<KeyLayout>
+
+    /**
+     * 当前布局
+     */
     private var currentLayout: KeyLayout? = null
 
     override fun onBind(p0: Intent?): IBinder? = null
@@ -58,6 +86,8 @@ class MainService : Service() {
             // 初始设置文案
             setText(R.id.btn_collapse, R.string.collapse)
             setText(R.id.btn_controller_switch, R.string.key_layout)
+            // 初始隐藏音乐停止按钮
+            setVisibility(R.id.btn_stop_music, View.GONE)
             // 初始隐藏布局控制器
             setVisibility(R.id.key_layout_controller_wrapper, View.GONE)
             // 初始勾选显示序号
