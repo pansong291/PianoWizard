@@ -10,7 +10,7 @@ import pansong291.piano.wizard.utils.ViewUtil
 
 class TextInputDialog(application: Application) : BaseDialog(application) {
     private val textInput = EditText(application)
-    var onTextConfirmed: (t: CharSequence) -> Unit = {}
+    var onTextConfirmed: ((t: CharSequence) -> Unit)? = null
 
     init {
         dialog.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
@@ -25,7 +25,7 @@ class TextInputDialog(application: Application) : BaseDialog(application) {
         findContentWrapper().addView(textInput)
         DialogCommonActions.loadIn(this) { ok, _ ->
             ok.setOnClickListener {
-                onTextConfirmed.invoke(textInput.text ?: "")
+                onTextConfirmed?.invoke(textInput.text ?: "")
             }
         }
     }

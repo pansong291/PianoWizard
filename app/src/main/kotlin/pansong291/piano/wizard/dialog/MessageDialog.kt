@@ -12,7 +12,7 @@ import pansong291.piano.wizard.utils.ViewUtil
 
 class MessageDialog(application: Application) : BaseDialog(application) {
     private val textView = TextView(application)
-    var onOkClick: () -> Unit = {}
+    var onOkClick: (() -> Unit)? = null
 
     init {
         val scrollView = ScrollView(application)
@@ -31,7 +31,7 @@ class MessageDialog(application: Application) : BaseDialog(application) {
         findContentWrapper().addView(scrollView)
         DialogCommonActions.loadIn(this) { ok, _ ->
             ok.setOnClickListener {
-                onOkClick.invoke()
+                onOkClick?.invoke()
             }
         }
     }

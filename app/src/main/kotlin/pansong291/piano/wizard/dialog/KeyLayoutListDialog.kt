@@ -12,12 +12,13 @@ class KeyLayoutListDialog(
     data: List<KeyLayout>,
     default: Int
 ) : BaseDialog(application) {
-    var onAction: (index: Int, actionId: Int) -> Unit = { _, _ -> }
+    var onAction: ((index: Int, actionId: Int) -> Unit)? = null
     private val setSpecialActionEnabled: (b: Boolean) -> Unit
     private val adapter: DialogRadioListContent.Adapter =
         DialogRadioListContent.loadIn(this, data.map { it.name }, default)
 
     init {
+        setIcon(R.drawable.outline_layout_32)
         setTitle(R.string.select_layout)
         val actions = View.inflate(
             application,
@@ -31,7 +32,7 @@ class KeyLayoutListDialog(
         val btnRename = actions.findViewById<AppCompatImageButton>(R.id.btn_rename)
         val btnOk = actions.findViewById<AppCompatImageButton>(android.R.id.primary)
         View.OnClickListener {
-            onAction.invoke(adapter.getSelectedPosition(), it.id)
+            onAction?.invoke(adapter.getSelectedPosition(), it.id)
         }.also {
             btnSave.setOnClickListener(it)
             btnCreate.setOnClickListener(it)

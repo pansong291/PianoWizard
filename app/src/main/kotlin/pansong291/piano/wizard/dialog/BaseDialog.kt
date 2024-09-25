@@ -57,11 +57,11 @@ abstract class BaseDialog(val application: Application) : IDialog {
             .setCompoundDrawablesRelativeWithIntrinsicBounds(id, 0, 0, 0)
     }
 
-    final override fun show() {
+    override fun show() {
         dialog.show()
     }
 
-    final override fun destroy() {
+    override fun destroy() {
         dialog.recycle()
     }
 }

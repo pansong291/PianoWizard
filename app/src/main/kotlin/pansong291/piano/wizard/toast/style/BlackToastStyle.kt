@@ -16,7 +16,7 @@ object BlackToastStyle {
         val textView = TextView(context)
         textView.id = android.R.id.message
         textView.gravity = Gravity.CENTER
-        textView.setTextColor(-0x11000001)
+        textView.setTextColor(0xffffffff.toInt())
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
 
         val horizontalPadding = ViewUtil.dpToPx(context, 24f).toInt()
@@ -57,7 +57,7 @@ object BlackToastStyle {
     private fun getBackgroundDrawable(context: Context): Drawable {
         val drawable = GradientDrawable()
         // 设置颜色
-        drawable.setColor(-0x4d000000)
+        drawable.setColor(0xff000000.toInt())
         // 设置圆角
         drawable.cornerRadius = ViewUtil.dpToPx(context, 10f)
         return drawable

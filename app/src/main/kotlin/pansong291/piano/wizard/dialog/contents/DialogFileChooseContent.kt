@@ -1,8 +1,9 @@
-package pansong291.piano.wizard.dialog
+package pansong291.piano.wizard.dialog.contents
 
 import android.annotation.SuppressLint
 import android.app.Application
 import android.os.Environment
+import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,83 +12,73 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
 import pansong291.piano.wizard.R
-import pansong291.piano.wizard.dialog.actions.DialogCommonActions
+import pansong291.piano.wizard.dialog.IDialog
 import java.io.File
 import java.io.FileFilter
 
-class FileChooseDialog(application: Application) : BaseDialog(application) {
-    var basePath: String = Environment.getExternalStorageDirectory().path
-    var fileFilter: FileFilter = FileFilter { true }
-    var onFileChose: (path: String, file: String?) -> Unit = { _, _ -> }
-
-    init {
+object DialogFileChooseContent {
+    fun loadIn(dialog: IDialog): FileListAdapter {
+        val application = dialog.getAppContext()
         val content = View.inflate(
             application,
             R.layout.dialog_content_file_choose,
-            findContentWrapper()
+            dialog.findContentWrapper()
         )
+        val adapter = FileListAdapter(application)
         // 主内容：一个回退按钮和文件列表
-        val backwardItem = content.findViewById<AppCompatTextView>(android.R.id.undo)
-        val recyclerView = content.findViewById<FastScrollRecyclerView>(android.R.id.list)
-        val adapter = FileListAdapter(basePath, fileFilter)
-        adapter.onFileItemClick = { info, _ ->
-            if (info.icon == R.drawable.outline_folder_24) {
-                adapter.forwardFolder(info.name)
-            } else {
-                onFileChose.invoke(adapter.getPath(), info.name)
+        val backwardItem = content.findViewById<AppCompatTextView>(android.R.id.undo).apply {
+            ellipsize = TextUtils.TruncateAt.START
+            setOnClickListener { adapter.backwardFolder() }
+        }
+        adapter.onPathLoaded = {
+            backwardItem.text = it
+        }
+        content.findViewById<FastScrollRecyclerView>(android.R.id.list).apply {
+            layoutManager = LinearLayoutManager(application).apply {
+                orientation = LinearLayoutManager.VERTICAL
             }
+            this.adapter = adapter
         }
-        recyclerView.layoutManager = LinearLayoutManager(application).apply {
-            orientation = LinearLayoutManager.VERTICAL
-        }
-        recyclerView.adapter = adapter
-        backwardItem.text = application.getString(R.string.path_backward)
-        backwardItem.setOnClickListener { adapter.backwardFolder() }
-        DialogCommonActions.loadIn(this) { ok, _ ->
-            // 确定按钮
-            ok.setOnClickListener {
-                onFileChose.invoke(adapter.getPath(), null)
-            }
-        }
+        return adapter
     }
 
-    private class FileInfo {
+    class FileInfo {
         var icon: Int = 0
         var name: String = ""
     }
 
-    private class FileViewHolder(val textView: AppCompatTextView) :
+    class FileViewHolder(val textView: AppCompatTextView) :
         RecyclerView.ViewHolder(textView)
 
-    private inner class FileListAdapter(
-        private var path: String,
-        private val filter: FileFilter
-    ) : RecyclerView.Adapter<FileViewHolder>() {
+    class FileListAdapter(private val application: Application) :
+        RecyclerView.Adapter<FileViewHolder>() {
         private lateinit var fileList: List<FileInfo>
-        var onFileItemClick: (info: FileInfo, position: Int) -> Unit = { _, _ -> }
+        var basePath: String = Environment.getExternalStorageDirectory().path
+        var fileFilter: FileFilter = FileFilter { true }
+        var onFileChose: ((path: String, file: String) -> Unit)? = null
+        var onPathLoaded: ((path: String) -> Unit)? = null
 
-        init {
+        fun reload() {
             loadFileList(null)
         }
 
-        fun getPath() = path
-
         fun backwardFolder() {
-            val cur = File(path)
+            val cur = File(basePath)
             if (Environment.getExternalStorageDirectory() == cur) return
             loadFileList(cur.parentFile)
-            cur.parent?.let { path = it }
+            cur.parent?.let { basePath = it }
         }
 
         fun forwardFolder(folder: String) {
-            val file = File(path, folder)
+            val file = File(basePath, folder)
             loadFileList(file)
-            path = file.path
+            basePath = file.path
         }
 
         @SuppressLint("NotifyDataSetChanged")
         private fun loadFileList(folder: File?) {
-            fileList = (folder ?: File(path)).listFiles(filter)?.map {
+            val folderFile = folder ?: File(basePath)
+            fileList = folderFile.listFiles(fileFilter)?.map {
                 FileInfo().apply {
                     icon = if (it.isDirectory) R.drawable.outline_folder_24
                     else R.drawable.outline_file_24
@@ -100,6 +91,7 @@ class FileChooseDialog(application: Application) : BaseDialog(application) {
                     else -> 1
                 }
             } ?: emptyList()
+            onPathLoaded?.invoke(folderFile.path)
             notifyDataSetChanged()
         }
 
@@ -118,7 +110,11 @@ class FileChooseDialog(application: Application) : BaseDialog(application) {
             holder.textView.text = item.name
             holder.textView.setCompoundDrawablesRelativeWithIntrinsicBounds(item.icon, 0, 0, 0)
             holder.itemView.setOnClickListener {
-                onFileItemClick.invoke(item, position)
+                if (item.icon == R.drawable.outline_folder_24) {
+                    forwardFolder(item.name)
+                } else {
+                    onFileChose?.invoke(basePath, item.name)
+                }
             }
         }
     }

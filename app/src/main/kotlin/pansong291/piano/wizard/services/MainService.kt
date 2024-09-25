@@ -16,14 +16,14 @@ import com.hjq.window.EasyWindow
 import com.hjq.window.draggable.SpringBackDraggable
 import pansong291.piano.wizard.R
 import pansong291.piano.wizard.consts.StringConst
-import pansong291.piano.wizard.dialog.FileChooseDialog
 import pansong291.piano.wizard.dialog.KeyLayoutListDialog
 import pansong291.piano.wizard.dialog.MessageDialog
+import pansong291.piano.wizard.dialog.MusicFileChooseDialog
 import pansong291.piano.wizard.dialog.TextInputDialog
 import pansong291.piano.wizard.entity.KeyLayout
+import pansong291.piano.wizard.entity.MusicNotation
 import pansong291.piano.wizard.toast.Toaster
 import pansong291.piano.wizard.views.KeysLayoutView
-import java.io.FileFilter
 
 class MainService : Service() {
     private lateinit var sharedPreferences: SharedPreferences
@@ -63,6 +63,11 @@ class MainService : Service() {
      */
     private var currentLayout: KeyLayout? = null
 
+    /**
+     * 当前乐谱
+     */
+    private var currentMusic: MusicNotation? = null
+
     override fun onBind(p0: Intent?): IBinder? = null
 
     override fun onCreate() {
@@ -92,8 +97,6 @@ class MainService : Service() {
             setVisibility(R.id.key_layout_controller_wrapper, View.GONE)
             // 初始勾选显示序号
             contentView.findViewById<CheckBox>(R.id.cb_display_number).isChecked = true
-            // 初始化布局
-            keyLayouts.firstOrNull()?.let { updateCurrentLayout(it) }
             // 展开、收起 长按
             setOnLongClickListener(
                 R.id.btn_collapse,
@@ -138,9 +141,14 @@ class MainService : Service() {
                 }
             )
         }
+        // 初始化布局
+        sharedPreferences.getInt(StringConst.SP_DATA_KEY_LAST_LAYOUT, 0).takeIf {
+            it >= 0 && it < keyLayouts.size
+        }?.let { updateCurrentLayout(keyLayouts[it]) }
         setupMusicScoreController()
         setupKeysLayoutController()
         layoutWindow = EasyWindow.with(application).apply {
+            setAnimStyle(android.R.style.Animation_Dialog)
             setContentView(keysLayoutView)
             setOutsideTouchable(false)
             setWidth(ViewGroup.LayoutParams.MATCH_PARENT)
@@ -155,13 +163,10 @@ class MainService : Service() {
             setOnClickListener(
                 R.id.btn_choose_music,
                 EasyWindow.OnClickListener { _, _: Button ->
-                    val fcd = FileChooseDialog(application)
-                    fcd.setTitle(R.string.select_music)
-                    fcd.fileFilter = FileFilter {
-                        it.isDirectory || it.name.endsWith(StringConst.MUSIC_NOTATION_FILE_EXT)
-                    }
-                    fcd.onFileChose = onFileChose@{ path, file ->
-                        if (file == null) return@onFileChose
+                    val fcd = MusicFileChooseDialog(application)
+                    fcd.onFileChose = { path, file ->
+                        // TODO
+                        Toaster.show("选择的文件：${path}/${file}")
                     }
                     fcd.show()
                 }
@@ -194,6 +199,7 @@ class MainService : Service() {
                         val tid = TextInputDialog(application)
                         tid.setIcon(R.drawable.outline_add_32)
                         tid.setTitle(R.string.create)
+                        tid.setHint(R.string.enter_layout_name_hint)
                         tid.onTextConfirmed = onTextConfirmed@{
                             if (it.isEmpty()) {
                                 Toaster.show(R.string.require_name_message)
@@ -222,7 +228,11 @@ class MainService : Service() {
                                 // 清空所选项
                                 klld.reloadData(keyLayouts, -1)
                                 // 如果所选布局是当前布局
-                                if (currentLayout == kl) updateCurrentLayout(null)
+                                if (currentLayout == kl) {
+                                    updateCurrentLayout(null)
+                                    sharedPreferences.edit()
+                                        .putInt(StringConst.SP_DATA_KEY_LAST_LAYOUT, 0).apply()
+                                }
                                 md.destroy()
                             }
                             md.show()
@@ -233,6 +243,7 @@ class MainService : Service() {
                             val tid = TextInputDialog(application)
                             tid.setIcon(R.drawable.outline_drive_file_rename_outline_32)
                             tid.setTitle(R.string.rename)
+                            tid.setHint(R.string.enter_layout_name_hint)
                             tid.setText(kl.name)
                             tid.onTextConfirmed = onTextConfirmed@{
                                 if (it.isEmpty()) {
@@ -251,6 +262,8 @@ class MainService : Service() {
                         // 将所选布局设为当前布局
                         android.R.id.primary -> {
                             updateCurrentLayout(kl)
+                            sharedPreferences.edit()
+                                .putInt(StringConst.SP_DATA_KEY_LAST_LAYOUT, index).apply()
                             klld.destroy()
                         }
                     }
@@ -329,7 +342,17 @@ class MainService : Service() {
     }
 
     private fun withCurrentLayout(block: (c: KeyLayout) -> Unit) {
-        currentLayout?.also(block) ?: Toaster.show(R.string.layout_empty_warn)
+        currentLayout?.also(block) ?: Toaster.show(R.string.layout_empty_warn_message)
+    }
+
+    private fun updateCurrentMusic(mn: MusicNotation?) {
+        currentMusic = mn
+        mn?.also { } ?: run {}
+        // TODO
+    }
+
+    private fun withCurrentMusic(block: (c: MusicNotation) -> Unit) {
+        currentMusic?.also(block) ?: Toaster.show(R.string.music_empty_warn_message)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

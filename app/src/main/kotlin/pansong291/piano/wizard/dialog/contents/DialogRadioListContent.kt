@@ -33,7 +33,7 @@ object DialogRadioListContent {
     ) : RecyclerView.Adapter<ViewHolder>() {
         private var selectedPosition = checkPosition(default)
         private var lastChecked: RadioButton? = null
-        var onItemSelected: (p: Int) -> Unit = {}
+        var onItemSelected: ((p: Int) -> Unit)? = null
 
         /**
          * @param selected 选择项。为 null 则保持原来的选择项
@@ -72,7 +72,7 @@ object DialogRadioListContent {
             holder.itemView.setOnClickListener {
                 if (selectedPosition == holder.adapterPosition) return@setOnClickListener
                 selectedPosition = holder.adapterPosition
-                onItemSelected.invoke(selectedPosition)
+                onItemSelected?.invoke(selectedPosition)
                 radio.isChecked = true
                 lastChecked?.let { it.isChecked = false }
                 lastChecked = radio

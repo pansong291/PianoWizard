@@ -69,7 +69,7 @@ class KeysLayoutView(context: Context) : View(context) {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        canvas.drawARGB(20, 0, 0, 0)
+        canvas.drawARGB(50, 0, 0, 0)
         val fx = indicator.x.toFloat()
         val fy = indicator.y.toFloat()
         // 绘制全部点位

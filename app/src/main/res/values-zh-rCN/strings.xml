@@ -16,9 +16,7 @@
     <string name="display_number">显示序号</string>
     <string name="reset_indicator">重置指示器</string>
     <string name="semitone">半音</string>
-    <string name="layout_empty_warn">当前布局为空，请先选择一个布局。</string>
-    <string name="folder">目录</string>
-    <string name="file">文件</string>
+    <string name="layout_empty_warn_message">当前布局为空，请先选择一个布局。</string>
     <string name="select_layout">选择布局</string>
     <string name="select_music">选择乐谱</string>
     <string name="modulation">变调：%s</string>
@@ -30,4 +28,8 @@
     <string name="save">保存</string>
     <string name="save_all_layouts_message">已保存全部布局。</string>
     <string name="stop">停止</string>
+    <string name="make_as_default_folder">设为默认</string>
+    <string name="make_default_folder_feedback_message">已将当前目录设为默认目录。</string>
+    <string name="music_empty_warn_message">当前乐谱为空，请先选择一个乐谱。</string>
+    <string name="enter_layout_name_hint">输入布局名称</string>
 </resources>
