@@ -5,8 +5,8 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.EditText
 import android.widget.LinearLayout
-import pansong291.piano.wizard.ViewUtil
 import pansong291.piano.wizard.dialog.actions.DialogCommonActions
+import pansong291.piano.wizard.utils.ViewUtil
 
 class TextInputDialog(application: Application) : BaseDialog(application) {
     private val textInput = EditText(application)

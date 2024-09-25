@@ -7,8 +7,8 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
-import pansong291.piano.wizard.ViewUtil
 import pansong291.piano.wizard.dialog.actions.DialogCommonActions
+import pansong291.piano.wizard.utils.ViewUtil
 
 class MessageDialog(application: Application) : BaseDialog(application) {
     private val textView = TextView(application)

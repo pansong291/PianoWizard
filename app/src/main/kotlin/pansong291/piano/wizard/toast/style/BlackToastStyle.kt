@@ -9,7 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import pansong291.piano.wizard.ViewUtil
+import pansong291.piano.wizard.utils.ViewUtil
 
 object BlackToastStyle {
     fun createView(context: Context): View {

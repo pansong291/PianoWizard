@@ -250,7 +250,9 @@ class MainService : Service() {
                 R.id.cb_enable_semitone,
                 EasyWindow.OnClickListener { _, view: CheckBox ->
                     withCurrentLayout {
-                        it.semitone = view.isChecked
+                        val semi = !keysLayoutView.getSemitone()
+                        keysLayoutView.setSemitone(semi)
+                        it.semitone = semi
                     }
                 }
             )
@@ -289,6 +291,7 @@ class MainService : Service() {
             btnChooseLayout.text = it.name
             cbSemitone.isChecked = it.semitone
             keysLayoutView.setPoints(it.points)
+            keysLayoutView.setSemitone(it.semitone)
         } ?: run {
             btnChooseLayout.setText(R.string.select_layout)
             keysLayoutView.setPoints(emptyList())
