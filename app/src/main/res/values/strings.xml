@@ -15,7 +15,7 @@
     <string name="display_number">Display number</string>
     <string name="reset_indicator">Reset indicator</string>
     <string name="semitone">Semitone</string>
-    <string name="layout_empty_warn_message">The current layout is empty. Please select a layout first.</string>
+    <string name="layout_empty_warn_message">The current layout is empty. Please select a layout first</string>
     <string name="select_layout">Select layout</string>
     <string name="select_music">Select music</string>
     <string name="modulation">Modulation: %s</string>
@@ -23,12 +23,17 @@
     <string name="create">Create</string>
     <string name="rename">Rename</string>
     <string name="delete_confirm_message">Are you sure you want to delete \"%s\"?</string>
-    <string name="require_name_message">Please enter a name.</string>
+    <string name="require_name_message">Please enter a name</string>
     <string name="save">Save</string>
-    <string name="save_all_layouts_message">All layouts have been saved.</string>
+    <string name="save_all_layouts_message">All layouts have been saved</string>
     <string name="stop">Stop</string>
     <string name="make_as_default_folder">Make default</string>
-    <string name="make_default_folder_feedback_message">The current folder has been set as the default folder.</string>
-    <string name="music_empty_warn_message">The current sheet music is empty. Please select a sheet music first.</string>
+    <string name="make_default_folder_feedback_message">The current folder has been set as the default folder</string>
+    <string name="music_empty_warn_message">The current sheet music is empty. Please select a sheet music first</string>
     <string name="enter_layout_name_hint">Enter layout name</string>
+    <string name="music_syntax_error_message">The sheet music format is incorrect, parsing failed</string>
+    <string name="unsupport_note_message">Unsupported note: %s</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="start">Start</string>
+    <string name="pause">Pause</string>
 </resources>

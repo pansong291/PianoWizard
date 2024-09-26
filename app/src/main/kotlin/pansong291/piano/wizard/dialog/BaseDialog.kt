@@ -5,6 +5,8 @@ import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import com.hjq.window.EasyWindow
 import pansong291.piano.wizard.R
 
@@ -48,11 +50,11 @@ abstract class BaseDialog(val application: Application) : IDialog {
         dialog.setText(android.R.id.title, text)
     }
 
-    final override fun setTitle(id: Int) {
+    final override fun setTitle(@StringRes id: Int) {
         dialog.setText(android.R.id.title, id)
     }
 
-    final override fun setIcon(id: Int) {
+    final override fun setIcon(@DrawableRes id: Int) {
         dialog.findViewById<TextView>(android.R.id.title)
             .setCompoundDrawablesRelativeWithIntrinsicBounds(id, 0, 0, 0)
     }

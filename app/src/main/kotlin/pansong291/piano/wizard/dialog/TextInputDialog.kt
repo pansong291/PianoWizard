@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.EditText
 import android.widget.LinearLayout
+import androidx.annotation.StringRes
 import pansong291.piano.wizard.dialog.actions.DialogCommonActions
 import pansong291.piano.wizard.utils.ViewUtil
 
@@ -38,7 +39,7 @@ class TextInputDialog(application: Application) : BaseDialog(application) {
         textInput.hint = text
     }
 
-    fun setHint(id: Int) {
+    fun setHint(@StringRes id: Int) {
         textInput.setHint(id)
     }
 }

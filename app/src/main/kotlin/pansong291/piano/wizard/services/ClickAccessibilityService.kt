@@ -14,6 +14,7 @@ class ClickAccessibilityService : AccessibilityService() {
         private var aService: ClickAccessibilityService? = null
 
         fun click(points: List<Point>, duration: Long) {
+            if (points.isEmpty()) return
             aService?.apply {
                 dispatchGesture(GestureDescription.Builder().apply {
                     points.forEach {

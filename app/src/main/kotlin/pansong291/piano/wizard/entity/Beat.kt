@@ -10,7 +10,7 @@ class Beat {
     var durationRate: Float = 1f
 
     /**
-     * 音调，支持和弦
+     * 音调，支持和弦，为空时表示休止或停顿
      */
     var tones: List<Int> = emptyList()
 }

@@ -2,6 +2,8 @@ package pansong291.piano.wizard.dialog
 
 import android.app.Application
 import android.widget.LinearLayout
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 
 interface IDialog {
     fun getAppContext(): Application
@@ -14,9 +16,9 @@ interface IDialog {
 
     fun setTitle(text: CharSequence)
 
-    fun setTitle(id: Int)
+    fun setTitle(@StringRes id: Int)
 
-    fun setIcon(id: Int)
+    fun setIcon(@DrawableRes id: Int)
 
     fun show()
 

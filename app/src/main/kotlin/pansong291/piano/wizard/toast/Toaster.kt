@@ -5,6 +5,7 @@ import android.content.res.Resources
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
+import androidx.annotation.StringRes
 import pansong291.piano.wizard.toast.config.IToast
 import java.lang.ref.WeakReference
 
@@ -26,7 +27,7 @@ object Toaster {
     /**
      * 显示 Toast
      */
-    fun show(id: Int, duration: Int = LENGTH_SHORT) {
+    fun show(@StringRes id: Int, duration: Int = LENGTH_SHORT) {
         show(stringIdToCharSequence(id), duration)
     }
 

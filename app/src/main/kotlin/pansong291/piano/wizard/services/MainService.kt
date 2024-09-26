@@ -14,7 +14,9 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.hjq.window.EasyWindow
 import com.hjq.window.draggable.SpringBackDraggable
+import pansong291.piano.wizard.PlayMusicThreadManager
 import pansong291.piano.wizard.R
+import pansong291.piano.wizard.ServiceException
 import pansong291.piano.wizard.consts.StringConst
 import pansong291.piano.wizard.dialog.KeyLayoutListDialog
 import pansong291.piano.wizard.dialog.MessageDialog
@@ -23,7 +25,10 @@ import pansong291.piano.wizard.dialog.TextInputDialog
 import pansong291.piano.wizard.entity.KeyLayout
 import pansong291.piano.wizard.entity.MusicNotation
 import pansong291.piano.wizard.toast.Toaster
+import pansong291.piano.wizard.utils.MusicUtil
 import pansong291.piano.wizard.views.KeysLayoutView
+import java.io.File
+import java.io.FileReader
 
 class MainService : Service() {
     private lateinit var sharedPreferences: SharedPreferences
@@ -109,6 +114,36 @@ class MainService : Service() {
     private lateinit var btnChooseMusic: Button
 
     /**
+     * 显示变调按钮
+     */
+    private lateinit var btnModulation: Button
+
+    /**
+     * 变调 -1 按钮
+     */
+    private lateinit var btnToneMinus1: Button
+
+    /**
+     * 变调 +1 按钮
+     */
+    private lateinit var btnTonePlus1: Button
+
+    /**
+     * 变调 -7 按钮
+     */
+    private lateinit var btnToneMinus7: Button
+
+    /**
+     * 变调 -7 按钮
+     */
+    private lateinit var btnTonePlus7: Button
+
+    /**
+     * 开始暂停按钮
+     */
+    private lateinit var btnPlayPause: Button
+
+    /**
      * 全部布局
      */
     private lateinit var keyLayouts: List<KeyLayout>
@@ -158,6 +193,12 @@ class MainService : Service() {
             btnPointRemove = contentView.findViewById(R.id.btn_point_remove)
             btnPointAdd = contentView.findViewById(R.id.btn_point_add)
             btnChooseMusic = contentView.findViewById(R.id.btn_choose_music)
+            btnModulation = contentView.findViewById(R.id.btn_modulation)
+            btnToneMinus1 = contentView.findViewById(R.id.btn_tone_minus_1)
+            btnTonePlus1 = contentView.findViewById(R.id.btn_tone_plus_1)
+            btnToneMinus7 = contentView.findViewById(R.id.btn_tone_minus_7)
+            btnTonePlus7 = contentView.findViewById(R.id.btn_tone_plus_7)
+            btnPlayPause = contentView.findViewById(R.id.btn_play_pause)
         }
 
         setupBasicController()
@@ -190,9 +231,9 @@ class MainService : Service() {
         // 初始勾选显示序号
         cbDisplayNumber.isChecked = keysLayoutView.isShowNum()
         // 展开、收起 长按
-        btnCollapse.setOnLongClickListener { _ -> true }
+        btnCollapse.setOnLongClickListener { true }
         // 展开、收起
-        btnCollapse.setOnClickListener { _ ->
+        btnCollapse.setOnClickListener {
             val isShow = btnControllerSwitch.visibility == View.VISIBLE
             val visible = if (isShow) View.GONE else View.VISIBLE
             btnControllerSwitch.visibility = visible
@@ -200,7 +241,7 @@ class MainService : Service() {
             btnCollapse.text = getString(if (isShow) R.string.expand else R.string.collapse)
         }
         // 布局、乐谱
-        btnControllerSwitch.setOnClickListener { _ ->
+        btnControllerSwitch.setOnClickListener {
             val isShowKL = vgKeyLayoutControllerWrapper.visibility == View.VISIBLE
             if (isShowKL) {
                 vgKeyLayoutControllerWrapper.visibility = View.GONE
@@ -222,20 +263,64 @@ class MainService : Service() {
 
     private fun setupMusicScoreController() {
         // 选择乐谱
-        btnChooseMusic.setOnClickListener { _ ->
+        btnChooseMusic.setOnClickListener {
             val fcd = MusicFileChooseDialog(application)
-            fcd.onFileChose = { path, file ->
-                // TODO
-                Toaster.show("选择的文件：${path}/${file}")
+            fcd.onFileChose = { path, filename ->
+                withCurrentLayout {
+                    try {
+                        val index = filename.lastIndexOf(StringConst.MUSIC_NOTATION_FILE_EXT)
+                        updateCurrentMusic(
+                            MusicUtil.parseMusicNotation(
+                                if (index > 0) filename.substring(0, index) else filename,
+                                FileReader(File(path, filename)).readText()
+                            )
+                        )
+                        fcd.destroy()
+                    } catch (e: ServiceException) {
+                        Toaster.show(e.getI18NMessage(application))
+                    } catch (e: Throwable) {
+                        Toaster.show(
+                            e.cause?.message ?: e.message ?: getString(R.string.unknown_error)
+                        )
+                    }
+                }
             }
             fcd.show()
         }
-        // TODO
+        // 显示变调
+        btnModulation.setOnClickListener {
+            withCurrentMusic { }
+        }
+        // 变调 -1
+        btnToneMinus1.setOnClickListener {
+            withCurrentMusic { }
+        }
+        // 变调 +1
+        btnTonePlus1.setOnClickListener {
+            withCurrentMusic { }
+        }
+        // 变调 -7
+        btnToneMinus7.setOnClickListener {
+            withCurrentMusic { }
+        }
+        // 变调 +7
+        btnTonePlus7.setOnClickListener {
+            withCurrentMusic { }
+        }
+        // 开始暂停
+        btnPlayPause.setOnClickListener {
+            withCurrentMusic {
+                PlayMusicThreadManager.startMusic(it, currentLayout!!, 0)
+            }
+        }
+        PlayMusicThreadManager.onStopped = {
+            // TODO
+        }
     }
 
     private fun setupKeysLayoutController() {
         // 选择布局
-        btnChooseLayout.setOnClickListener { _ ->
+        btnChooseLayout.setOnClickListener {
             val klld = KeyLayoutListDialog(
                 application,
                 keyLayouts,
@@ -327,7 +412,7 @@ class MainService : Service() {
             klld.show()
         }
         // 重置指示器
-        btnResetIndicator.setOnClickListener { _ ->
+        btnResetIndicator.setOnClickListener {
             keysLayoutView.resetIndicator()
         }
         // 显示序号
@@ -342,7 +427,7 @@ class MainService : Service() {
             }
         }
         // 移除点位
-        btnPointRemove.setOnClickListener { _ ->
+        btnPointRemove.setOnClickListener {
             withCurrentLayout {
                 if (it.points.isEmpty()) return@withCurrentLayout
                 val mPoints = it.points.toMutableList()
@@ -353,7 +438,7 @@ class MainService : Service() {
             }
         }
         // 增加点位
-        btnPointAdd.setOnClickListener { _ ->
+        btnPointAdd.setOnClickListener {
             withCurrentLayout {
                 it.points += Point(keysLayoutView.getIndicator())
                 it.rawOffset.set(keysLayoutView.rawOffset)
@@ -372,6 +457,7 @@ class MainService : Service() {
         } ?: run {
             btnChooseLayout.setText(R.string.select_layout)
             keysLayoutView.setPoints(emptyList())
+            updateCurrentMusic(null)
         }
     }
 

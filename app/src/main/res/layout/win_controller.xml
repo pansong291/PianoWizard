@@ -67,7 +67,7 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/tone_minus_1"
+                    android:id="@+id/btn_tone_minus_1"
                     style="@style/WindowButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -75,7 +75,7 @@
                     android:text="-1" />
 
                 <Button
-                    android:id="@+id/tone_plus_1"
+                    android:id="@+id/btn_tone_plus_1"
                     style="@style/WindowButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -90,7 +90,7 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/tone_minus_7"
+                    android:id="@+id/btn_tone_minus_7"
                     style="@style/WindowButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -98,13 +98,20 @@
                     android:text="-7" />
 
                 <Button
-                    android:id="@+id/tone_plus_7"
+                    android:id="@+id/btn_tone_plus_7"
                     style="@style/WindowButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="+7" />
             </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_play_pause"
+                style="@style/WindowButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/start" />
 
         </LinearLayout>
 

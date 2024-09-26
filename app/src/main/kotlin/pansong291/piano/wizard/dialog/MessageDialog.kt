@@ -7,6 +7,7 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import androidx.annotation.StringRes
 import pansong291.piano.wizard.dialog.actions.DialogCommonActions
 import pansong291.piano.wizard.utils.ViewUtil
 
@@ -36,7 +37,7 @@ class MessageDialog(application: Application) : BaseDialog(application) {
         }
     }
 
-    fun setText(id: Int) {
+    fun setText(@StringRes id: Int) {
         textView.setText(id)
     }
 
