@@ -30,6 +30,7 @@ class KeysLayoutView(context: Context) : View(context) {
     private val indicator = Point()
     private val touchStart = PointF()
     private val indicatorStart = Point()
+    val rawOffset = PointF()
 
     init {
         val dp1 = ViewUtil.dpToPx(context, 1f)
@@ -51,6 +52,7 @@ class KeysLayoutView(context: Context) : View(context) {
         setOnTouchListener { _, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
+                    rawOffset.set(event.rawX - event.x, event.rawY - event.y)
                     touchStart.set(event.x, event.y)
                     indicatorStart.set(indicator.x, indicator.y)
                 }
