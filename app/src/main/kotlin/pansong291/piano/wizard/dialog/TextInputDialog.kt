@@ -6,7 +6,7 @@ import android.view.WindowManager
 import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.annotation.StringRes
-import pansong291.piano.wizard.dialog.actions.DialogCommonActions
+import pansong291.piano.wizard.dialog.actions.DialogConfirmActions
 import pansong291.piano.wizard.utils.ViewUtil
 
 class TextInputDialog(application: Application) : BaseDialog(application) {
@@ -24,7 +24,7 @@ class TextInputDialog(application: Application) : BaseDialog(application) {
             marginEnd = horizontalMargin
         }
         findContentWrapper().addView(textInput)
-        DialogCommonActions.loadIn(this) { ok, _ ->
+        DialogConfirmActions.loadIn(this) { ok, _ ->
             ok.setOnClickListener {
                 onTextConfirmed?.invoke(textInput.text ?: "")
             }

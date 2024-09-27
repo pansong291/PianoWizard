@@ -3,7 +3,7 @@ package pansong291.piano.wizard.dialog
 import android.app.Application
 import pansong291.piano.wizard.R
 import pansong291.piano.wizard.consts.StringConst
-import pansong291.piano.wizard.dialog.actions.DialogCommonActions
+import pansong291.piano.wizard.dialog.actions.DialogConfirmActions
 import pansong291.piano.wizard.dialog.contents.DialogFileChooseContent
 import pansong291.piano.wizard.toast.Toaster
 import java.io.FileFilter
@@ -29,7 +29,7 @@ class MusicFileChooseDialog(application: Application) : BaseDialog(application) 
         adapter.fileFilter = FileFilter {
             it.isDirectory || it.name.endsWith(StringConst.MUSIC_NOTATION_FILE_EXT)
         }
-        DialogCommonActions.loadIn(this) { ok, _ ->
+        DialogConfirmActions.loadIn(this) { ok, _ ->
             ok.setText(R.string.make_as_default_folder)
             ok.setOnClickListener {
                 sharedPreferences.edit()

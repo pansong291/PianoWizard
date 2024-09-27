@@ -3,16 +3,18 @@ package pansong291.piano.wizard.dialog
 import android.app.Application
 import android.widget.TextView
 import androidx.annotation.StringRes
-import pansong291.piano.wizard.dialog.actions.DialogCommonActions
+import pansong291.piano.wizard.dialog.actions.DialogConfirmActions
 import pansong291.piano.wizard.dialog.contents.DialogMessageContent
 
-class MessageDialog(application: Application) : BaseDialog(application) {
+class ConfirmDialog(application: Application) : BaseDialog(application) {
     private val textView: TextView = DialogMessageContent.loadIn(this)
-    var onOkClick: (() -> Unit)? = { destroy() }
+    var onOk: (() -> Unit)? = null
+    var onCancel: (() -> Unit)? = { destroy() }
 
     init {
-        DialogCommonActions.loadIn(this) { ok ->
-            ok.setOnClickListener { onOkClick?.invoke() }
+        DialogConfirmActions.loadIn(this) { ok, cancel ->
+            ok.setOnClickListener { onOk?.invoke() }
+            cancel.setOnClickListener { onCancel?.invoke() }
         }
     }
 

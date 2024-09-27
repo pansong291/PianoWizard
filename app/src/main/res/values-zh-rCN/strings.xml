@@ -19,7 +19,7 @@
     <string name="layout_empty_warn_message">当前布局为空，请先选择一个布局</string>
     <string name="select_layout">选择布局</string>
     <string name="select_music">选择乐谱</string>
-    <string name="modulation">变调：%s</string>
+    <string name="modulation">变调：%d</string>
     <string name="delete">删除</string>
     <string name="create">新建</string>
     <string name="rename">重命名</string>
@@ -33,8 +33,11 @@
     <string name="music_empty_warn_message">当前乐谱为空，请先选择一个乐谱</string>
     <string name="enter_layout_name_hint">输入布局名称</string>
     <string name="music_syntax_error_message">琴谱格式不正确，解析失败</string>
-    <string name="unsupport_note_message">不支持的音符：%s</string>
+    <string name="unsupport_note_message">不支持的音符：%d</string>
     <string name="unknown_error">未知错误</string>
     <string name="start">开始</string>
     <string name="pause">暂停</string>
+    <string name="error">错误</string>
+    <string name="layout_missing_key_confirm_message">当前键盘布局无法完整演奏此音乐，确定继续吗？</string>
+    <string name="resume">继续</string>
 </resources>

@@ -27,7 +27,7 @@ class KeysLayoutView(context: Context) : View(context) {
     private val smallRadius = ViewUtil.dpToPx(context, 4f)
     private val textCenterY: Float
 
-    private val indicator = Point()
+    private val indicator = Point(-1, -1)
     private val touchStart = PointF()
     private val indicatorStart = Point()
     val rawOffset = PointF()
@@ -107,6 +107,11 @@ class KeysLayoutView(context: Context) : View(context) {
         textPaint.color = Color.WHITE
         fillPaint.color = Color.BLACK
         strokePaint.color = Color.WHITE
+    }
+
+    fun isIndicatorOutOfView(): Boolean {
+        if (indicator.x < 0 || indicator.x >= width) return true
+        return indicator.y < 0 || indicator.y >= height
     }
 
     fun resetIndicator() {

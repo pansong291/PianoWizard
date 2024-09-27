@@ -6,16 +6,15 @@ import pansong291.piano.wizard.R
 import pansong291.piano.wizard.dialog.IDialog
 
 object DialogCommonActions {
-    fun loadIn(dialog: IDialog, block: (ok: Button, cancel: Button) -> Unit) {
+    fun loadIn(dialog: IDialog, block: (ok: Button) -> Unit) {
         val actions = View.inflate(
             dialog.getAppContext(),
             R.layout.dialog_actions_common,
             dialog.findActionsWrapper()
         )
-        // 操作区：取消和确定按钮
-        val cancel = actions.findViewById<Button>(android.R.id.button1)
-        val ok = actions.findViewById<Button>(android.R.id.button2)
-        cancel.setOnClickListener { dialog.destroy() }
-        block.invoke(ok, cancel)
+        // 操作区：确定按钮
+        val ok = actions.findViewById<Button>(android.R.id.button1)
+        ok.setOnClickListener { dialog.destroy() }
+        block.invoke(ok)
     }
 }
