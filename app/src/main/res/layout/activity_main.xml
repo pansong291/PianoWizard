@@ -8,6 +8,22 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
+
+    <Button
+        android:id="@+id/btn_main_file_perm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btn_main_win_perm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btn_main_accessibility_perm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,25 +31,25 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/btn_main_file_perm"
+            android:id="@+id/btn_main_start"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/launch" />
+
+        <Space
+            android:layout_width="8dp"
             android:layout_height="wrap_content" />
 
         <Button
-            android:id="@+id/btn_main_win_perm"
+            android:id="@+id/btn_main_stop"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <Button
-            android:id="@+id/btn_main_accessibility_perm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="@string/stop" />
     </LinearLayout>
 
     <Button
-        android:id="@+id/btn_main_start"
+        android:id="@+id/btn_main_about"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/launch" />
-
+        android:text="@string/about" />
 </LinearLayout>

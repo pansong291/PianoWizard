@@ -32,11 +32,17 @@
     <string name="music_empty_warn_message">The current sheet music is empty. Please select a sheet music first</string>
     <string name="enter_layout_name_hint">Enter layout name</string>
     <string name="music_syntax_error_message">The sheet music format is incorrect, parsing failed</string>
-    <string name="unsupport_note_message">Unsupported note: %d</string>
+    <string name="unsupported_note_message">Unsupported note: %s</string>
     <string name="unknown_error">Unknown error</string>
     <string name="start">Start</string>
     <string name="pause">Pause</string>
     <string name="error">Error</string>
-    <string name="layout_missing_key_confirm_message">The current keyboard layout cannot fully perform this piece of music. Are you sure you want to continue?</string>
+    <string name="missing_key_note_confirm_message">The current settings cannot play this music completely. Are you sure you want to continue?</string>
     <string name="resume">Resume</string>
+    <string name="key_note_absent_message">The current layout does not contain this note</string>
+    <string name="layout_unsupported_music_message">The current keyboard layout cannot fully perform this piece of music</string>
+    <string name="about">About</string>
+    <string name="about_message">Open-source repository: %s\n\nQQ group: %s</string>
+    <string name="about_goto_repository">Go to the repo</string>
+    <string name="about_copy_group_number">Copy the group num</string>
 </resources>

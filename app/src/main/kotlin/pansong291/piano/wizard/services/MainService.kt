@@ -3,6 +3,7 @@ package pansong291.piano.wizard.services
 import android.app.Service
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Color
 import android.graphics.Point
 import android.os.IBinder
 import android.view.Gravity
@@ -135,14 +136,14 @@ class MainService : Service() {
     private lateinit var btnTonePlus1: Button
 
     /**
-     * 变调 -7 按钮
+     * 变调 -12 按钮
      */
-    private lateinit var btnToneMinus7: Button
+    private lateinit var btnToneMinus12: Button
 
     /**
-     * 变调 -7 按钮
+     * 变调 -12 按钮
      */
-    private lateinit var btnTonePlus7: Button
+    private lateinit var btnTonePlus12: Button
 
     /**
      * 开始暂停按钮
@@ -167,7 +168,7 @@ class MainService : Service() {
     /**
      * 变调值
      */
-    private var toneModulation = 0
+    private var toneModulation = -1
 
     /**
      * 是否暂停
@@ -215,9 +216,17 @@ class MainService : Service() {
             btnModulation = contentView.findViewById(R.id.btn_modulation)
             btnToneMinus1 = contentView.findViewById(R.id.btn_tone_minus_1)
             btnTonePlus1 = contentView.findViewById(R.id.btn_tone_plus_1)
-            btnToneMinus7 = contentView.findViewById(R.id.btn_tone_minus_7)
-            btnTonePlus7 = contentView.findViewById(R.id.btn_tone_plus_7)
+            btnToneMinus12 = contentView.findViewById(R.id.btn_tone_minus_12)
+            btnTonePlus12 = contentView.findViewById(R.id.btn_tone_plus_12)
             btnPlayPause = contentView.findViewById(R.id.btn_play_pause)
+        }
+        layoutWindow = EasyWindow.with(application).apply {
+            setAnimStyle(android.R.style.Animation_Dialog)
+            setContentView(keysLayoutView)
+            setOutsideTouchable(false)
+            setWidth(ViewGroup.LayoutParams.MATCH_PARENT)
+            setHeight(ViewGroup.LayoutParams.MATCH_PARENT)
+            windowVisibility = View.GONE
         }
 
         setupBasicController()
@@ -228,62 +237,26 @@ class MainService : Service() {
         sharedPreferences.getInt(StringConst.SP_DATA_KEY_LAST_LAYOUT, 0).takeIf {
             it >= 0 && it < keyLayouts.size
         }?.let { updateCurrentLayout(keyLayouts[it]) }
-
-        layoutWindow = EasyWindow.with(application).apply {
-            setAnimStyle(android.R.style.Animation_Dialog)
-            setContentView(keysLayoutView)
-            setOutsideTouchable(false)
-            setWidth(ViewGroup.LayoutParams.MATCH_PARENT)
-            setHeight(ViewGroup.LayoutParams.MATCH_PARENT)
-            windowVisibility = View.GONE
-        }
     }
 
     private fun setupBasicController() {
-        // 初始设置文案
-        btnCollapse.setText(R.string.collapse)
-        btnControllerSwitch.setText(R.string.key_layout)
+        // 初始展开
+        updateCollapse(false)
+        // 初始切换到乐谱控制器
+        updateSwitchMusic(true)
+        // 初始化变调为 0
         updateToneModulation(0)
-        // 初始隐藏音乐停止按钮
-        btnStopMusic.visibility = View.GONE
-        // 初始隐藏布局控制器
-        vgKeyLayoutControllerWrapper.visibility = View.GONE
         // 初始勾选显示序号
         cbDisplayNumber.isChecked = keysLayoutView.isShowNum()
         // 展开、收起 长按
         btnCollapse.setOnLongClickListener { true }
         // 展开、收起
         btnCollapse.setOnClickListener {
-            val isShow = vgControllerWrapper.visibility == View.VISIBLE
-            val visible = if (isShow) View.GONE else View.VISIBLE
-            vgControllerWrapper.visibility = visible
-            if (MusicPlayer.isPlaying()) {
-                btnControllerSwitch.visibility = View.GONE
-                btnStopMusic.visibility = visible
-            } else {
-                btnControllerSwitch.visibility = visible
-                btnStopMusic.visibility = View.GONE
-            }
-            btnCollapse.text = getString(if (isShow) R.string.expand else R.string.collapse)
+            updateCollapse(vgControllerWrapper.visibility == View.VISIBLE)
         }
         // 布局、乐谱
         btnControllerSwitch.setOnClickListener {
-            val isShowKL = vgKeyLayoutControllerWrapper.visibility == View.VISIBLE
-            if (isShowKL) {
-                vgKeyLayoutControllerWrapper.visibility = View.GONE
-                vgMusicScoreControllerWrapper.visibility = View.VISIBLE
-                layoutWindow.windowVisibility = View.GONE
-                btnControllerSwitch.text = getString(R.string.key_layout)
-            } else {
-                vgKeyLayoutControllerWrapper.visibility = View.VISIBLE
-                vgMusicScoreControllerWrapper.visibility = View.GONE
-                layoutWindow.windowVisibility = View.VISIBLE
-                btnControllerSwitch.text = getString(R.string.music_score)
-                if (keysLayoutView.isIndicatorOutOfView()) {
-                    // 重置指示器
-                    keysLayoutView.resetIndicator()
-                }
-            }
+            updateSwitchMusic(vgKeyLayoutControllerWrapper.visibility == View.VISIBLE)
         }
         btnStopMusic.setOnClickListener {
             MusicPlayer.stop()
@@ -293,43 +266,74 @@ class MainService : Service() {
     private fun setupMusicScoreController() {
         // 选择乐谱
         btnChooseMusic.setOnClickListener {
-            val fcd = MusicFileChooseDialog(application)
-            fcd.onFileChose = { path, filename ->
-                withCurrentLayout {
+            withCurrentLayout {
+                val fcd = MusicFileChooseDialog(application)
+                fcd.onFileChose = { path, filename ->
                     tryAlert {
                         val index = filename.lastIndexOf(StringConst.MUSIC_NOTATION_FILE_EXT)
+                        // 解析乐谱并置为当前
                         updateCurrentMusic(
                             MusicUtil.parseMusicNotation(
                                 if (index > 0) filename.substring(0, index) else filename,
                                 FileReader(File(path, filename)).readText()
                             )
                         )
-                        // TODO 根据键盘预置一个变调
-                        fcd.destroy()
+                        // 尝试找到可完整演奏的最小变调值
+                        try {
+                            updateToneModulation(MusicPlayer.findMinOffset(currentMusic!!, it))
+                            btnPlayPause.setTextColor(Color.WHITE)
+                        } catch (e: MissingKeyException) {
+                            updateToneModulation(0)
+                            btnPlayPause.setTextColor(Color.RED)
+                            MessageDialog(application).apply {
+                                setText(R.string.layout_unsupported_music_message)
+                            }.show()
+                        } finally {
+                            fcd.destroy()
+                        }
                     }
                 }
+                currentMusic?.also { mn ->
+                    fcd.scrollTo = {
+                        it.name == mn.name + StringConst.MUSIC_NOTATION_FILE_EXT
+                    }
+                }
+                fcd.show()
             }
-            fcd.show()
         }
         // 显示变调
         btnModulation.setOnClickListener {
-            withCurrentMusic { }
+            withCurrentMusic {
+                playToneModulation(true)
+            }
         }
         // 变调 -1
         btnToneMinus1.setOnClickListener {
-            withCurrentMusic { }
+            withCurrentMusic {
+                updateToneModulation(toneModulation - 1)
+                playToneModulation()
+            }
         }
         // 变调 +1
         btnTonePlus1.setOnClickListener {
-            withCurrentMusic { }
+            withCurrentMusic {
+                updateToneModulation(toneModulation + 1)
+                playToneModulation()
+            }
         }
-        // 变调 -7
-        btnToneMinus7.setOnClickListener {
-            withCurrentMusic { }
+        // 变调 -12
+        btnToneMinus12.setOnClickListener {
+            withCurrentMusic {
+                updateToneModulation(toneModulation - 12)
+                playToneModulation()
+            }
         }
-        // 变调 +7
-        btnTonePlus7.setOnClickListener {
-            withCurrentMusic { }
+        // 变调 +12
+        btnTonePlus12.setOnClickListener {
+            withCurrentMusic {
+                updateToneModulation(toneModulation + 12)
+                playToneModulation()
+            }
         }
         // 开始暂停
         btnPlayPause.setOnClickListener {
@@ -337,12 +341,12 @@ class MainService : Service() {
                 if (MusicPlayer.isPlaying()) {
                     updatePauseState(!pause)
                 } else try {
-                    MusicPlayer.startPlay(serviceScope, it, currentLayout!!, 0)
+                    MusicPlayer.startPlay(serviceScope, it, currentLayout!!, toneModulation)
                     updatePlayingState(MusicPlayer.isPlaying())
                 } catch (e: MissingKeyException) {
                     val cd = ConfirmDialog(application)
                     cd.setIcon(R.drawable.outline_error_problem_32)
-                    cd.setText(R.string.layout_missing_key_confirm_message)
+                    cd.setText(R.string.missing_key_note_confirm_message)
                     cd.onOk = {
                         cd.destroy()
                         MusicPlayer.startPlay(
@@ -469,6 +473,7 @@ class MainService : Service() {
             withCurrentLayout {
                 keysLayoutView.setSemitone(isChecked)
                 it.semitone = isChecked
+                updateCurrentMusic(null)
             }
         }
         // 移除点位
@@ -480,6 +485,7 @@ class MainService : Service() {
                 it.points = mPoints
                 keysLayoutView.setIndicator(last)
                 keysLayoutView.setPoints(mPoints)
+                updateCurrentMusic(null)
             }
         }
         // 增加点位
@@ -488,11 +494,13 @@ class MainService : Service() {
                 it.points += Point(keysLayoutView.getIndicator())
                 it.rawOffset.set(keysLayoutView.rawOffset)
                 keysLayoutView.setPoints(it.points)
+                updateCurrentMusic(null)
             }
         }
     }
 
     private fun updateCurrentLayout(kl: KeyLayout?) {
+        if (currentLayout == kl) return
         kl?.also {
             btnChooseLayout.text = it.name
             cbEnableSemitone.isChecked = it.semitone
@@ -518,6 +526,7 @@ class MainService : Service() {
     }
 
     private fun updateCurrentMusic(mn: MusicNotation?) {
+        if (currentMusic == mn) return
         currentMusic = mn
         mn?.also {
             btnChooseMusic.text = it.name
@@ -527,6 +536,7 @@ class MainService : Service() {
     }
 
     private fun updateToneModulation(t: Int) {
+        if (toneModulation == t) return
         toneModulation = t
         btnModulation.text = getString(R.string.modulation, t)
     }
@@ -539,23 +549,25 @@ class MainService : Service() {
             btnModulation.visibility = View.GONE
             btnToneMinus1.visibility = View.GONE
             btnTonePlus1.visibility = View.GONE
-            btnToneMinus7.visibility = View.GONE
-            btnTonePlus7.visibility = View.GONE
+            btnToneMinus12.visibility = View.GONE
+            btnTonePlus12.visibility = View.GONE
             btnPlayPause.setText(R.string.pause)
         } else {
-            btnControllerSwitch.visibility = View.VISIBLE
+            if (vgControllerWrapper.visibility == View.VISIBLE)
+                btnControllerSwitch.visibility = View.VISIBLE
             btnStopMusic.visibility = View.GONE
             btnChooseMusic.visibility = View.VISIBLE
             btnModulation.visibility = View.VISIBLE
             btnToneMinus1.visibility = View.VISIBLE
             btnTonePlus1.visibility = View.VISIBLE
-            btnToneMinus7.visibility = View.VISIBLE
-            btnTonePlus7.visibility = View.VISIBLE
+            btnToneMinus12.visibility = View.VISIBLE
+            btnTonePlus12.visibility = View.VISIBLE
             btnPlayPause.setText(R.string.start)
         }
     }
 
     private fun updatePauseState(p: Boolean) {
+        if (pause == p) return
         pause = p
         if (p) {
             btnPlayPause.setText(R.string.resume)
@@ -566,8 +578,55 @@ class MainService : Service() {
         }
     }
 
+    private fun updateCollapse(c: Boolean) {
+        if (c) {
+            vgControllerWrapper.visibility = View.GONE
+            btnControllerSwitch.visibility = View.GONE
+            btnStopMusic.visibility = View.GONE
+            btnCollapse.setText(R.string.expand)
+        } else {
+            vgControllerWrapper.visibility = View.VISIBLE
+            if (MusicPlayer.isPlaying()) {
+                btnControllerSwitch.visibility = View.GONE
+                btnStopMusic.visibility = View.VISIBLE
+            } else {
+                btnControllerSwitch.visibility = View.VISIBLE
+                btnStopMusic.visibility = View.GONE
+            }
+            btnCollapse.setText(R.string.collapse)
+        }
+    }
+
+    private fun updateSwitchMusic(m: Boolean) {
+        if (m) {
+            vgKeyLayoutControllerWrapper.visibility = View.GONE
+            vgMusicScoreControllerWrapper.visibility = View.VISIBLE
+            layoutWindow.windowVisibility = View.GONE
+            btnControllerSwitch.setText(R.string.key_layout)
+        } else {
+            vgKeyLayoutControllerWrapper.visibility = View.VISIBLE
+            vgMusicScoreControllerWrapper.visibility = View.GONE
+            layoutWindow.windowVisibility = View.VISIBLE
+            btnControllerSwitch.setText(R.string.music_score)
+            keysLayoutView.post {
+                if (keysLayoutView.isIndicatorOutOfView()) {
+                    // 重置指示器
+                    keysLayoutView.resetIndicator()
+                }
+            }
+        }
+    }
+
     private fun withCurrentMusic(block: (c: MusicNotation) -> Unit) {
         currentMusic?.also(block) ?: Toaster.show(R.string.music_empty_warn_message)
+    }
+
+    private fun playToneModulation(showError: Boolean = false) {
+        try {
+            MusicPlayer.playKeyNote(currentMusic!!.keyNote, currentLayout!!, toneModulation)
+        } catch (e: MissingKeyException) {
+            if (showError) Toaster.show(R.string.key_note_absent_message)
+        }
     }
 
     private fun tryAlert(func: () -> Unit) {

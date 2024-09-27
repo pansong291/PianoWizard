@@ -11,8 +11,8 @@ android {
         applicationId = "pansong291.piano.wizard"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 20240928
+        versionName = "1.0-beta"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -44,7 +44,6 @@ dependencies {
     implementation(libs.androidx.cardview)
     implementation(libs.getactivity.xxpermissions)
     implementation(libs.getactivity.easywindow)
-    implementation(libs.greenrobot.eventbus)
     implementation(libs.google.gson)
     implementation(libs.simplecityapps.recyclerview.fastscroll)
     testImplementation(libs.junit)

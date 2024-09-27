@@ -1,6 +1,7 @@
 package pansong291.piano.wizard.dialog
 
 import android.app.Application
+import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
 import pansong291.piano.wizard.R
 import pansong291.piano.wizard.consts.StringConst
 import pansong291.piano.wizard.dialog.actions.DialogConfirmActions
@@ -13,17 +14,21 @@ class MusicFileChooseDialog(application: Application) : BaseDialog(application) 
         StringConst.SHARED_PREFERENCES_NAME,
         Application.MODE_PRIVATE
     )
+    private val recyclerView: FastScrollRecyclerView
     private val adapter: DialogFileChooseContent.FileListAdapter
     var onFileChose
         get() = adapter.onFileChose
         set(value) {
             adapter.onFileChose = value
         }
+    var scrollTo: ((DialogFileChooseContent.FileInfo) -> Boolean)? = null
 
     init {
         setIcon(R.drawable.outline_music_file_32)
         setTitle(R.string.select_music)
-        adapter = DialogFileChooseContent.loadIn(this)
+        val pair = DialogFileChooseContent.loadIn(this)
+        recyclerView = pair.first
+        adapter = pair.second
         sharedPreferences.getString(StringConst.SP_DATA_KEY_DEFAULT_FOLDER, null)
             ?.let { adapter.basePath = it }
         adapter.fileFilter = FileFilter {
@@ -41,6 +46,11 @@ class MusicFileChooseDialog(application: Application) : BaseDialog(application) 
 
     override fun show() {
         adapter.reload()
+        scrollTo?.also {
+            val position = adapter.findItemPosition(it)
+            adapter.highlight = position
+            if (position >= 0) recyclerView.scrollToPosition(position)
+        } ?: run { adapter.highlight = -1 }
         super.show()
     }
 }

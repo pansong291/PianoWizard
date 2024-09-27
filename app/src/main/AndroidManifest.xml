@@ -45,5 +45,17 @@
                 android:resource="@xml/click_accessibility_service_config" />
         </service>
     </application>
-
+    <queries>
+        <!-- 允许应用查询支持浏览器的应用程序 -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="http" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="https" />
+        </intent>
+    </queries>
 </manifest>

@@ -6,8 +6,6 @@ import android.content.Intent
 import android.graphics.Path
 import android.graphics.Point
 import android.view.accessibility.AccessibilityEvent
-import org.greenrobot.eventbus.EventBus
-import pansong291.piano.wizard.events.AccessibilityConnectedEvent
 
 class ClickAccessibilityService : AccessibilityService() {
     companion object {
@@ -30,18 +28,6 @@ class ClickAccessibilityService : AccessibilityService() {
     override fun onServiceConnected() {
         super.onServiceConnected()
         aService = this
-        EventBus.getDefault().post(AccessibilityConnectedEvent())
-        Thread {
-            Thread.sleep(7000)
-            click(
-                listOf(
-                    Point(500, 900),
-                    Point(500, 800),
-                    Point(400, 800),
-                    Point(400, 900)
-                ), 1000
-            )
-        }.start()
     }
 
     override fun onAccessibilityEvent(p0: AccessibilityEvent?) {}

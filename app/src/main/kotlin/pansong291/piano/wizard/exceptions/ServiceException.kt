@@ -8,6 +8,6 @@ class ServiceException(
     private vararg val args: Any
 ) : RuntimeException() {
     fun getI18NMessage(context: Context): String {
-        return context.getString(id, args)
+        return context.getString(id, *args)
     }
 }

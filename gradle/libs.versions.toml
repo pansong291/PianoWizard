@@ -12,7 +12,6 @@ activity = "1.8.0"
 constraintlayout = "2.1.4"
 xxpermissions = "20.0"
 easywindow = "10.62"
-eventbus = "3.3.1"
 gson = "2.11.0"
 recyclerview-fastscroll = "2.0.1"
 
@@ -28,7 +27,6 @@ androidx-activity = { group = "androidx.activity", name = "activity", version.re
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 getactivity-xxpermissions = { group = "com.github.getActivity", name = "XXPermissions", version.ref = "xxpermissions" }
 getactivity-easywindow = { group = "com.github.getActivity", name = "EasyWindow", version.ref = "easywindow" }
-greenrobot-eventbus = { group = "org.greenrobot", name = "eventbus", version.ref = "eventbus" }
 google-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 simplecityapps-recyclerview-fastscroll = { group = "com.simplecityapps", name = "recyclerview-fastscroll", version.ref = "recyclerview-fastscroll" }
 

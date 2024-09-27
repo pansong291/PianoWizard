@@ -134,7 +134,7 @@ object MusicUtil {
      */
     private fun parseNote(str: String): Int? {
         val note = str[0].minus('0')
-        if (note < 0 || note > 7) throw ServiceException(R.string.unsupport_note_message, note)
+        if (note < 0 || note > 7) throw ServiceException(R.string.unsupported_note_message, note)
         if (note == 0) return null
         // 这里减 1 使其变为从 0 开始，再转为十二平均律
         return basicNoteTo12TET(note - 1) + parseAccidental(str.substring(1), 0)

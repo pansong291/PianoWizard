@@ -54,6 +54,7 @@ object MusicPlayer {
 
         job = scope.launch {
             var isPaused = false
+            Thread.sleep(200)
             clickActions.forEach {
                 if (!isActive) return@forEach
                 if (!controlChannel.isEmpty) {
@@ -61,9 +62,10 @@ object MusicPlayer {
                 }
                 while (isPaused) {
                     isPaused = controlChannel.receive()
+                    Thread.sleep(200)
                 }
                 val time = System.currentTimeMillis()
-                ClickAccessibilityService.click(it.points, it.delay.toLong())
+                ClickAccessibilityService.click(it.points, maxOf(it.delay - 100L, 1L))
                 val rest = it.delay + time - System.currentTimeMillis()
                 if (rest > 0) Thread.sleep(rest)
             }
@@ -89,5 +91,44 @@ object MusicPlayer {
 
     fun isPlaying(): Boolean {
         return job != null
+    }
+
+    fun playKeyNote(key: Int, kl: KeyLayout, offset: Int) {
+        val target = key + offset
+        kl.points.forEachIndexed { index, point ->
+            if (target == if (!kl.semitone) MusicUtil.basicNoteTo12TET(index) else index) {
+                ClickAccessibilityService.click(
+                    listOf(
+                        Point(
+                            (point.x + kl.rawOffset.x).toInt(),
+                            (point.y + kl.rawOffset.y).toInt()
+                        )
+                    ), 1
+                )
+                return
+            }
+        }
+        throw MissingKeyException()
+    }
+
+    fun findMinOffset(mn: MusicNotation, kl: KeyLayout): Int {
+        val producer = kl.points.mapIndexedTo(mutableSetOf()) { index, _ ->
+            if (!kl.semitone) MusicUtil.basicNoteTo12TET(index) else index
+        }
+        val consumer = mn.beats.flatMapTo(mutableSetOf()) {
+            it.tones.map { it + mn.keyNote }
+        }
+        val minProducer = producer.minOrNull() ?: throw MissingKeyException()
+        val maxProducer = producer.maxOrNull() ?: throw MissingKeyException()
+        val minConsumer = consumer.minOrNull() ?: throw MissingKeyException()
+        val maxConsumer = consumer.maxOrNull() ?: throw MissingKeyException()
+        // 计算初始 offset，使 consumer 的最小值对齐 producer 的最小值
+        var offset = minProducer - minConsumer
+        val maxOffset = maxProducer - maxConsumer
+        while (offset <= maxOffset) {
+            if (consumer.all { producer.contains(it + offset) }) return offset
+            offset++
+        }
+        throw MissingKeyException()
     }
 }

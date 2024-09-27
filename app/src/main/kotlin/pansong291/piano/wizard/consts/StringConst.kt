@@ -21,4 +21,7 @@ object StringConst {
      * 默认目录
      */
     const val SP_DATA_KEY_DEFAULT_FOLDER = "default_folder"
+
+    const val ABOUT_QQ_GROUP_NUMBER = "906654380"
+    const val ABOUT_REPOSITORY_LINK = "https://github.com/pansong291/PianoWizard"
 }

@@ -33,11 +33,17 @@
     <string name="music_empty_warn_message">当前乐谱为空，请先选择一个乐谱</string>
     <string name="enter_layout_name_hint">输入布局名称</string>
     <string name="music_syntax_error_message">琴谱格式不正确，解析失败</string>
-    <string name="unsupport_note_message">不支持的音符：%d</string>
+    <string name="unsupported_note_message">不支持的音符：%s</string>
     <string name="unknown_error">未知错误</string>
     <string name="start">开始</string>
     <string name="pause">暂停</string>
     <string name="error">错误</string>
-    <string name="layout_missing_key_confirm_message">当前键盘布局无法完整演奏此音乐，确定继续吗？</string>
+    <string name="missing_key_note_confirm_message">当前设置无法完整演奏此音乐，确定继续吗？</string>
     <string name="resume">继续</string>
+    <string name="key_note_absent_message">当前布局不存在此音符</string>
+    <string name="layout_unsupported_music_message">当前键盘布局无法完整演奏此音乐</string>
+    <string name="about">关于</string>
+    <string name="about_message">开源地址：%s\n\nQQ交流群：%s</string>
+    <string name="about_goto_repository">跳转仓库</string>
+    <string name="about_copy_group_number">复制群号</string>
 </resources>
