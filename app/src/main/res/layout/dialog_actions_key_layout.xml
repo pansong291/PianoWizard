@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical|start"
+    android:orientation="horizontal">
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btn_save"
+        style="@style/DialogImageButtonStyle"
+        android:contentDescription="@string/save"
+        android:src="@drawable/outline_save_24" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btn_create"
+        style="@style/DialogImageButtonStyle"
+        android:layout_marginHorizontal="8dp"
+        android:contentDescription="@string/create"
+        android:src="@drawable/outline_add_32" />
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btn_delete"
+        style="@style/DialogImageButtonStyle"
+        android:contentDescription="@string/delete"
+        android:src="@drawable/outline_delete_forever_32"
+        app:tint="@android:color/holo_red_light" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btn_rename"
+        style="@style/DialogImageButtonStyle"
+        android:layout_marginHorizontal="8dp"
+        android:contentDescription="@string/rename"
+        android:src="@drawable/outline_drive_file_rename_outline_32" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@android:id/primary"
+        style="@style/DialogImageButtonStyle"
+        android:contentDescription="@android:string/ok"
+        android:src="@drawable/outline_done_24" />
+</LinearLayout>

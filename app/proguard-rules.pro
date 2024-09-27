@@ -19,3 +19,10 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# getactivity.xxpermissions
+-keep class com.hjq.permissions.** {*;}
+# getactivity.easywindow
+-keep class com.hjq.window.** {*;}
+# simplecityapps.recyclerview.fastscroll
+-keep class com.simplecityapps.** {*;}

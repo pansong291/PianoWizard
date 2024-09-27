@@ -34,5 +34,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Piano Wizard"
+rootProject.name = "PianoWizard"
 include(":app")
