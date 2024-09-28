@@ -46,4 +46,8 @@
     <string name="about_message">开源地址：%s\n\nQQ交流群：%s</string>
     <string name="about_goto_repository">跳转仓库</string>
     <string name="about_copy_group_number">复制群号</string>
+    <string name="key_layout_offset">偏移：%d</string>
+    <string name="enter_key_offset_hint">输入偏移值</string>
+    <string name="key_offset">按键偏移</string>
+    <string name="require_correct_integer_message">请输入正确的整数值</string>
 </resources>

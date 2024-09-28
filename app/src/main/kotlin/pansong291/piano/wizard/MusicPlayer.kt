@@ -37,7 +37,9 @@ object MusicPlayer {
 
         // 构建十二平均律到按键点位的映射关系
         kl.points.forEachIndexed { index, point ->
-            keyMap[if (!kl.semitone) MusicUtil.basicNoteTo12TET(index) else index] = Point(
+            var note = index + kl.keyOffset
+            note = if (!kl.semitone) MusicUtil.basicNoteTo12TET(note) else note
+            keyMap[note] = Point(
                 (point.x + kl.rawOffset.x).toInt(),
                 (point.y + kl.rawOffset.y).toInt()
             )
@@ -96,7 +98,9 @@ object MusicPlayer {
     fun playKeyNote(key: Int, kl: KeyLayout, offset: Int) {
         val target = key + offset
         kl.points.forEachIndexed { index, point ->
-            if (target == if (!kl.semitone) MusicUtil.basicNoteTo12TET(index) else index) {
+            var note = index + kl.keyOffset
+            note = if (!kl.semitone) MusicUtil.basicNoteTo12TET(note) else note
+            if (target == note) {
                 ClickAccessibilityService.click(
                     listOf(
                         Point(
@@ -113,7 +117,8 @@ object MusicPlayer {
 
     fun findMinOffset(mn: MusicNotation, kl: KeyLayout): Int {
         val producer = kl.points.mapIndexedTo(mutableSetOf()) { index, _ ->
-            if (!kl.semitone) MusicUtil.basicNoteTo12TET(index) else index
+            val note = index + kl.keyOffset
+            if (!kl.semitone) MusicUtil.basicNoteTo12TET(note) else note
         }
         val consumer = mn.beats.flatMapTo(mutableSetOf()) {
             it.tones.map { it + mn.keyNote }
