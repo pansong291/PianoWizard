@@ -12,7 +12,7 @@ android {
         minSdk = 24
         targetSdk = 34
         versionCode = 20240928
-        versionName = "1.0.1-beta"
+        versionName = "1.0.2-beta"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -20,10 +20,19 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
+            resValue("string", "build_app_name", "@string/app_name")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        debug {
+            // 调试版本，添加一个后缀来区分
+            applicationIdSuffix = ".debug"
+            isDebuggable = true
+            isMinifyEnabled = false
+            // 这个函数只能添加资源，无法覆盖原有的同名资源
+            resValue("string", "build_app_name", "PianoWizard Debug")
         }
     }
     compileOptions {

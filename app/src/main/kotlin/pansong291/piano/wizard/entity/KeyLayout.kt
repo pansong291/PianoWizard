@@ -23,6 +23,11 @@ class KeyLayout {
     var semitone: Boolean = false
 
     /**
+     * 按键偏移
+     */
+    var keyOffset: Int = 0
+
+    /**
      * 屏幕偏移值
      */
     var rawOffset: PointF = PointF()

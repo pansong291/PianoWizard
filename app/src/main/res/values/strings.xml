@@ -45,4 +45,8 @@
     <string name="about_message">Open-source repository: %s\n\nQQ group: %s</string>
     <string name="about_goto_repository">Go to the repo</string>
     <string name="about_copy_group_number">Copy the group num</string>
+    <string name="key_layout_offset">Offset: %d</string>
+    <string name="enter_key_offset_hint">Enter offset value</string>
+    <string name="key_offset">Key offset</string>
+    <string name="require_correct_integer_message">Please enter a valid integer value</string>
 </resources>

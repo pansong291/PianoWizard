@@ -17,6 +17,7 @@ class KeysLayoutView(context: Context) : View(context) {
     private var showNum = true
     private var points: List<Point> = emptyList()
     private var semitone: Boolean = false
+    private var pointOffset: Int = 0
 
     private val indicatorPaint = Paint()
     private val textPaint = Paint()
@@ -78,10 +79,11 @@ class KeysLayoutView(context: Context) : View(context) {
         points.forEachIndexed { i, p ->
             val pfx = p.x.toFloat()
             val pfy = p.y.toFloat()
-            toggleColor(i)
+            val note = i + pointOffset
+            toggleColor(note)
             if (showNum) {
                 canvas.drawCircle(pfx, pfy, largeRadius, fillPaint)
-                canvas.drawText((i + 1).toString(), pfx, pfy - textCenterY, textPaint)
+                canvas.drawText(note.toString(), pfx, pfy - textCenterY, textPaint)
             } else {
                 canvas.drawCircle(pfx, pfy, smallRadius, fillPaint)
                 canvas.drawCircle(pfx, pfy, smallRadius, strokePaint)
@@ -136,6 +138,13 @@ class KeysLayoutView(context: Context) : View(context) {
 
     fun setSemitone(s: Boolean) {
         semitone = s
+        postInvalidate()
+    }
+
+    fun getPointOffset() = pointOffset
+
+    fun setPointOffset(o: Int) {
+        pointOffset = o
         postInvalidate()
     }
 

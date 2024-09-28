@@ -106,6 +106,11 @@ class MainService : Service() {
     private lateinit var cbEnableSemitone: CheckBox
 
     /**
+     * 按键偏移按钮
+     */
+    private lateinit var btnKeyLayoutOffset: Button
+
+    /**
      * 移除点位按钮
      */
     private lateinit var btnPointRemove: Button
@@ -210,6 +215,7 @@ class MainService : Service() {
             btnResetIndicator = contentView.findViewById(R.id.btn_reset_indicator)
             cbDisplayNumber = contentView.findViewById(R.id.cb_display_number)
             cbEnableSemitone = contentView.findViewById(R.id.cb_enable_semitone)
+            btnKeyLayoutOffset = contentView.findViewById(R.id.btn_key_layout_offset)
             btnPointRemove = contentView.findViewById(R.id.btn_point_remove)
             btnPointAdd = contentView.findViewById(R.id.btn_point_add)
             btnChooseMusic = contentView.findViewById(R.id.btn_choose_music)
@@ -476,6 +482,28 @@ class MainService : Service() {
                 updateCurrentMusic(null)
             }
         }
+        // 按键偏移
+        btnKeyLayoutOffset.setOnClickListener {
+            withCurrentLayout { kl ->
+                val tid = TextInputDialog(application)
+                tid.setIcon(R.drawable.baseline_plus_one_32)
+                tid.setTitle(R.string.key_offset)
+                tid.setHint(R.string.enter_key_offset_hint)
+                tid.onTextConfirmed = onTextConfirmed@{
+                    val o = it.toString().toIntOrNull()
+                    if (o == null) {
+                        Toaster.show(R.string.require_correct_integer_message)
+                        return@onTextConfirmed
+                    }
+                    keysLayoutView.setPointOffset(o)
+                    btnKeyLayoutOffset.text = application.getString(R.string.key_layout_offset, o)
+                    kl.keyOffset = o
+                    updateCurrentMusic(null)
+                    tid.destroy()
+                }
+                tid.show()
+            }
+        }
         // 移除点位
         btnPointRemove.setOnClickListener {
             withCurrentLayout {
@@ -501,12 +529,17 @@ class MainService : Service() {
 
     private fun updateCurrentLayout(kl: KeyLayout?) {
         if (currentLayout == kl) return
+        val oldKl = currentLayout
+        currentLayout = kl
         kl?.also {
             btnChooseLayout.text = it.name
             cbEnableSemitone.isChecked = it.semitone
+            btnKeyLayoutOffset.text =
+                application.getString(R.string.key_layout_offset, it.keyOffset)
             keysLayoutView.setPoints(it.points)
             keysLayoutView.setSemitone(it.semitone)
-            currentLayout?.apply {
+            keysLayoutView.setPointOffset(it.keyOffset)
+            oldKl?.apply {
                 // 键盘的键数或半音不一样，则置空当前乐谱
                 if (this.points.size != it.points.size || this.semitone != it.semitone)
                     updateCurrentMusic(null)
@@ -516,9 +549,8 @@ class MainService : Service() {
         } ?: run {
             btnChooseLayout.setText(R.string.select_layout)
             keysLayoutView.setPoints(emptyList())
-            if (currentLayout != null) updateCurrentMusic(null)
+            updateCurrentMusic(null)
         }
-        currentLayout = kl
     }
 
     private fun withCurrentLayout(block: (c: KeyLayout) -> Unit) {
