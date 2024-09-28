@@ -26,3 +26,5 @@
 -keep class com.hjq.window.** {*;}
 # simplecityapps.recyclerview.fastscroll
 -keep class com.simplecityapps.** {*;}
+ # 避免 Gson 反序列化失败
+-keep class pansong291.piano.wizard.entity.** {*;}
