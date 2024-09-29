@@ -2,15 +2,15 @@
 
 ## 游界琴魔：一款安卓上的自动弹琴软件
 
-<img src="https://github.com/pansong291/Pictures/raw/master/github/pansong291/piano/wizard/Screenshot_2024-09-28-10-00-03-255_com.netease.sky.jpg" width="300" alt="光遇" />
+<img src="https://github.com/pansong291/Pictures/raw/master/github/pansong291/piano/wizard/Screenshot_2024-09-28-10-00-03-255_com.netease.sky.jpg" width="800" alt="光遇" />
 
-<img src="https://github.com/pansong291/Pictures/raw/master/github/pansong291/piano/wizard/Screenshot_2024-09-29-13-07-27-211_com.tencent.letsgo.jpg" width="300" alt="元梦之星" />
+<img src="https://github.com/pansong291/Pictures/raw/master/github/pansong291/piano/wizard/Screenshot_2024-09-29-13-07-27-211_com.tencent.letsgo.jpg" width="800" alt="元梦之星" />
 
-<img src="https://github.com/pansong291/Pictures/raw/master/github/pansong291/piano/wizard/Screenshot_2024-09-29-19-36-02-492_com.netease.nshm.jpg" width="300" alt="逆水寒" />
+<img src="https://github.com/pansong291/Pictures/raw/master/github/pansong291/piano/wizard/Screenshot_2024-09-29-19-36-02-492_com.netease.nshm.jpg" width="800" alt="逆水寒" />
 
-<img src="https://github.com/pansong291/Pictures/raw/master/github/pansong291/piano/wizard/Screenshot_2024-09-29-19-45-47-736_com.netease.nshm.jpg" width="300" alt="逆水寒" />
+<img src="https://github.com/pansong291/Pictures/raw/master/github/pansong291/piano/wizard/Screenshot_2024-09-29-19-45-47-736_com.netease.nshm.jpg" width="800" alt="逆水寒" />
 
-<img src="https://github.com/pansong291/Pictures/raw/master/github/pansong291/piano/wizard/Screenshot_2024-09-29-19-56-36-501_com.netease.harrypotter.jpg" width="300" alt="哈利波特：魔法觉醒" />
+<img src="https://github.com/pansong291/Pictures/raw/master/github/pansong291/piano/wizard/Screenshot_2024-09-29-19-56-36-501_com.netease.harrypotter.jpg" width="800" alt="哈利波特：魔法觉醒" />
 
 ### Bilibili 视频演示
 
