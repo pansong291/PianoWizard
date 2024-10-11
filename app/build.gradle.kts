@@ -55,6 +55,8 @@ dependencies {
     implementation(libs.getactivity.easywindow)
     implementation(libs.google.gson)
     implementation(libs.simplecityapps.recyclerview.fastscroll)
+    // TODO 引入 Jsoup
+    //  https://cn.bing.com/search?q=site%3Awww.cnblogs.com%2Fpansong291%2Fp+intitle%3A%E6%97%B6%E7%A9%BA
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
