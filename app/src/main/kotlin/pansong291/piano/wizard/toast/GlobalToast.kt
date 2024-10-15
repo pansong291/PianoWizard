@@ -90,7 +90,7 @@ class GlobalToast(private val application: Application) : IToast {
         return mDuration
     }
 
-    /***
+    /**
      * 显示吐司弹窗
      */
     override fun show() {

@@ -8,15 +8,18 @@
     <Button
         android:id="@android:id/button1"
         style="@style/DialogButtonStyle"
-        android:text="@android:string/cancel"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@android:string/cancel" />
+
+    <Space
+        android:layout_width="8dp"
         android:layout_height="wrap_content" />
 
     <Button
         android:id="@android:id/button2"
-        android:layout_marginStart="8dp"
         style="@style/DialogButtonStyle"
-        android:text="@android:string/ok"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="@android:string/ok" />
 </LinearLayout>

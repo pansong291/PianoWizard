@@ -23,7 +23,6 @@ import pansong291.piano.wizard.consts.StringConst
 import pansong291.piano.wizard.services.ClickAccessibilityService
 import pansong291.piano.wizard.services.MainService
 
-
 class MainActivity : AppCompatActivity() {
     private lateinit var btnFilePerm: Button
     private lateinit var btnWinPerm: Button

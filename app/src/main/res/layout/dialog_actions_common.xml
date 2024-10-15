@@ -7,9 +7,8 @@
 
     <Button
         android:id="@android:id/button1"
-        android:layout_marginStart="8dp"
         style="@style/DialogButtonStyle"
-        android:text="@android:string/ok"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="@android:string/ok" />
 </LinearLayout>

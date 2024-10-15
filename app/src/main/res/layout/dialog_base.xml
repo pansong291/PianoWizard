@@ -4,9 +4,9 @@
     android:id="@android:id/mask"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingVertical="16dp"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:paddingVertical="16dp">
 
     <androidx.cardview.widget.CardView
         android:layout_width="0dp"
