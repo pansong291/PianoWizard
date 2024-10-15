@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.getactivity.easywindow)
     implementation(libs.google.gson)
     implementation(libs.simplecityapps.recyclerview.fastscroll)
+    implementation(libs.googlecode.juniversalchardet)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

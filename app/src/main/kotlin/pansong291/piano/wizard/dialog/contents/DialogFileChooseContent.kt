@@ -59,6 +59,7 @@ object DialogFileChooseContent {
         var fileFilter: FileFilter = FileFilter { true }
         var onFileChose: ((path: String, file: String) -> Unit)? = null
         var onPathLoaded: ((path: String) -> Unit)? = null
+        var onPathChanged: ((path: String) -> Unit)? = null
 
         fun reload() {
             loadFileList(null)
@@ -68,13 +69,17 @@ object DialogFileChooseContent {
             val cur = File(basePath)
             if (Environment.getExternalStorageDirectory() == cur) return
             loadFileList(cur.parentFile)
-            cur.parent?.let { basePath = it }
+            cur.parent?.let {
+                basePath = it
+                onPathChanged?.invoke(it)
+            }
         }
 
         fun forwardFolder(folder: String) {
             val file = File(basePath, folder)
             loadFileList(file)
             basePath = file.path
+            onPathChanged?.invoke(basePath)
         }
 
         fun findItemPosition(predicate: (FileInfo) -> Boolean): Int {

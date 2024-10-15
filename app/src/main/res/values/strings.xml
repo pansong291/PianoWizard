@@ -2,7 +2,7 @@
     <string name="app_name">Piano Wizard</string>
     <string name="accessibility_description">Simulate clicking the screen to realize automatically playing musical instruments.</string>
     <string name="accessibility_title">Auto Piano Playing</string>
-    <string name="btn_req_file_perm">File R/W: %s</string>
+    <string name="btn_req_file_perm">File IO: %s</string>
     <string name="btn_req_win_perm">Floating win: %s</string>
     <string name="btn_req_accessibility_perm">Accessibility: %s</string>
     <string name="common_on">On</string>
@@ -49,4 +49,15 @@
     <string name="enter_key_offset_hint">Enter offset value</string>
     <string name="key_offset">Key offset</string>
     <string name="require_correct_integer_message">Please enter a valid integer value</string>
+    <string name="convert_sky_studio_sheet">Convert SkyStudio sheet</string>
+    <string name="select_sky_studio_sheet_file">Select SkyStudio sheet file</string>
+    <string name="current_folder">The current folder</string>
+    <string name="unknow_music">Unknown music</string>
+    <string name="target_must_gt_zero_message">The %s must be greater than 0</string>
+    <string name="target_must_gte_zero_message">The %s must be greater than or equal to 0</string>
+    <string name="target_cannot_empty_message">The %s cannot be empty</string>
+    <string name="target_format_incorrect_message">The format of %s is incorrect</string>
+    <string name="convert_current_folder_confirm_message">This operation will convert all files in the current folder. Do you wish to continue?</string>
+    <string name="processing">Processing</string>
+    <string name="convert_result">Convert result</string>
 </resources>

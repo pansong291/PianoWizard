@@ -18,29 +18,44 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import pansong291.piano.wizard.consts.ColorConst
 import pansong291.piano.wizard.consts.StringConst
+import pansong291.piano.wizard.coroutine.SkyStudioFileConvertor
+import pansong291.piano.wizard.dialog.ConfirmDialog
+import pansong291.piano.wizard.dialog.LoadingDialog
+import pansong291.piano.wizard.dialog.MessageDialog
+import pansong291.piano.wizard.dialog.SkyStudioSheetChooseDialog
 import pansong291.piano.wizard.services.ClickAccessibilityService
 import pansong291.piano.wizard.services.MainService
+import java.io.File
 
 class MainActivity : AppCompatActivity() {
     private lateinit var btnFilePerm: Button
     private lateinit var btnWinPerm: Button
     private lateinit var btnAccessibilityPerm: Button
+    private lateinit var btnAbout: Button
+    private lateinit var btnConvertSkyStudio: Button
     private lateinit var btnStart: Button
     private lateinit var btnStop: Button
-    private lateinit var btnAbout: Button
+
+    // 创建一个与 Activity 生命周期绑定的 CoroutineScope
+    private val activityScope = CoroutineScope(Dispatchers.IO + Job())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
         btnFilePerm = findViewById(R.id.btn_main_file_perm)
-        btnAccessibilityPerm = findViewById(R.id.btn_main_accessibility_perm)
         btnWinPerm = findViewById(R.id.btn_main_win_perm)
+        btnAccessibilityPerm = findViewById(R.id.btn_main_accessibility_perm)
+        btnAbout = findViewById(R.id.btn_main_about)
+        btnConvertSkyStudio = findViewById(R.id.btn_main_convert_sky_studio)
         btnStart = findViewById(R.id.btn_main_start)
         btnStop = findViewById(R.id.btn_main_stop)
-        btnAbout = findViewById(R.id.btn_main_about)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -60,12 +75,6 @@ class MainActivity : AppCompatActivity() {
             } else {
                 startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
             }
-        }
-        btnStart.setOnClickListener {
-            startService(Intent(this, MainService::class.java))
-        }
-        btnStop.setOnClickListener {
-            stopService(Intent(this, MainService::class.java))
         }
         btnAbout.setOnClickListener {
             AlertDialog.Builder(this)
@@ -96,11 +105,53 @@ class MainActivity : AppCompatActivity() {
                 }
                 .show()
         }
+        btnConvertSkyStudio.setOnClickListener {
+            val ssscd = SkyStudioSheetChooseDialog(this)
+            ssscd.onFileChose = { path, file ->
+                showLoadingAndConvertSkyStudioFile(File(path, file), ssscd::reload)
+            }
+            ssscd.onFolderChose = { path ->
+                val cd = ConfirmDialog(this)
+                cd.setText(R.string.convert_current_folder_confirm_message)
+                cd.onOk = {
+                    showLoadingAndConvertSkyStudioFile(File(path), ssscd::reload)
+                    cd.destroy()
+                }
+                cd.show()
+            }
+            ssscd.show()
+        }
+        btnStart.setOnClickListener {
+            startService(Intent(this, MainService::class.java))
+        }
+        btnStop.setOnClickListener {
+            stopService(Intent(this, MainService::class.java))
+        }
     }
 
     override fun onStart() {
         super.onStart()
         updatePermState(7)
+    }
+
+    override fun onDestroy() {
+        activityScope.cancel()
+        super.onDestroy()
+    }
+
+    private fun showLoadingAndConvertSkyStudioFile(file: File, onSuccess: () -> Unit) {
+        val ld = LoadingDialog(this)
+        ld.show()
+        SkyStudioFileConvertor.onFinished = ld::destroy
+        SkyStudioFileConvertor.onResult = {
+            onSuccess()
+            MessageDialog(this).apply {
+                setTitle(R.string.convert_result)
+                setText(it)
+                show()
+            }
+        }
+        SkyStudioFileConvertor.convert(application, activityScope, file)
     }
 
     private fun updatePermState(flags: Int, success: Boolean? = null) {

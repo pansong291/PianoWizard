@@ -8,20 +8,53 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/btn_main_file_perm"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_main_file_perm"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/btn_req_file_perm" />
+
+        <Space
+            android:layout_width="8dp"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/btn_main_win_perm"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/btn_req_win_perm" />
+
+        <Space
+            android:layout_width="8dp"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/btn_main_accessibility_perm"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/btn_req_accessibility_perm" />
+    </LinearLayout>
 
     <Button
-        android:id="@+id/btn_main_win_perm"
+        android:id="@+id/btn_main_about"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="@string/about" />
 
     <Button
-        android:id="@+id/btn_main_accessibility_perm"
+        android:id="@+id/btn_main_convert_sky_studio"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="@string/convert_sky_studio_sheet" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -45,10 +78,4 @@
             android:layout_height="wrap_content"
             android:text="@string/stop" />
     </LinearLayout>
-
-    <Button
-        android:id="@+id/btn_main_about"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/about" />
 </LinearLayout>

@@ -6,9 +6,9 @@ import android.content.Context
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.appcompat.widget.AppCompatTextView
 import com.hjq.window.EasyWindow
 import pansong291.piano.wizard.R
 
@@ -40,6 +40,10 @@ abstract class BaseDialog(private val context: Context) : IDialog {
         return context
     }
 
+    override fun findTitle(): AppCompatTextView {
+        return dialog.findViewById(android.R.id.title)
+    }
+
     final override fun findContentWrapper(): LinearLayout {
         return dialog.contentView.findViewById(android.R.id.content)
     }
@@ -61,8 +65,7 @@ abstract class BaseDialog(private val context: Context) : IDialog {
     }
 
     final override fun setIcon(@DrawableRes id: Int) {
-        dialog.findViewById<TextView>(android.R.id.title)
-            .setCompoundDrawablesRelativeWithIntrinsicBounds(id, 0, 0, 0)
+        findTitle().setCompoundDrawablesRelativeWithIntrinsicBounds(id, 0, 0, 0)
     }
 
     override fun show() {

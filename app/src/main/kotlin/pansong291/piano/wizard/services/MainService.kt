@@ -19,9 +19,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
-import pansong291.piano.wizard.MusicPlayer
 import pansong291.piano.wizard.R
 import pansong291.piano.wizard.consts.StringConst
+import pansong291.piano.wizard.coroutine.MusicPlayer
 import pansong291.piano.wizard.dialog.ConfirmDialog
 import pansong291.piano.wizard.dialog.KeyLayoutListDialog
 import pansong291.piano.wizard.dialog.MessageDialog
@@ -35,7 +35,6 @@ import pansong291.piano.wizard.toast.Toaster
 import pansong291.piano.wizard.utils.MusicUtil
 import pansong291.piano.wizard.views.KeysLayoutView
 import java.io.File
-import java.io.FileReader
 
 class MainService : Service() {
     private lateinit var sharedPreferences: SharedPreferences
@@ -281,7 +280,7 @@ class MainService : Service() {
                         updateCurrentMusic(
                             MusicUtil.parseMusicNotation(
                                 if (index > 0) filename.substring(0, index) else filename,
-                                FileReader(File(path, filename)).readText()
+                                File(path, filename).readText()
                             )
                         )
                         // 尝试找到可完整演奏的最小变调值

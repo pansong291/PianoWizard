@@ -4,9 +4,12 @@ import android.content.Context
 import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.appcompat.widget.AppCompatTextView
 
 interface IDialog {
     fun getContext(): Context
+
+    fun findTitle(): AppCompatTextView
 
     fun findContentWrapper(): LinearLayout
 
