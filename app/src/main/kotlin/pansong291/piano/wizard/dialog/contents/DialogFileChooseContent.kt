@@ -1,7 +1,7 @@
 package pansong291.piano.wizard.dialog.contents
 
 import android.annotation.SuppressLint
-import android.app.Application
+import android.content.Context
 import android.graphics.Color
 import android.os.Environment
 import android.text.TextUtils
@@ -14,19 +14,19 @@ import androidx.recyclerview.widget.RecyclerView
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
 import pansong291.piano.wizard.R
 import pansong291.piano.wizard.consts.ColorConst
-import pansong291.piano.wizard.dialog.IDialog
+import pansong291.piano.wizard.dialog.base.IDialog
 import java.io.File
 import java.io.FileFilter
 
 object DialogFileChooseContent {
     fun loadIn(dialog: IDialog): Pair<FastScrollRecyclerView, FileListAdapter> {
-        val application = dialog.getAppContext()
+        val context = dialog.getContext()
         val content = View.inflate(
-            application,
+            context,
             R.layout.dialog_content_file_choose,
             dialog.findContentWrapper()
         )
-        val adapter = FileListAdapter(application)
+        val adapter = FileListAdapter(context)
         // 主内容：一个回退按钮和文件列表
         val backwardItem = content.findViewById<AppCompatTextView>(android.R.id.undo).apply {
             ellipsize = TextUtils.TruncateAt.START
@@ -36,7 +36,7 @@ object DialogFileChooseContent {
             backwardItem.text = it
         }
         val recyclerView = content.findViewById<FastScrollRecyclerView>(android.R.id.list)
-        recyclerView.layoutManager = LinearLayoutManager(application).apply {
+        recyclerView.layoutManager = LinearLayoutManager(context).apply {
             orientation = LinearLayoutManager.VERTICAL
         }
         recyclerView.adapter = adapter
@@ -51,7 +51,7 @@ object DialogFileChooseContent {
     class FileViewHolder(val textView: AppCompatTextView) :
         RecyclerView.ViewHolder(textView)
 
-    class FileListAdapter(private val application: Application) :
+    class FileListAdapter(private val context: Context) :
         RecyclerView.Adapter<FileViewHolder>() {
         private lateinit var fileList: List<FileInfo>
         var highlight: Int = -1
@@ -102,7 +102,7 @@ object DialogFileChooseContent {
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FileViewHolder {
-            val view = LayoutInflater.from(application)
+            val view = LayoutInflater.from(context)
                 .inflate(R.layout.list_item_file, parent, false) as AppCompatTextView
             return FileViewHolder(view)
         }

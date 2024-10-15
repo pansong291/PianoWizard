@@ -1,12 +1,12 @@
-package pansong291.piano.wizard.dialog
+package pansong291.piano.wizard.dialog.base
 
-import android.app.Application
+import android.content.Context
 import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 
 interface IDialog {
-    fun getAppContext(): Application
+    fun getContext(): Context
 
     fun findContentWrapper(): LinearLayout
 

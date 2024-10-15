@@ -1,12 +1,13 @@
 package pansong291.piano.wizard.dialog
 
-import android.app.Application
+import android.content.Context
 import android.widget.TextView
 import androidx.annotation.StringRes
 import pansong291.piano.wizard.dialog.actions.DialogCommonActions
+import pansong291.piano.wizard.dialog.base.BaseDialog
 import pansong291.piano.wizard.dialog.contents.DialogMessageContent
 
-class MessageDialog(application: Application) : BaseDialog(application) {
+class MessageDialog(context: Context) : BaseDialog(context) {
     private val textView: TextView = DialogMessageContent.loadIn(this)
     var onOkClick: (() -> Unit)? = { destroy() }
 

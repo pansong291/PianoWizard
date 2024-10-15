@@ -1,12 +1,13 @@
 package pansong291.piano.wizard.dialog
 
-import android.app.Application
+import android.content.Context
 import android.widget.TextView
 import androidx.annotation.StringRes
 import pansong291.piano.wizard.dialog.actions.DialogConfirmActions
+import pansong291.piano.wizard.dialog.base.BaseDialog
 import pansong291.piano.wizard.dialog.contents.DialogMessageContent
 
-class ConfirmDialog(application: Application) : BaseDialog(application) {
+class ConfirmDialog(context: Context) : BaseDialog(context) {
     private val textView: TextView = DialogMessageContent.loadIn(this)
     var onOk: (() -> Unit)? = null
     var onCancel: (() -> Unit)? = { destroy() }

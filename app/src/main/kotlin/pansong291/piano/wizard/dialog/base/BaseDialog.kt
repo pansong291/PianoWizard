@@ -1,6 +1,8 @@
-package pansong291.piano.wizard.dialog
+package pansong291.piano.wizard.dialog.base
 
+import android.app.Activity
 import android.app.Application
+import android.content.Context
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.LinearLayout
@@ -10,9 +12,13 @@ import androidx.annotation.StringRes
 import com.hjq.window.EasyWindow
 import pansong291.piano.wizard.R
 
-abstract class BaseDialog(val application: Application) : IDialog {
+abstract class BaseDialog(private val context: Context) : IDialog {
     private var maskCloseable = true
-    protected var dialog: EasyWindow<*> = EasyWindow.with(application).apply {
+    protected var dialog: EasyWindow<*> = when (context) {
+        is Application -> EasyWindow.with(context)
+        is Activity -> EasyWindow.with(context)
+        else -> throw IllegalArgumentException("The context must be an Activity or Application.")
+    }.apply {
         setAnimStyle(android.R.style.Animation_Dialog)
         // 设置外层是否能被触摸
         setOutsideTouchable(false)
@@ -30,8 +36,8 @@ abstract class BaseDialog(val application: Application) : IDialog {
         }
     }
 
-    final override fun getAppContext(): Application {
-        return application
+    final override fun getContext(): Context {
+        return context
     }
 
     final override fun findContentWrapper(): LinearLayout {

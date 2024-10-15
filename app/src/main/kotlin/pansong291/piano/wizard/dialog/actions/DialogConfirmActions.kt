@@ -3,12 +3,12 @@ package pansong291.piano.wizard.dialog.actions
 import android.view.View
 import android.widget.Button
 import pansong291.piano.wizard.R
-import pansong291.piano.wizard.dialog.IDialog
+import pansong291.piano.wizard.dialog.base.IDialog
 
 object DialogConfirmActions {
     fun loadIn(dialog: IDialog, block: (ok: Button, cancel: Button) -> Unit) {
         val actions = View.inflate(
-            dialog.getAppContext(),
+            dialog.getContext(),
             R.layout.dialog_actions_confirm,
             dialog.findActionsWrapper()
         )

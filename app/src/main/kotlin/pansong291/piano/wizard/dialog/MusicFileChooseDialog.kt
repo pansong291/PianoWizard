@@ -1,18 +1,19 @@
 package pansong291.piano.wizard.dialog
 
-import android.app.Application
+import android.content.Context
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
 import pansong291.piano.wizard.R
 import pansong291.piano.wizard.consts.StringConst
 import pansong291.piano.wizard.dialog.actions.DialogConfirmActions
+import pansong291.piano.wizard.dialog.base.BaseDialog
 import pansong291.piano.wizard.dialog.contents.DialogFileChooseContent
 import pansong291.piano.wizard.toast.Toaster
 import java.io.FileFilter
 
-class MusicFileChooseDialog(application: Application) : BaseDialog(application) {
-    private val sharedPreferences = application.getSharedPreferences(
+class MusicFileChooseDialog(context: Context) : BaseDialog(context) {
+    private val sharedPreferences = context.getSharedPreferences(
         StringConst.SHARED_PREFERENCES_NAME,
-        Application.MODE_PRIVATE
+        Context.MODE_PRIVATE
     )
     private val recyclerView: FastScrollRecyclerView
     private val adapter: DialogFileChooseContent.FileListAdapter
