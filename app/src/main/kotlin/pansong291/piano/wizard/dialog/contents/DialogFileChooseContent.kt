@@ -48,13 +48,13 @@ object DialogFileChooseContent {
         var name: String = ""
     }
 
-    class FileViewHolder(val textView: AppCompatTextView) :
-        RecyclerView.ViewHolder(textView)
+    class FileViewHolder(val textView: AppCompatTextView) : RecyclerView.ViewHolder(textView)
 
-    class FileListAdapter(private val application: Application) :
-        RecyclerView.Adapter<FileViewHolder>() {
+    class FileListAdapter(
+        private val application: Application
+    ) : RecyclerView.Adapter<FileViewHolder>() {
         private lateinit var fileList: List<FileInfo>
-        var highlight: Int = -1
+        var highlight: Pair<String, String>? = null
         var basePath: String = Environment.getExternalStorageDirectory().path
         var fileFilter: FileFilter = FileFilter { true }
         var onFileChose: ((path: String, file: String) -> Unit)? = null
@@ -79,6 +79,10 @@ object DialogFileChooseContent {
 
         fun findItemPosition(predicate: (FileInfo) -> Boolean): Int {
             return fileList.indexOfFirst(predicate)
+        }
+
+        fun getItem(position: Int): FileInfo? {
+            return fileList.getOrNull(position)
         }
 
         @SuppressLint("NotifyDataSetChanged")
@@ -113,7 +117,11 @@ object DialogFileChooseContent {
 
         override fun onBindViewHolder(holder: FileViewHolder, position: Int) {
             val item = fileList[position]
-            holder.textView.setTextColor(if (position == highlight) ColorConst.GREEN_600 else Color.BLACK)
+            holder.textView.setTextColor(
+                if (highlight?.let { it.first == basePath && it.second == item.name } == true)
+                    ColorConst.GREEN_600
+                else Color.BLACK
+            )
             holder.textView.text = item.name
             holder.textView.setCompoundDrawablesRelativeWithIntrinsicBounds(item.icon, 0, 0, 0)
             holder.itemView.setOnClickListener {
