@@ -359,7 +359,7 @@ class MainService : Service() {
                             serviceScope,
                             it,
                             currentLayout!!,
-                            0,
+                            toneModulation,
                             true
                         )
                         updatePlayingState(MusicPlayer.isPlaying())
