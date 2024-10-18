@@ -48,9 +48,9 @@ class MusicFileChooseDialog(application: Application) : BaseDialog(application) 
         adapter.reload()
         scrollTo?.also {
             val position = adapter.findItemPosition(it)
-            adapter.highlight = position
+            adapter.highlight = adapter.getItem(position)?.let { adapter.basePath to it.name }
             if (position >= 0) recyclerView.scrollToPosition(position)
-        } ?: run { adapter.highlight = -1 }
+        } ?: run { adapter.highlight = null }
         super.show()
     }
 }

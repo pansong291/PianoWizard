@@ -48,8 +48,7 @@ object DialogRadioListContent {
         fun getSelectedPosition() = selectedPosition
 
         fun getSelectedString(): String? {
-            if (selectedPosition < 0) return null
-            return data[selectedPosition]
+            return data.getOrNull(selectedPosition)
         }
 
         private fun checkPosition(p: Int): Int {
