@@ -285,7 +285,7 @@ class MainService : Service() {
                         )
                         // 尝试找到可完整演奏的最小变调值
                         try {
-                            updateToneModulation(MusicPlayer.findMinOffset(currentMusic!!, it))
+                            updateToneModulation(MusicPlayer.findSuitableOffset(currentMusic!!, it))
                             btnPlayPause.setTextColor(Color.WHITE)
                         } catch (e: MissingKeyException) {
                             updateToneModulation(0)
@@ -358,7 +358,7 @@ class MainService : Service() {
                             serviceScope,
                             it,
                             currentLayout!!,
-                            0,
+                            toneModulation,
                             true
                         )
                         updatePlayingState(MusicPlayer.isPlaying())

@@ -15,6 +15,7 @@ import pansong291.piano.wizard.entity.MusicNotation
 import pansong291.piano.wizard.exceptions.MissingKeyException
 import pansong291.piano.wizard.services.ClickAccessibilityService
 import pansong291.piano.wizard.utils.MusicUtil
+import java.util.TreeSet
 
 object MusicPlayer {
     private val handler = Handler(Looper.getMainLooper())
@@ -38,7 +39,7 @@ object MusicPlayer {
         // 构建十二平均律到按键点位的映射关系
         kl.points.forEachIndexed { index, point ->
             var note = index + kl.keyOffset
-            note = if (!kl.semitone) MusicUtil.basicNoteTo12TET(note) else note
+            if (!kl.semitone) note = MusicUtil.basicNoteTo12TET(note)
             keyMap[note] = Point(
                 (point.x + kl.rawOffset.x).toInt(),
                 (point.y + kl.rawOffset.y).toInt()
@@ -99,7 +100,7 @@ object MusicPlayer {
         val target = key + offset
         kl.points.forEachIndexed { index, point ->
             var note = index + kl.keyOffset
-            note = if (!kl.semitone) MusicUtil.basicNoteTo12TET(note) else note
+            if (!kl.semitone) note = MusicUtil.basicNoteTo12TET(note)
             if (target == note) {
                 ClickAccessibilityService.click(
                     listOf(
@@ -115,24 +116,30 @@ object MusicPlayer {
         throw MissingKeyException()
     }
 
-    fun findMinOffset(mn: MusicNotation, kl: KeyLayout): Int {
-        val producer = kl.points.mapIndexedTo(mutableSetOf()) { index, _ ->
+    fun findSuitableOffset(mn: MusicNotation, kl: KeyLayout): Int {
+        val producer = kl.points.mapIndexedTo(TreeSet()) { index, _ ->
             val note = index + kl.keyOffset
-            if (!kl.semitone) MusicUtil.basicNoteTo12TET(note) else note
+            if (kl.semitone) note else MusicUtil.basicNoteTo12TET(note)
         }
-        val consumer = mn.beats.flatMapTo(mutableSetOf()) {
+        val consumer = mn.beats.flatMapTo(TreeSet()) {
             it.tones.map { it + mn.keyNote }
         }
-        val minProducer = producer.minOrNull() ?: throw MissingKeyException()
-        val maxProducer = producer.maxOrNull() ?: throw MissingKeyException()
-        val minConsumer = consumer.minOrNull() ?: throw MissingKeyException()
-        val maxConsumer = consumer.maxOrNull() ?: throw MissingKeyException()
-        // 计算初始 offset，使 consumer 的最小值对齐 producer 的最小值
-        var offset = minProducer - minConsumer
+        val minProducer = producer.firstOrNull() ?: throw MissingKeyException()
+        val maxProducer = producer.last()
+        val minConsumer = consumer.first()
+        val maxConsumer = consumer.last()
+        // minOffset 是使 consumer 的最小值对齐 producer 的最小值，maxOffset 同理
+        val minOffset = minProducer - minConsumer
         val maxOffset = maxProducer - maxConsumer
+        var offset = maxOf(0, minOffset)
         while (offset <= maxOffset) {
             if (consumer.all { producer.contains(it + offset) }) return offset
             offset++
+        }
+        offset = minOf(-1, maxOffset)
+        while (offset >= minOffset) {
+            if (consumer.all { producer.contains(it + offset) }) return offset
+            offset--
         }
         throw MissingKeyException()
     }
