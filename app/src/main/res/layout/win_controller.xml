@@ -137,14 +137,14 @@
 
             <CheckBox
                 android:id="@+id/cb_display_number"
-                style="@style/CheckBoxStyle"
+                style="@style/WindowCheckBoxStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/display_number" />
 
             <CheckBox
                 android:id="@+id/cb_enable_semitone"
-                style="@style/CheckBoxStyle"
+                style="@style/WindowCheckBoxStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/semitone" />
