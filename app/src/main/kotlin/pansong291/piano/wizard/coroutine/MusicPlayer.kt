@@ -1,4 +1,4 @@
-package pansong291.piano.wizard
+package pansong291.piano.wizard.coroutine
 
 import android.graphics.Point
 import android.os.Handler

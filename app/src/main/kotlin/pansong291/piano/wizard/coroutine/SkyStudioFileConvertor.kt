@@ -1,0 +1,138 @@
+package pansong291.piano.wizard.coroutine
+
+import android.app.Application
+import android.os.Environment
+import android.os.Handler
+import android.os.Looper
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import pansong291.piano.wizard.R
+import pansong291.piano.wizard.consts.StringConst
+import pansong291.piano.wizard.entity.SkyStudioSheet
+import pansong291.piano.wizard.exceptions.ServiceException
+import pansong291.piano.wizard.utils.FileUtil
+import pansong291.piano.wizard.utils.LangUtil
+import pansong291.piano.wizard.utils.MusicUtil
+import java.io.File
+import java.io.FileFilter
+import java.nio.charset.Charset
+
+object SkyStudioFileConvertor {
+    private val handler = Handler(Looper.getMainLooper())
+    private lateinit var application: Application
+    var onResult: ((message: String) -> Unit)? = null
+    var onFinished: (() -> Unit)? = null
+
+    fun convert(application: Application, scope: CoroutineScope, file: File) {
+        this.application = application
+        scope.launch {
+            val result = tryResult {
+                val messages = mutableListOf<String>()
+                val gson = Gson()
+                if (file.isDirectory) {
+                    file.listFiles(FileFilter {
+                        it.isFile && it.name.endsWith(StringConst.SKY_STUDIO_SHEET_FILE_EXT)
+                    })?.forEach {
+                        messages.add(convert(it, gson))
+                    }
+                } else {
+                    messages.add(convert(file, gson))
+                }
+                messages.joinToString("\n\n")
+            }
+            onResult?.also { handler.post { it(result) } }
+        }.invokeOnCompletion {
+            onFinished?.also { handler.post(it) }
+        }
+    }
+
+    private fun convert(file: File, gson: Gson): String {
+        return file.name + " ->\n" + tryResult {
+            val text = file.readText(FileUtil.detectFileEncoding(file)?.let {
+                Charset.forName(it)
+            } ?: Charsets.UTF_8)
+            val sheets = gson.fromJson<List<SkyStudioSheet>>(
+                text,
+                object : TypeToken<List<SkyStudioSheet>>() {}.type
+            )
+            sheets.joinToString("\n") {
+                "    " + convert(it, file.parent ?: Environment.getExternalStorageDirectory().path)
+            }
+        }
+    }
+
+    private fun convert(sheet: SkyStudioSheet, path: String): String {
+        return tryResult {
+            val name = sheet.name ?: application.getString(R.string.unknow_music)
+            val bpm = sheet.bpm?.takeIf { it > 0 }
+                ?: throw ServiceException(R.string.target_must_gt_zero_message, "bpm")
+            val pitchLevel = (sheet.pitchLevel?.toInt() ?: 0).takeIf { it >= 0 }
+                ?: throw ServiceException(R.string.target_must_gte_zero_message, "pitchLevel")
+            val baseTime = 60_000.0 / bpm
+            val songNotes = sheet.songNotes
+            if (songNotes.isNullOrEmpty())
+                throw ServiceException(R.string.target_cannot_empty_message, "songNotes")
+            val notesList = songNotes.groupByTo(LinkedHashMap()) {
+                // 按时间分组，相同时间的 key 构成和弦
+                (it.time ?: .0).takeIf { it >= 0 }
+                    ?: throw ServiceException(R.string.target_must_gte_zero_message, "time")
+            }.mapTo(mutableListOf()) {
+                it.key to it.value.map {
+                    it.key?.split("Key")?.getOrNull(1)?.toIntOrNull()
+                        ?: throw ServiceException(R.string.target_format_incorrect_message, "key")
+                }
+            }
+            // 排序
+            LangUtil.insertionSort(notesList) { p1, p2 -> p1.first < p2.first }
+            val isSemi = MusicUtil.isSemitone(pitchLevel)
+            val basePitch = MusicUtil.naturals.indexOf(if (isSemi) pitchLevel - 1 else pitchLevel)
+            val baseNote = if (basePitch < 5) 'C' + basePitch else 'A' + basePitch - 5
+            val strBuilder = StringBuilder("[1=").apply {
+                append(baseNote)
+                if (isSemi) append('#')
+                // FIXME 节拍待填入
+                append(",4/4,")
+                append(bpm.toLong())
+                append(']')
+            }
+            var last = .0 to "0"
+            for (i in 0..notesList.size) {
+                if (i == notesList.size) {
+                    strBuilder.append(last.second).append(',')
+                    break
+                }
+                val note = notesList[i]
+                var rateA = (note.first - last.first).toLong()
+                var rateB = baseTime.toLong()
+                val gcd = LangUtil.gcd(rateA, rateB)
+                rateA /= gcd
+                rateB /= gcd
+                if (rateA > 0) strBuilder.append(last.second).apply {
+                    if (rateA != 1L) append('*').append(rateA)
+                    if (rateB != 1L) append('/').append(rateB)
+                    append(',')
+                }
+                last = note.first to note.second.joinToString("&") {
+                    MusicUtil.compileNote(MusicUtil.basicNoteTo12TET(it))
+                }
+            }
+            val filename =
+                FileUtil.findAvailableFileName(path, name, StringConst.MUSIC_NOTATION_FILE_EXT)
+            File(path, filename).writeText(strBuilder.toString())
+            filename
+        }
+    }
+
+    private fun tryResult(block: () -> String): String {
+        return try {
+            block()
+        } catch (e: Throwable) {
+            val cause = e.cause ?: e
+            if (cause is ServiceException)
+                "${application.getString(R.string.error)}: ${cause.getI18NMessage(application)}"
+            else "${cause.javaClass.simpleName}: ${cause.message}"
+        }
+    }
+}

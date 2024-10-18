@@ -7,10 +7,9 @@ import pansong291.piano.wizard.consts.StringConst
 import pansong291.piano.wizard.dialog.actions.DialogConfirmActions
 import pansong291.piano.wizard.dialog.base.BaseDialog
 import pansong291.piano.wizard.dialog.contents.DialogFileChooseContent
-import pansong291.piano.wizard.toast.Toaster
 import java.io.FileFilter
 
-class MusicFileChooseDialog(context: Context) : BaseDialog(context) {
+class SkyStudioSheetChooseDialog(context: Context) : BaseDialog(context) {
     private val sharedPreferences = context.getSharedPreferences(
         StringConst.SHARED_PREFERENCES_NAME,
         Context.MODE_PRIVATE
@@ -22,36 +21,38 @@ class MusicFileChooseDialog(context: Context) : BaseDialog(context) {
         set(value) {
             adapter.onFileChose = value
         }
-    var scrollTo: ((DialogFileChooseContent.FileInfo) -> Boolean)? = null
+    var onFolderChose: ((path: String) -> Unit)? = null
 
     init {
-        setIcon(R.drawable.outline_music_file_32)
-        setTitle(R.string.select_music)
+        setIcon(R.drawable.outline_file_24)
+        setTitle(R.string.select_sky_studio_sheet_file)
         val pair = DialogFileChooseContent.loadIn(this)
         recyclerView = pair.first
         adapter = pair.second
-        sharedPreferences.getString(StringConst.SP_DATA_KEY_DEFAULT_FOLDER, null)
+        sharedPreferences.getString(StringConst.SP_DATA_KEY_SKY_STUDIO_SHEET_LAST_FOLDER, null)
             ?.let { adapter.basePath = it }
         adapter.fileFilter = FileFilter {
-            it.isDirectory || it.name.endsWith(StringConst.MUSIC_NOTATION_FILE_EXT)
+            it.isDirectory || it.name.endsWith(StringConst.SKY_STUDIO_SHEET_FILE_EXT)
+        }
+        adapter.onPathChanged = { path ->
+            sharedPreferences.edit()
+                .putString(StringConst.SP_DATA_KEY_SKY_STUDIO_SHEET_LAST_FOLDER, path)
+                .apply()
         }
         DialogConfirmActions.loadIn(this) { ok, _ ->
-            ok.setText(R.string.make_as_default_folder)
+            ok.setText(R.string.current_folder)
             ok.setOnClickListener {
-                sharedPreferences.edit()
-                    .putString(StringConst.SP_DATA_KEY_DEFAULT_FOLDER, adapter.basePath).apply()
-                Toaster.show(R.string.make_default_folder_feedback_message)
+                onFolderChose?.invoke(adapter.basePath)
             }
         }
     }
 
+    fun reload() {
+        adapter.reload()
+    }
+
     override fun show() {
         adapter.reload()
-        scrollTo?.also {
-            val position = adapter.findItemPosition(it)
-            adapter.highlight = adapter.getItem(position)?.let { adapter.basePath to it.name }
-            if (position >= 0) recyclerView.scrollToPosition(position)
-        } ?: run { adapter.highlight = null }
         super.show()
     }
 }

@@ -10,16 +10,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
 import pansong291.piano.wizard.R
-import pansong291.piano.wizard.dialog.IDialog
+import pansong291.piano.wizard.dialog.base.IDialog
 
 object DialogRadioListContent {
     fun loadIn(dialog: IDialog, data: List<String>, default: Int): Adapter {
-        val content = FastScrollRecyclerView(dialog.getAppContext())
+        val context = dialog.getContext()
+        val content = FastScrollRecyclerView(context)
         dialog.findContentWrapper().addView(content)
-        content.layoutManager = LinearLayoutManager(dialog.getAppContext()).apply {
+        content.layoutManager = LinearLayoutManager(context).apply {
             orientation = LinearLayoutManager.VERTICAL
         }
-        return Adapter(dialog.getAppContext(), data, default).also {
+        return Adapter(context, data, default).also {
             content.adapter = it
         }
     }

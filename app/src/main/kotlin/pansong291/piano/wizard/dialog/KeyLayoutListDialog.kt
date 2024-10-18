@@ -1,17 +1,18 @@
 package pansong291.piano.wizard.dialog
 
-import android.app.Application
+import android.content.Context
 import android.view.View
 import androidx.appcompat.widget.AppCompatImageButton
 import pansong291.piano.wizard.R
+import pansong291.piano.wizard.dialog.base.BaseDialog
 import pansong291.piano.wizard.dialog.contents.DialogRadioListContent
 import pansong291.piano.wizard.entity.KeyLayout
 
 class KeyLayoutListDialog(
-    application: Application,
+    context: Context,
     data: List<KeyLayout>,
     default: Int
-) : BaseDialog(application) {
+) : BaseDialog(context) {
     var onAction: ((index: Int, actionId: Int) -> Unit)? = null
     private val setSpecialActionEnabled: (b: Boolean) -> Unit
     private val adapter: DialogRadioListContent.Adapter =
@@ -21,7 +22,7 @@ class KeyLayoutListDialog(
         setIcon(R.drawable.outline_layout_32)
         setTitle(R.string.select_layout)
         val actions = View.inflate(
-            application,
+            context,
             R.layout.dialog_actions_key_layout,
             findActionsWrapper()
         )

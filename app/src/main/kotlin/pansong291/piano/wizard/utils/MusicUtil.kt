@@ -10,8 +10,8 @@ object MusicUtil {
     // 以 0 开始的十二平均律和对应的自然音
     // 0 1 2 3 4 5 6 7 8 9 10 11
     // 0   2   4 5   7   9    11
-    private val semitones = listOf(1, 3, 6, 8, 10)
-    private val naturals = listOf(0, 2, 4, 5, 7, 9, 11)
+    val semitones = listOf(1, 3, 6, 8, 10)
+    val naturals = listOf(0, 2, 4, 5, 7, 9, 11)
     private val blockCommentRegex = Regex("/\\*[\\d\\D]*?\\*/")
     private val lineCommentRegex = Regex("//[^\\n]*")
     private val spaceCharRegex = Regex("\\s+")
@@ -48,17 +48,16 @@ object MusicUtil {
      */
     fun basicNoteTo12TET(basic: Int): Int {
         // 计算八度变化
-        val octaveShift = basic / 7
+        var octaveShift = basic / 7
         // 计算基础音符在 0 到 6 的范围内的对应值
         var basicInRange = basic % 7
         // 将负数的情况处理为正数，并对应到负八度
         if (basicInRange < 0) {
             basicInRange += 7
             // 八度向下移动
-            basicInRange = naturals[basicInRange] - 12
-        } else {
-            basicInRange = naturals[basicInRange]
+            octaveShift--
         }
+        basicInRange = naturals[basicInRange]
         // 返回计算的值
         return basicInRange + octaveShift * 12
     }
@@ -87,7 +86,7 @@ object MusicUtil {
     fun parseMusicNotation(name: String, str: String): MusicNotation {
         val triple = checkMusicSyntax(removeComment(str))
         val key = triple.first
-        var keyNote = key[0].minus('C')
+        var keyNote = key[0] - 'C'
         if (keyNote < 0) keyNote += 7 // 把 AB 移到 G 的后面
         keyNote = basicNoteTo12TET(keyNote) // 转为十二平均律
         if (key.length > 1) when (key[1]) {
@@ -121,7 +120,7 @@ object MusicUtil {
         if (str.isNullOrEmpty()) return acc
         // *21/5  乘除后面的数字是必有的
         val rest = str.substring(1)
-        val n = startsWithNumberRegex.find(rest)?.value?.toIntOrNull()
+        val n = startsWithNumberRegex.find(rest)?.value?.toIntOrNull()?.takeIf { it > 0 }
             ?: throw ServiceException(R.string.music_syntax_error_message)
         return parseRate(
             anyFollowByNANRegex.find(rest)?.value,
@@ -157,6 +156,31 @@ object MusicUtil {
             'b' -> n = -n
         }
         return parseAccidental(anyFollowByNANRegex.find(rest)?.value, acc + n)
+    }
+
+    /**
+     * 将十二平均律编译为音符
+     */
+    fun compileNote(tet12: Int): String {
+        var octaveShift = tet12 / 12
+        var tet12Rang = tet12 % 12
+        if (tet12Rang < 0) {
+            tet12Rang += 12
+            octaveShift--
+        }
+        val isSemi = semitones.contains(tet12Rang)
+        if (isSemi) tet12Rang--
+        val note = naturals.indexOf(tet12Rang) + 1
+        if (note == 0) return "0"
+        val octave = when {
+            octaveShift == 0 -> ""
+            octaveShift == 1 -> "+"
+            octaveShift == -1 -> "-"
+            octaveShift > 0 -> "+$octaveShift"
+            else -> octaveShift.toString()
+        }
+        val result = "$note$octave"
+        return if (isSemi) "$result#" else result
     }
 }
 
@@ -207,7 +231,13 @@ fun main() {
     """.trimIndent()
     )
     println(Gson().toJson(message))
+    println("\nbasic -> 12TET -> note")
     for (i in -14..20) {
-        println(MusicUtil.basicNoteTo12TET(i))
+        val tet12 = MusicUtil.basicNoteTo12TET(i)
+        println("$i -> $tet12 -> ${MusicUtil.compileNote(tet12)}")
+    }
+    println("\n12TET -> note")
+    for (i in -24..35) {
+        println("$i -> ${MusicUtil.compileNote(i)}")
     }
 }

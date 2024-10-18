@@ -1,21 +1,22 @@
 package pansong291.piano.wizard.dialog
 
-import android.app.Application
+import android.content.Context
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.annotation.StringRes
 import pansong291.piano.wizard.dialog.actions.DialogConfirmActions
+import pansong291.piano.wizard.dialog.base.BaseDialog
 import pansong291.piano.wizard.utils.ViewUtil
 
-class TextInputDialog(application: Application) : BaseDialog(application) {
-    private val textInput = EditText(application)
+class TextInputDialog(context: Context) : BaseDialog(context) {
+    private val textInput = EditText(context)
     var onTextConfirmed: ((t: CharSequence) -> Unit)? = null
 
     init {
         dialog.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
-        val horizontalMargin = ViewUtil.dpToPx(application, 16f).toInt()
+        val horizontalMargin = ViewUtil.dpToPx(context, 16f).toInt()
         textInput.layoutParams = LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT

@@ -6,18 +6,19 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
-import pansong291.piano.wizard.dialog.IDialog
+import pansong291.piano.wizard.dialog.base.IDialog
 import pansong291.piano.wizard.utils.ViewUtil
 
 object DialogMessageContent {
     fun loadIn(dialog: IDialog): TextView {
-        val textView = TextView(dialog.getAppContext())
-        val scrollView = ScrollView(dialog.getAppContext())
+        val context = dialog.getContext()
+        val textView = TextView(context)
+        val scrollView = ScrollView(context)
         scrollView.layoutParams = LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
-        val horizontalPadding = ViewUtil.dpToPx(dialog.getAppContext(), 16f).toInt()
+        val horizontalPadding = ViewUtil.dpToPx(context, 16f).toInt()
         scrollView.setPadding(horizontalPadding, horizontalPadding, horizontalPadding, 0)
         textView.layoutParams = FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
