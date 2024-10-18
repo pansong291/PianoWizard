@@ -83,8 +83,8 @@ object MusicUtil {
     /**
      * 解析乐谱
      */
-    fun parseMusicNotation(name: String, str: String): MusicNotation {
-        val triple = checkMusicSyntax(removeComment(str))
+    fun parseMusicNotation(filepath: String, name: String, content: String): MusicNotation {
+        val triple = checkMusicSyntax(removeComment(content))
         val key = triple.first
         var keyNote = key[0] - 'C'
         if (keyNote < 0) keyNote += 7 // 把 AB 移到 G 的后面
@@ -93,11 +93,12 @@ object MusicUtil {
             '#' -> keyNote++
             'b' -> keyNote--
         }
-        return MusicNotation().apply {
-            this.name = name
-            this.keyNote = keyNote
-            this.bpm = triple.second.toInt()
-            beats = triple.third.split(",").filter(String::isNotEmpty).map(::parseBeat)
+        return MusicNotation().also {
+            it.name = name
+            it.filepath = filepath
+            it.keyNote = keyNote
+            it.bpm = triple.second.toInt()
+            it.beats = triple.third.split(",").filter(String::isNotEmpty).map(::parseBeat)
         }
     }
 
@@ -186,7 +187,7 @@ object MusicUtil {
 
 fun main() {
     val message = MusicUtil.parseMusicNotation(
-        "", """
+        "", "", """
         // 乐谱：两只老虎
         // 这是单行注释
         /*

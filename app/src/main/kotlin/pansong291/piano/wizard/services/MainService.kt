@@ -32,6 +32,7 @@ import pansong291.piano.wizard.entity.MusicNotation
 import pansong291.piano.wizard.exceptions.MissingKeyException
 import pansong291.piano.wizard.exceptions.ServiceException
 import pansong291.piano.wizard.toast.Toaster
+import pansong291.piano.wizard.utils.FileUtil
 import pansong291.piano.wizard.utils.MusicUtil
 import pansong291.piano.wizard.views.KeysLayoutView
 import java.io.File
@@ -272,15 +273,17 @@ class MainService : Service() {
         // 选择乐谱
         btnChooseMusic.setOnClickListener {
             withCurrentLayout {
-                val fcd = MusicFileChooseDialog(application)
-                fcd.onFileChose = { path, filename ->
+                val mfcd = MusicFileChooseDialog(application)
+                mfcd.onFileChose = { path, filename ->
                     tryAlert {
                         val index = filename.lastIndexOf(StringConst.MUSIC_NOTATION_FILE_EXT)
+                        val file = File(path, filename)
                         // 解析乐谱并置为当前
                         updateCurrentMusic(
                             MusicUtil.parseMusicNotation(
+                                file.path,
                                 if (index > 0) filename.substring(0, index) else filename,
-                                File(path, filename).readText()
+                                file.readText()
                             )
                         )
                         // 尝试找到可完整演奏的最小变调值
@@ -294,16 +297,17 @@ class MainService : Service() {
                                 setText(R.string.layout_unsupported_music_message)
                             }.show()
                         } finally {
-                            fcd.destroy()
+                            mfcd.destroy()
                         }
                     }
                 }
                 currentMusic?.also { mn ->
-                    fcd.scrollTo = {
-                        it.name == mn.name + StringConst.MUSIC_NOTATION_FILE_EXT
+                    mfcd.setHighlight(mn.filepath)
+                    mfcd.scrollTo = { path, info ->
+                        mn.filepath == FileUtil.pathJoin(path, info.name)
                     }
                 }
-                fcd.show()
+                mfcd.show()
             }
         }
         // 显示变调

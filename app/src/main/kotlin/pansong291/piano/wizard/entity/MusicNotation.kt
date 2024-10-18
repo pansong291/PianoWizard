@@ -10,6 +10,11 @@ class MusicNotation {
     var name: String = ""
 
     /**
+     * 乐谱文件路径
+     */
+    var filepath: String = ""
+
+    /**
      * 基准音调
      */
     var keyNote: Int = 1
