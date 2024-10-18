@@ -12,7 +12,7 @@
     <string name="music_score">Music</string>
     <string name="expand">Expand</string>
     <string name="collapse">Collapse</string>
-    <string name="display_number">Display number</string>
+    <string name="display_number">Number</string>
     <string name="reset_indicator">Reset indicator</string>
     <string name="semitone">Semitone</string>
     <string name="layout_empty_warn_message">The current layout is empty. Please select a layout first</string>

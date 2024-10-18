@@ -13,7 +13,7 @@
     <string name="music_score">乐谱</string>
     <string name="expand">展开</string>
     <string name="collapse">收起</string>
-    <string name="display_number">显示序号</string>
+    <string name="display_number">序号</string>
     <string name="reset_indicator">重置指示器</string>
     <string name="semitone">半音</string>
     <string name="layout_empty_warn_message">当前布局为空，请先选择一个布局</string>
