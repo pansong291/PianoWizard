@@ -61,4 +61,13 @@
     <string name="convert_current_folder_confirm_message">此操作将转换当前目录下的全部文件，是否继续？</string>
     <string name="processing">处理中</string>
     <string name="convert_result">转换结果</string>
+    <string name="other">其他</string>
+    <string name="tempo_rate">倍速</string>
+    <string name="tap_mode">点击模式</string>
+    <string name="tap">点触</string>
+    <string name="tap_and_hold">按住</string>
+    <string name="repeatedly_tap">连点</string>
+    <string name="early_release">提前释放</string>
+    <string name="tap_interval">点击间隔</string>
+    <string name="playing_settings">演奏设置</string>
 </resources>

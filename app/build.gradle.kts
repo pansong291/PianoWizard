@@ -56,6 +56,8 @@ dependencies {
     implementation(libs.google.gson)
     implementation(libs.simplecityapps.recyclerview.fastscroll)
     implementation(libs.googlecode.juniversalchardet)
+    implementation(libs.xw.repo.bubbleseekbar)
+    implementation(libs.androidx.gridlayout)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
