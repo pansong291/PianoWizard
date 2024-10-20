@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.gridlayout.widget.GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:alignmentMode="alignMargins"
+    app:columnCount="3"
+    app:orientation="horizontal"
+    app:rowCount="7">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tempo_rate"
+        app:layout_column="0"
+        app:layout_row="0" />
+
+    <Space
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        app:layout_column="1"
+        app:layout_row="0" />
+
+    <com.xw.repo.BubbleSeekBar
+        android:id="@+id/bsb_tempo_rate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:paddingHorizontal="4dp"
+        app:bsb_hide_bubble="true"
+        app:bsb_is_float_type="true"
+        app:bsb_max="2"
+        app:bsb_min="0.1"
+        app:bsb_progress="1"
+        app:bsb_section_count="19"
+        app:bsb_section_text_position="sides"
+        app:bsb_seek_step_section="true"
+        app:bsb_show_section_mark="true"
+        app:bsb_show_thumb_text="true"
+        app:bsb_touch_to_seek="true"
+        app:layout_column="2"
+        app:layout_gravity="fill_horizontal"
+        app:layout_row="0" />
+
+    <Space
+        android:layout_width="8dp"
+        android:layout_height="16dp"
+        app:layout_column="0"
+        app:layout_row="1" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:gravity="center"
+        android:text="@string/tap_mode"
+        app:layout_column="0"
+        app:layout_row="2" />
+
+    <RadioGroup
+        android:id="@+id/rg_tap_mode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_column="2"
+        app:layout_gravity="fill_horizontal"
+        app:layout_row="2">
+
+        <RadioButton
+            android:id="@android:id/button1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="0dp"
+            android:text="@string/tap" />
+
+        <RadioButton
+            android:id="@android:id/button2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="0dp"
+            android:text="@string/tap_and_hold" />
+
+        <RadioButton
+            android:id="@android:id/button3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="0dp"
+            android:text="@string/repeatedly_tap" />
+    </RadioGroup>
+
+    <Space
+        android:layout_width="8dp"
+        android:layout_height="16dp"
+        app:layout_column="0"
+        app:layout_row="3" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/early_release"
+        app:layout_column="0"
+        app:layout_row="4" />
+
+    <com.xw.repo.BubbleSeekBar
+        android:id="@+id/bsb_early_release"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:alpha=".2"
+        android:enabled="false"
+        android:paddingHorizontal="4dp"
+        app:bsb_hide_bubble="true"
+        app:bsb_max="1000"
+        app:bsb_min="10"
+        app:bsb_progress="100"
+        app:bsb_section_text_position="sides"
+        app:bsb_show_thumb_text="true"
+        app:bsb_touch_to_seek="true"
+        app:layout_column="2"
+        app:layout_gravity="fill_horizontal"
+        app:layout_row="4" />
+
+    <Space
+        android:layout_width="8dp"
+        android:layout_height="16dp"
+        app:layout_column="0"
+        app:layout_row="5" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tap_interval"
+        app:layout_column="0"
+        app:layout_row="6" />
+
+    <com.xw.repo.BubbleSeekBar
+        android:id="@+id/bsb_tap_interval"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:alpha=".2"
+        android:enabled="false"
+        android:paddingHorizontal="4dp"
+        app:bsb_hide_bubble="true"
+        app:bsb_max="1000"
+        app:bsb_min="10"
+        app:bsb_progress="100"
+        app:bsb_section_text_position="sides"
+        app:bsb_show_thumb_text="true"
+        app:bsb_touch_to_seek="true"
+        app:layout_column="2"
+        app:layout_gravity="fill_horizontal"
+        app:layout_row="6" />
+</androidx.gridlayout.widget.GridLayout>

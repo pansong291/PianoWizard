@@ -15,6 +15,7 @@ import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
 import pansong291.piano.wizard.R
 import pansong291.piano.wizard.consts.ColorConst
 import pansong291.piano.wizard.dialog.base.IDialog
+import pansong291.piano.wizard.utils.FileUtil
 import java.io.File
 import java.io.FileFilter
 
@@ -54,7 +55,7 @@ object DialogFileChooseContent {
         private val context: Context
     ) : RecyclerView.Adapter<FileViewHolder>() {
         private lateinit var fileList: List<FileInfo>
-        var highlight: Pair<String, String>? = null
+        var highlight: String? = null
         var basePath: String = Environment.getExternalStorageDirectory().path
         var fileFilter: FileFilter = FileFilter { true }
         var onFileChose: ((path: String, file: String) -> Unit)? = null
@@ -123,8 +124,7 @@ object DialogFileChooseContent {
         override fun onBindViewHolder(holder: FileViewHolder, position: Int) {
             val item = fileList[position]
             holder.textView.setTextColor(
-                if (highlight?.let { it.first == basePath && it.second == item.name } == true)
-                    ColorConst.GREEN_600
+                if (highlight == FileUtil.pathJoin(basePath, item.name)) ColorConst.GREEN_600
                 else Color.BLACK
             )
             holder.textView.text = item.name

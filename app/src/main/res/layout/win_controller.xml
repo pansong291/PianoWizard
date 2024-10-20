@@ -55,6 +55,13 @@
                 android:text="@string/select_music" />
 
             <Button
+                android:id="@+id/btn_other_settings"
+                style="@style/WindowButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/other" />
+
+            <Button
                 android:id="@+id/btn_modulation"
                 style="@style/WindowButtonStyle"
                 android:layout_width="match_parent"

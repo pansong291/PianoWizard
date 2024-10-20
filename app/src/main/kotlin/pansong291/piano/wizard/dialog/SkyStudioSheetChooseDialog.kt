@@ -32,7 +32,8 @@ class SkyStudioSheetChooseDialog(context: Context) : BaseDialog(context) {
         sharedPreferences.getString(StringConst.SP_DATA_KEY_SKY_STUDIO_SHEET_LAST_FOLDER, null)
             ?.let { adapter.basePath = it }
         adapter.fileFilter = FileFilter {
-            it.isDirectory || it.name.endsWith(StringConst.SKY_STUDIO_SHEET_FILE_EXT)
+            it.isDirectory || (it.name.endsWith(StringConst.SKY_STUDIO_SHEET_FILE_EXT) &&
+                    !it.name.endsWith(StringConst.MUSIC_NOTATION_FILE_EXT))
         }
         adapter.onPathChanged = { path ->
             sharedPreferences.edit()

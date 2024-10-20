@@ -11,8 +11,8 @@ android {
         applicationId = "pansong291.piano.wizard"
         minSdk = 24
         targetSdk = 34
-        versionCode = 20241018
-        versionName = "1.1.0-beta"
+        versionCode = 20241020
+        versionName = "1.2.0-beta"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -56,6 +56,8 @@ dependencies {
     implementation(libs.google.gson)
     implementation(libs.simplecityapps.recyclerview.fastscroll)
     implementation(libs.googlecode.juniversalchardet)
+    implementation(libs.xw.repo.bubbleseekbar)
+    implementation(libs.androidx.gridlayout)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

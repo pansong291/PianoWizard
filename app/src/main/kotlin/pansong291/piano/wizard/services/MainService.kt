@@ -26,12 +26,15 @@ import pansong291.piano.wizard.dialog.ConfirmDialog
 import pansong291.piano.wizard.dialog.KeyLayoutListDialog
 import pansong291.piano.wizard.dialog.MessageDialog
 import pansong291.piano.wizard.dialog.MusicFileChooseDialog
+import pansong291.piano.wizard.dialog.MusicPlayingSettingsDialog
 import pansong291.piano.wizard.dialog.TextInputDialog
 import pansong291.piano.wizard.entity.KeyLayout
 import pansong291.piano.wizard.entity.MusicNotation
+import pansong291.piano.wizard.entity.MusicPlayingSettings
 import pansong291.piano.wizard.exceptions.MissingKeyException
 import pansong291.piano.wizard.exceptions.ServiceException
 import pansong291.piano.wizard.toast.Toaster
+import pansong291.piano.wizard.utils.FileUtil
 import pansong291.piano.wizard.utils.MusicUtil
 import pansong291.piano.wizard.views.KeysLayoutView
 import java.io.File
@@ -125,6 +128,11 @@ class MainService : Service() {
     private lateinit var btnChooseMusic: Button
 
     /**
+     * 其他设置按钮
+     */
+    private lateinit var btnOtherSettings: Button
+
+    /**
      * 显示变调按钮
      */
     private lateinit var btnModulation: Button
@@ -170,6 +178,11 @@ class MainService : Service() {
     private var currentMusic: MusicNotation? = null
 
     /**
+     * 音乐弹奏设置
+     */
+    private var musicPlayingSettings = MusicPlayingSettings()
+
+    /**
      * 变调值
      */
     private var toneModulation = -1
@@ -179,6 +192,8 @@ class MainService : Service() {
      */
     private var pause = false
 
+    private val gson = Gson()
+
     // 创建一个与 Service 生命周期绑定的 CoroutineScope
     private val serviceScope = CoroutineScope(Dispatchers.Default + Job())
 
@@ -187,10 +202,13 @@ class MainService : Service() {
     override fun onCreate() {
         super.onCreate()
         sharedPreferences = getSharedPreferences(StringConst.SHARED_PREFERENCES_NAME, MODE_PRIVATE)
-        keyLayouts = Gson().fromJson(
+        keyLayouts = gson.fromJson(
             sharedPreferences.getString(StringConst.SP_DATA_KEY_KEY_LAYOUTS, null),
             object : TypeToken<List<KeyLayout>>() {}.type
         ) ?: emptyList()
+        sharedPreferences.getString(StringConst.SP_DATA_KEY_MUSIC_PLAYING_SETTINGS, null)?.let {
+            musicPlayingSettings = gson.fromJson(it, MusicPlayingSettings::class.java)
+        }
 
         keysLayoutView = KeysLayoutView(application)
         controllerWindow = EasyWindow.with(application).apply {
@@ -218,6 +236,7 @@ class MainService : Service() {
             btnPointRemove = contentView.findViewById(R.id.btn_point_remove)
             btnPointAdd = contentView.findViewById(R.id.btn_point_add)
             btnChooseMusic = contentView.findViewById(R.id.btn_choose_music)
+            btnOtherSettings = contentView.findViewById(R.id.btn_other_settings)
             btnModulation = contentView.findViewById(R.id.btn_modulation)
             btnToneMinus1 = contentView.findViewById(R.id.btn_tone_minus_1)
             btnTonePlus1 = contentView.findViewById(R.id.btn_tone_plus_1)
@@ -272,15 +291,17 @@ class MainService : Service() {
         // 选择乐谱
         btnChooseMusic.setOnClickListener {
             withCurrentLayout {
-                val fcd = MusicFileChooseDialog(application)
-                fcd.onFileChose = { path, filename ->
+                val mfcd = MusicFileChooseDialog(application)
+                mfcd.onFileChose = { path, filename ->
                     tryAlert {
                         val index = filename.lastIndexOf(StringConst.MUSIC_NOTATION_FILE_EXT)
+                        val file = File(path, filename)
                         // 解析乐谱并置为当前
                         updateCurrentMusic(
                             MusicUtil.parseMusicNotation(
+                                file.path,
                                 if (index > 0) filename.substring(0, index) else filename,
-                                File(path, filename).readText()
+                                file.readText()
                             )
                         )
                         // 尝试找到可完整演奏的最小变调值
@@ -294,17 +315,32 @@ class MainService : Service() {
                                 setText(R.string.layout_unsupported_music_message)
                             }.show()
                         } finally {
-                            fcd.destroy()
+                            mfcd.destroy()
                         }
                     }
                 }
                 currentMusic?.also { mn ->
-                    fcd.scrollTo = {
-                        it.name == mn.name + StringConst.MUSIC_NOTATION_FILE_EXT
+                    mfcd.setHighlight(mn.filepath)
+                    mfcd.scrollTo = { path, info ->
+                        mn.filepath == FileUtil.pathJoin(path, info.name)
                     }
                 }
-                fcd.show()
+                mfcd.show()
             }
+        }
+        // 其他设置
+        btnOtherSettings.setOnClickListener {
+            val mpsd = MusicPlayingSettingsDialog(application)
+            mpsd.setSettings(musicPlayingSettings)
+            mpsd.onOk = {
+                musicPlayingSettings = mpsd.getSettings()
+                sharedPreferences.edit().putString(
+                    StringConst.SP_DATA_KEY_MUSIC_PLAYING_SETTINGS,
+                    gson.toJson(musicPlayingSettings)
+                ).apply()
+                mpsd.destroy()
+            }
+            mpsd.show()
         }
         // 显示变调
         btnModulation.setOnClickListener {
@@ -346,7 +382,13 @@ class MainService : Service() {
                 if (MusicPlayer.isPlaying()) {
                     updatePauseState(!pause)
                 } else try {
-                    MusicPlayer.startPlay(serviceScope, it, currentLayout!!, toneModulation)
+                    MusicPlayer.startPlay(
+                        serviceScope,
+                        it,
+                        currentLayout!!,
+                        musicPlayingSettings,
+                        toneModulation
+                    )
                     updatePlayingState(MusicPlayer.isPlaying())
                 } catch (e: MissingKeyException) {
                     val cd = ConfirmDialog(application)
@@ -358,6 +400,7 @@ class MainService : Service() {
                             serviceScope,
                             it,
                             currentLayout!!,
+                            musicPlayingSettings,
                             toneModulation,
                             true
                         )
@@ -385,7 +428,7 @@ class MainService : Service() {
                 if (actionId == R.id.btn_save) {
                     sharedPreferences.edit().putString(
                         StringConst.SP_DATA_KEY_KEY_LAYOUTS,
-                        Gson().toJson(keyLayouts)
+                        gson.toJson(keyLayouts)
                     ).apply()
                     Toaster.show(R.string.save_all_layouts_message)
                 }
@@ -485,7 +528,7 @@ class MainService : Service() {
         btnKeyLayoutOffset.setOnClickListener {
             withCurrentLayout { kl ->
                 val tid = TextInputDialog(application)
-                tid.setIcon(R.drawable.baseline_plus_one_32)
+                tid.setIcon(R.drawable.outline_plus_one_32)
                 tid.setTitle(R.string.key_offset)
                 tid.setHint(R.string.enter_key_offset_hint)
                 tid.onTextConfirmed = onTextConfirmed@{
@@ -577,6 +620,7 @@ class MainService : Service() {
             btnControllerSwitch.visibility = View.GONE
             btnStopMusic.visibility = View.VISIBLE
             btnChooseMusic.visibility = View.GONE
+            btnOtherSettings.visibility = View.GONE
             btnModulation.visibility = View.GONE
             btnToneMinus1.visibility = View.GONE
             btnTonePlus1.visibility = View.GONE
@@ -588,6 +632,7 @@ class MainService : Service() {
                 btnControllerSwitch.visibility = View.VISIBLE
             btnStopMusic.visibility = View.GONE
             btnChooseMusic.visibility = View.VISIBLE
+            btnOtherSettings.visibility = View.VISIBLE
             btnModulation.visibility = View.VISIBLE
             btnToneMinus1.visibility = View.VISIBLE
             btnTonePlus1.visibility = View.VISIBLE

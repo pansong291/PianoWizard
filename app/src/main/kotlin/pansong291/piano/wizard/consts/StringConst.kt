@@ -32,6 +32,11 @@ object StringConst {
     const val SP_DATA_KEY_SKY_STUDIO_SHEET_LAST_FOLDER = "sky_studio_sheet_last_folder"
 
     /**
+     * 演奏设置
+     */
+    const val SP_DATA_KEY_MUSIC_PLAYING_SETTINGS = "music_playing_settings"
+
+    /**
      * SkyStudio 乐谱的文件后缀
      */
     const val SKY_STUDIO_SHEET_FILE_EXT = ".txt"

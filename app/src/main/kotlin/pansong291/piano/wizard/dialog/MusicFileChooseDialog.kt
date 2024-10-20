@@ -22,7 +22,7 @@ class MusicFileChooseDialog(context: Context) : BaseDialog(context) {
         set(value) {
             adapter.onFileChose = value
         }
-    var scrollTo: ((DialogFileChooseContent.FileInfo) -> Boolean)? = null
+    var scrollTo: ((String, DialogFileChooseContent.FileInfo) -> Boolean)? = null
 
     init {
         setIcon(R.drawable.outline_music_file_32)
@@ -45,13 +45,18 @@ class MusicFileChooseDialog(context: Context) : BaseDialog(context) {
         }
     }
 
+    fun setHighlight(path: String) {
+        adapter.highlight = path
+    }
+
     override fun show() {
         adapter.reload()
         scrollTo?.also {
-            val position = adapter.findItemPosition(it)
-            adapter.highlight = adapter.getItem(position)?.let { adapter.basePath to it.name }
+            val position = adapter.findItemPosition { info ->
+                it(adapter.basePath, info)
+            }
             if (position >= 0) recyclerView.scrollToPosition(position)
-        } ?: run { adapter.highlight = null }
+        }
         super.show()
     }
 }

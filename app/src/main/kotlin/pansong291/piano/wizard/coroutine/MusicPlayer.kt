@@ -12,6 +12,8 @@ import kotlinx.coroutines.launch
 import pansong291.piano.wizard.entity.ClickAction
 import pansong291.piano.wizard.entity.KeyLayout
 import pansong291.piano.wizard.entity.MusicNotation
+import pansong291.piano.wizard.entity.MusicPlayingSettings
+import pansong291.piano.wizard.entity.TapMode
 import pansong291.piano.wizard.exceptions.MissingKeyException
 import pansong291.piano.wizard.services.ClickAccessibilityService
 import pansong291.piano.wizard.utils.MusicUtil
@@ -30,11 +32,17 @@ object MusicPlayer {
         scope: CoroutineScope,
         mn: MusicNotation,
         kl: KeyLayout,
+        mps: MusicPlayingSettings,
         offset: Int,
         ignoreMissingKey: Boolean = false
     ) {
+        if (mps.tempoRate <= 0) throw IllegalArgumentException("tempoRate must be greater than 0")
+        if (mps.tapMode == TapMode.TapAndHold && mps.earlyRelease <= 0)
+            throw IllegalArgumentException("earlyRelease must be greater than 0")
+        if (mps.tapMode == TapMode.RepeatedlyTap && mps.tapInterval <= 0)
+            throw IllegalArgumentException("tapInterval must be greater than 0")
         val keyMap = mutableMapOf<Int, Point>()
-        val baseTime = 60_000f / mn.bpm
+        val baseTime = 60_000f / mn.bpm / mps.tempoRate
 
         // 构建十二平均律到按键点位的映射关系
         kl.points.forEachIndexed { index, point ->
@@ -68,7 +76,22 @@ object MusicPlayer {
                     Thread.sleep(200)
                 }
                 val time = System.currentTimeMillis()
-                ClickAccessibilityService.click(it.points, maxOf(it.delay - 100L, 1L))
+                val holdTime = when (mps.tapMode) {
+                    TapMode.TapAndHold -> maxOf(it.delay.toLong() - mps.earlyRelease, 1L)
+                    TapMode.RepeatedlyTap -> maxOf(it.delay.toLong(), 1L)
+                    else -> 1L
+                }
+                if (mps.tapMode == TapMode.RepeatedlyTap) {
+                    val interval = mps.tapInterval.toLong()
+                    var start = 0L
+                    while (start < holdTime) {
+                        if (start > 0) Thread.sleep(interval)
+                        ClickAccessibilityService.click(it.points, 1L)
+                        start += interval
+                    }
+                } else {
+                    ClickAccessibilityService.click(it.points, holdTime)
+                }
                 val rest = it.delay + time - System.currentTimeMillis()
                 if (rest > 0) Thread.sleep(rest)
             }

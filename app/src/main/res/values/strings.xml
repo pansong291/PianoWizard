@@ -60,4 +60,13 @@
     <string name="convert_current_folder_confirm_message">This operation will convert all files in the current folder. Do you wish to continue?</string>
     <string name="processing">Processing</string>
     <string name="convert_result">Convert result</string>
+    <string name="other">Other</string>
+    <string name="tempo_rate">Tempo rate</string>
+    <string name="tap_mode">Tap mode</string>
+    <string name="tap">Tap</string>
+    <string name="tap_and_hold">Tap and hold</string>
+    <string name="repeatedly_tap">Repeatedly tap</string>
+    <string name="early_release">Early release</string>
+    <string name="tap_interval">Tap interval</string>
+    <string name="playing_settings">Playing settings</string>
 </resources>
