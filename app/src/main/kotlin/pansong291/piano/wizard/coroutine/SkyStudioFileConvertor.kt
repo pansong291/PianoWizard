@@ -92,13 +92,15 @@ object SkyStudioFileConvertor {
             val isSemi = MusicUtil.isSemitone(pitchLevel)
             val basePitch = MusicUtil.naturals.indexOf(if (isSemi) pitchLevel - 1 else pitchLevel)
             val baseNote = if (basePitch < 5) 'C' + basePitch else 'A' + basePitch - 5
-            val strBuilder = StringBuilder("[1=").apply {
-                append(baseNote)
+            val strBuilder = StringBuilder().apply {
+                append("/**\n * name: ").append(sheet.name)
+                append("\n * author: ").append(sheet.author)
+                append("\n * arrangedBy: ").append(sheet.arrangedBy)
+                append("\n * transcribedBy: ").append(sheet.transcribedBy)
+                append("\n */\n[1=").append(baseNote)
                 if (isSemi) append('#')
                 // FIXME 节拍待填入
-                append(",4/4,")
-                append(bpm.toLong())
-                append(']')
+                append(",4/4,").append(bpm.toLong()).append("]\n")
             }
             var last = .0 to "0"
             for (i in 0..notesList.size) {
