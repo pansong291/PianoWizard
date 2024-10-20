@@ -65,7 +65,10 @@ object SkyStudioFileConvertor {
 
     private fun convert(sheet: SkyStudioSheet, path: String): String {
         return tryResult {
-            val name = sheet.name ?: application.getString(R.string.unknow_music)
+            var name = sheet.name ?: application.getString(R.string.unknow_music)
+            if (!sheet.author.isNullOrEmpty()) name += " - ${sheet.author}"
+            if (!sheet.arrangedBy.isNullOrEmpty()) name += " + ${sheet.arrangedBy}"
+            if (!sheet.transcribedBy.isNullOrEmpty()) name += " ~ ${sheet.transcribedBy}"
             val bpm = sheet.bpm?.takeIf { it > 0 }
                 ?: throw ServiceException(R.string.target_must_gt_zero_message, "bpm")
             val pitchLevel = (sheet.pitchLevel?.toInt() ?: 0).takeIf { it >= 0 }
