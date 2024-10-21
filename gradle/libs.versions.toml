@@ -15,7 +15,6 @@ easywindow = "10.62"
 gson = "2.11.0"
 recyclerview-fastscroll = "2.0.1"
 juniversalchardet = "1.0.3"
-bubbleseekbar = "3.20-lite"
 gridlayout = "1.0.0"
 
 [libraries]
@@ -33,7 +32,6 @@ getactivity-easywindow = { group = "com.github.getActivity", name = "EasyWindow"
 google-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 simplecityapps-recyclerview-fastscroll = { group = "com.simplecityapps", name = "recyclerview-fastscroll", version.ref = "recyclerview-fastscroll" }
 googlecode-juniversalchardet = { group = "com.googlecode.juniversalchardet", name = "juniversalchardet", version.ref = "juniversalchardet" }
-xw-repo-bubbleseekbar = { group = "com.xw.repo", name = "bubbleseekbar", version.ref = "bubbleseekbar" }
 androidx-gridlayout = { group = "androidx.gridlayout", name = "gridlayout", version.ref = "gridlayout" }
 
 [plugins]
