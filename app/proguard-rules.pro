@@ -20,15 +20,5 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
-# getactivity.xxpermissions
--keep class com.hjq.permissions.** {*;}
-# getactivity.easywindow
--keep class com.hjq.window.** {*;}
-# getactivity.gsonfactory
--keep class com.hjq.gson.factory.** {*;}
-# simplecityapps.recyclerview.fastscroll
--keep class com.simplecityapps.** {*;}
 # 避免 Gson 反序列化失败
 -keep class pansong291.piano.wizard.entity.** {*;}
-# com.xw.repo.bubbleseekbar
--keep class com.xw.repo.** {*;}
