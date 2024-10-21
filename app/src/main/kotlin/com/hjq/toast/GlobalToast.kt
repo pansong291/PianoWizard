@@ -1,4 +1,4 @@
-package pansong291.piano.wizard.toast
+package com.hjq.toast
 
 import android.app.Application
 import android.content.Context
@@ -10,8 +10,8 @@ import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
 import android.view.WindowManager.BadTokenException
-import pansong291.piano.wizard.toast.config.IToast
-import pansong291.piano.wizard.toast.style.BlackToastStyle
+import com.hjq.toast.config.IToast
+import com.hjq.toast.style.BlackToastStyle
 
 class GlobalToast(private val application: Application) : IToast {
     companion object {

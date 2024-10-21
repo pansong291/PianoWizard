@@ -1,13 +1,13 @@
 package pansong291.piano.wizard.dialog
 
 import android.content.Context
+import com.hjq.toast.Toaster
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
 import pansong291.piano.wizard.R
 import pansong291.piano.wizard.consts.StringConst
 import pansong291.piano.wizard.dialog.actions.DialogConfirmActions
 import pansong291.piano.wizard.dialog.base.BaseDialog
 import pansong291.piano.wizard.dialog.contents.DialogFileChooseContent
-import pansong291.piano.wizard.toast.Toaster
 import java.io.FileFilter
 
 class MusicFileChooseDialog(context: Context) : BaseDialog(context) {

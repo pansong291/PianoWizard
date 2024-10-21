@@ -1,4 +1,4 @@
-package pansong291.piano.wizard.toast.config
+package com.hjq.toast.config
 
 import android.view.View
 import android.widget.TextView

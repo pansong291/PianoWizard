@@ -13,6 +13,7 @@ import android.widget.Button
 import android.widget.CheckBox
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.hjq.toast.Toaster
 import com.hjq.window.EasyWindow
 import com.hjq.window.draggable.SpringBackDraggable
 import kotlinx.coroutines.CoroutineScope
@@ -33,7 +34,6 @@ import pansong291.piano.wizard.entity.MusicNotation
 import pansong291.piano.wizard.entity.MusicPlayingSettings
 import pansong291.piano.wizard.exceptions.MissingKeyException
 import pansong291.piano.wizard.exceptions.ServiceException
-import pansong291.piano.wizard.toast.Toaster
 import pansong291.piano.wizard.utils.FileUtil
 import pansong291.piano.wizard.utils.MusicUtil
 import pansong291.piano.wizard.views.KeysLayoutView

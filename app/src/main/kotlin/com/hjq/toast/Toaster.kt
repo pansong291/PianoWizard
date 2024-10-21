@@ -1,4 +1,4 @@
-package pansong291.piano.wizard.toast
+package com.hjq.toast
 
 import android.app.Application
 import android.content.res.Resources
@@ -6,7 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
 import androidx.annotation.StringRes
-import pansong291.piano.wizard.toast.config.IToast
+import com.hjq.toast.config.IToast
 import java.lang.ref.WeakReference
 
 /**

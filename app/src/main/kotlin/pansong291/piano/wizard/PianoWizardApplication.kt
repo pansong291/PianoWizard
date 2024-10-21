@@ -1,7 +1,7 @@
 package pansong291.piano.wizard
 
 import android.app.Application
-import pansong291.piano.wizard.toast.Toaster
+import com.hjq.toast.Toaster
 
 class PianoWizardApplication : Application() {
     override fun onCreate() {

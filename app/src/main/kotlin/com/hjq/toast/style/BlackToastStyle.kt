@@ -1,4 +1,4 @@
-package pansong291.piano.wizard.toast.style
+package com.hjq.toast.style
 
 import android.content.Context
 import android.graphics.drawable.Drawable
