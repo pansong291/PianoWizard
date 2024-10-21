@@ -13,6 +13,7 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -228,11 +229,20 @@ public class BubbleSeekBar extends View {
         mLayoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
                 | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                 | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
-        // MIUI禁止了开发者使用TYPE_TOAST，Android 7.1.1 对TYPE_TOAST的使用更严格
-        if (BubbleUtils.isMIUI() || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-            mLayoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION;
+        if (context instanceof Application) {
+            // 使用全局悬浮窗
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                mLayoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+            } else {
+                mLayoutParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
+            }
         } else {
-            mLayoutParams.type = WindowManager.LayoutParams.TYPE_TOAST;
+            // MIUI禁止了开发者使用TYPE_TOAST，Android 7.1.1 对TYPE_TOAST的使用更严格
+            if (BubbleUtils.isMIUI() || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                mLayoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION;
+            } else {
+                mLayoutParams.type = WindowManager.LayoutParams.TYPE_TOAST;
+            }
         }
 
         calculateRadiusOfBubble();
