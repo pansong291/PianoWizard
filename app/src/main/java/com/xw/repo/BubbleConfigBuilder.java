@@ -49,6 +49,8 @@ public class BubbleConfigBuilder {
     boolean hideBubble;
     boolean rtl;
 
+    BubbleSeekBar.BubbleValueToTextConverter bubbleValueToTextConverter;
+
     private final BubbleSeekBar mBubbleSeekBar;
 
     BubbleConfigBuilder(BubbleSeekBar bubbleSeekBar) {
@@ -234,6 +236,11 @@ public class BubbleConfigBuilder {
         return this;
     }
 
+    public BubbleConfigBuilder bubbleValueToTextConverter(BubbleSeekBar.BubbleValueToTextConverter converter) {
+        this.bubbleValueToTextConverter = converter;
+        return this;
+    }
+
     public float getMin() {
         return min;
     }
@@ -368,5 +375,9 @@ public class BubbleConfigBuilder {
 
     public boolean isRtl() {
         return rtl;
+    }
+
+    public BubbleSeekBar.BubbleValueToTextConverter getBubbleValueToTextConverter() {
+        return bubbleValueToTextConverter;
     }
 }
