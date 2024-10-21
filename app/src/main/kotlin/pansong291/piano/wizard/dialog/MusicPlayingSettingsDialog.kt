@@ -42,13 +42,11 @@ class MusicPlayingSettingsDialog(context: Context) : BaseDialog(context) {
         bsbEarlyRelease = root.findViewById(R.id.bsb_early_release)
         bsbTapInterval = root.findViewById(R.id.bsb_tap_interval)
 
-        // FIXME 目前存在问题 https://github.com/woxingxiao/BubbleSeekBar/issues/214
-        //  故未启用进度气泡，待解决后再调整
-        /* scrollView.setOnScrollChangeListener { _, _, _, _, _ ->
+        scrollView.setOnScrollChangeListener { _, _, _, _, _ ->
             bsbTempoRate.correctOffsetWhenContainerOnScrolling()
             bsbEarlyRelease.correctOffsetWhenContainerOnScrolling()
             bsbTapInterval.correctOffsetWhenContainerOnScrolling()
-        } */
+        }
         rgTapMode.setOnCheckedChangeListener { _, id ->
             setBubbleSeekBarEnabled(bsbEarlyRelease, id == android.R.id.button2)
             setBubbleSeekBarEnabled(bsbTapInterval, id == android.R.id.button3)
