@@ -11,8 +11,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
-import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.hjq.gson.factory.GsonFactory
 import com.hjq.toast.Toaster
 import com.hjq.window.EasyWindow
 import com.hjq.window.draggable.SpringBackDraggable
@@ -192,7 +192,7 @@ class MainService : Service() {
      */
     private var pause = false
 
-    private val gson = Gson()
+    private val gson = GsonFactory.getSingletonGson()
 
     // 创建一个与 Service 生命周期绑定的 CoroutineScope
     private val serviceScope = CoroutineScope(Dispatchers.Default + Job())

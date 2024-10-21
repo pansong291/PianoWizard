@@ -4,8 +4,8 @@ import android.app.Application
 import android.os.Environment
 import android.os.Handler
 import android.os.Looper
-import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.hjq.gson.factory.GsonFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import pansong291.piano.wizard.R
@@ -30,15 +30,14 @@ object SkyStudioFileConvertor {
         scope.launch {
             val result = tryResult {
                 val messages = mutableListOf<String>()
-                val gson = Gson()
                 if (file.isDirectory) {
                     file.listFiles(FileFilter {
                         it.isFile && it.name.endsWith(StringConst.SKY_STUDIO_SHEET_FILE_EXT)
                     })?.forEach {
-                        messages.add(convert(it, gson))
+                        messages.add(convert(it))
                     }
                 } else {
-                    messages.add(convert(file, gson))
+                    messages.add(convert(file))
                 }
                 messages.joinToString("\n\n")
             }
@@ -48,12 +47,12 @@ object SkyStudioFileConvertor {
         }
     }
 
-    private fun convert(file: File, gson: Gson): String {
+    private fun convert(file: File): String {
         return file.name + " ->\n" + tryResult {
             val text = file.readText(FileUtil.detectFileEncoding(file)?.let {
                 Charset.forName(it)
             } ?: Charsets.UTF_8)
-            val sheets = gson.fromJson<List<SkyStudioSheet>>(
+            val sheets = GsonFactory.getSingletonGson().fromJson<List<SkyStudioSheet>>(
                 text,
                 object : TypeToken<List<SkyStudioSheet>>() {}.type
             )

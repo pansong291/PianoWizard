@@ -53,6 +53,8 @@ dependencies {
     implementation(libs.androidx.cardview)
     implementation(libs.getactivity.xxpermissions)
     implementation(libs.getactivity.easywindow)
+    implementation(libs.getactivity.gsonfactory)
+    implementation(libs.jetbrains.kotlin.reflect)
     implementation(libs.google.gson)
     implementation(libs.simplecityapps.recyclerview.fastscroll)
     implementation(libs.googlecode.juniversalchardet)

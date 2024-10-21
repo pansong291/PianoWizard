@@ -12,6 +12,7 @@ activity = "1.8.0"
 constraintlayout = "2.1.4"
 xxpermissions = "20.0"
 easywindow = "10.62"
+gsonfactory = "9.6"
 gson = "2.11.0"
 recyclerview-fastscroll = "2.0.1"
 juniversalchardet = "1.0.3"
@@ -29,6 +30,8 @@ androidx-activity = { group = "androidx.activity", name = "activity", version.re
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 getactivity-xxpermissions = { group = "com.github.getActivity", name = "XXPermissions", version.ref = "xxpermissions" }
 getactivity-easywindow = { group = "com.github.getActivity", name = "EasyWindow", version.ref = "easywindow" }
+getactivity-gsonfactory = { group = "com.github.getActivity", name = "GsonFactory", version.ref = "gsonfactory" }
+jetbrains-kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
 google-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 simplecityapps-recyclerview-fastscroll = { group = "com.simplecityapps", name = "recyclerview-fastscroll", version.ref = "recyclerview-fastscroll" }
 googlecode-juniversalchardet = { group = "com.googlecode.juniversalchardet", name = "juniversalchardet", version.ref = "juniversalchardet" }

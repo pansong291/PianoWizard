@@ -1,6 +1,6 @@
 package pansong291.piano.wizard.utils
 
-import com.google.gson.Gson
+import com.hjq.gson.factory.GsonFactory
 import pansong291.piano.wizard.R
 import pansong291.piano.wizard.entity.Beat
 import pansong291.piano.wizard.entity.MusicNotation
@@ -231,7 +231,7 @@ fun main() {
 
     """.trimIndent()
     )
-    println(Gson().toJson(message))
+    println(GsonFactory.getSingletonGson().toJson(message))
     println("\nbasic -> 12TET -> note")
     for (i in -14..20) {
         val tet12 = MusicUtil.basicNoteTo12TET(i)
