@@ -9,7 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import pansong291.piano.wizard.utils.ViewUtil
+import pansong291.piano.wizard.utils.ViewUtil.dp
+import pansong291.piano.wizard.utils.ViewUtil.dpInt
 
 object BlackToastStyle {
     fun createView(context: Context): View {
@@ -19,8 +20,8 @@ object BlackToastStyle {
         textView.setTextColor(0xffffffff.toInt())
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
 
-        val horizontalPadding = ViewUtil.dpToPx(context, 24f).toInt()
-        val verticalPadding = ViewUtil.dpToPx(context, 16f).toInt()
+        val horizontalPadding = 24.dpInt()
+        val verticalPadding = 16.dpInt()
 
         // 适配布局反方向特性
         textView.setPaddingRelative(
@@ -40,7 +41,7 @@ object BlackToastStyle {
         textView.background = backgroundDrawable
 
         // 设置 Z 轴阴影
-        textView.z = ViewUtil.dpToPx(context, 3f)
+        textView.z = 3.dp()
 
         return LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
@@ -48,7 +49,7 @@ object BlackToastStyle {
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
-            val wp = ViewUtil.dpToPx(context, 48f).toInt()
+            val wp = 48.dpInt()
             setPadding(0, wp, 0, wp)
             addView(textView)
         }
@@ -59,7 +60,7 @@ object BlackToastStyle {
         // 设置颜色
         drawable.setColor(0xff000000.toInt())
         // 设置圆角
-        drawable.cornerRadius = ViewUtil.dpToPx(context, 10f)
+        drawable.cornerRadius = 10.dp()
         return drawable
     }
 }

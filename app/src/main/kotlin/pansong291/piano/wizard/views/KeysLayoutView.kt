@@ -10,7 +10,8 @@ import android.graphics.PointF
 import android.view.MotionEvent
 import android.view.View
 import pansong291.piano.wizard.utils.MusicUtil
-import pansong291.piano.wizard.utils.ViewUtil
+import pansong291.piano.wizard.utils.ViewUtil.dp
+import pansong291.piano.wizard.utils.ViewUtil.sp
 
 @SuppressLint("ClickableViewAccessibility")
 class KeysLayoutView(context: Context) : View(context) {
@@ -24,8 +25,8 @@ class KeysLayoutView(context: Context) : View(context) {
     private val fillPaint = Paint()
     private val strokePaint = Paint()
 
-    private val largeRadius = ViewUtil.dpToPx(context, 18f)
-    private val smallRadius = ViewUtil.dpToPx(context, 4f)
+    private val largeRadius = 18.dp()
+    private val smallRadius = 4.dp()
     private val textCenterY: Float
 
     private val indicator = Point(-1, -1)
@@ -34,13 +35,13 @@ class KeysLayoutView(context: Context) : View(context) {
     val rawOffset = PointF()
 
     init {
-        val dp1 = ViewUtil.dpToPx(context, 1f)
+        val dp1 = 1.dp()
         indicatorPaint.color = Color.RED
         indicatorPaint.style = Paint.Style.STROKE
         indicatorPaint.strokeWidth = dp1
 
         textPaint.style = Paint.Style.FILL
-        textPaint.textSize = ViewUtil.spToPx(context, 18f)
+        textPaint.textSize = 18.sp()
         textPaint.isFakeBoldText = true
         textPaint.textAlign = Paint.Align.CENTER
 

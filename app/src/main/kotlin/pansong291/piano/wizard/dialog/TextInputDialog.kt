@@ -8,7 +8,7 @@ import android.widget.LinearLayout
 import androidx.annotation.StringRes
 import pansong291.piano.wizard.dialog.actions.DialogConfirmActions
 import pansong291.piano.wizard.dialog.base.BaseDialog
-import pansong291.piano.wizard.utils.ViewUtil
+import pansong291.piano.wizard.utils.ViewUtil.dpInt
 
 class TextInputDialog(context: Context) : BaseDialog(context) {
     private val textInput = EditText(context)
@@ -16,7 +16,7 @@ class TextInputDialog(context: Context) : BaseDialog(context) {
 
     init {
         dialog.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
-        val horizontalMargin = ViewUtil.dpToPx(context, 16f).toInt()
+        val horizontalMargin = 16.dpInt()
         textInput.layoutParams = LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT

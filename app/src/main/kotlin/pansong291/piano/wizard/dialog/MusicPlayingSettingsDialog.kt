@@ -12,7 +12,7 @@ import pansong291.piano.wizard.dialog.actions.DialogConfirmActions
 import pansong291.piano.wizard.dialog.base.BaseDialog
 import pansong291.piano.wizard.entity.MusicPlayingSettings
 import pansong291.piano.wizard.entity.TapMode
-import pansong291.piano.wizard.utils.ViewUtil
+import pansong291.piano.wizard.utils.ViewUtil.dpInt
 
 class MusicPlayingSettingsDialog(context: Context) : BaseDialog(context) {
     private val bsbTempoRate: BubbleSeekBar
@@ -32,7 +32,7 @@ class MusicPlayingSettingsDialog(context: Context) : BaseDialog(context) {
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
-        val horizontalPadding = ViewUtil.dpToPx(context, 16f).toInt()
+        val horizontalPadding = 16.dpInt()
         scrollView.setPadding(horizontalPadding, horizontalPadding, horizontalPadding, 0)
         findContentWrapper().addView(scrollView)
         val root = LayoutInflater.from(context)
