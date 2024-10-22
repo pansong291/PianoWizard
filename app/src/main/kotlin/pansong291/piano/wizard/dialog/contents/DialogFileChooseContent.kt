@@ -54,16 +54,25 @@ object DialogFileChooseContent {
     class FileListAdapter(
         private val context: Context
     ) : RecyclerView.Adapter<FileViewHolder>() {
-        private lateinit var fileList: List<FileInfo>
+        private lateinit var infoList: List<FileInfo>
+        private lateinit var filteredList: List<FileInfo>
         var highlight: String? = null
         var basePath: String = Environment.getExternalStorageDirectory().path
         var fileFilter: FileFilter = FileFilter { true }
         var onFileChose: ((path: String, file: String) -> Unit)? = null
         var onPathLoaded: ((path: String) -> Unit)? = null
         var onPathChanged: ((path: String) -> Unit)? = null
+        private var infoFilter: ((FileInfo) -> Boolean)? = null
 
         fun reload() {
             loadFileList(null)
+        }
+
+        fun setInfoFilter(filter: ((FileInfo) -> Boolean)?) {
+            infoFilter = filter
+            filteredList = filter?.let {
+                infoList.filter(it)
+            } ?: infoList
         }
 
         fun backwardFolder() {
@@ -84,17 +93,17 @@ object DialogFileChooseContent {
         }
 
         fun findItemPosition(predicate: (FileInfo) -> Boolean): Int {
-            return fileList.indexOfFirst(predicate)
+            return filteredList.indexOfFirst(predicate)
         }
 
         fun getItem(position: Int): FileInfo? {
-            return fileList.getOrNull(position)
+            return filteredList.getOrNull(position)
         }
 
         @SuppressLint("NotifyDataSetChanged")
         private fun loadFileList(folder: File?) {
             val folderFile = folder ?: File(basePath)
-            fileList = folderFile.listFiles(fileFilter)?.map {
+            infoList = folderFile.listFiles(fileFilter)?.map {
                 FileInfo().apply {
                     icon = if (it.isDirectory) R.drawable.outline_folder_24
                     else R.drawable.outline_file_24
@@ -107,6 +116,7 @@ object DialogFileChooseContent {
                     else -> 1
                 }
             } ?: emptyList()
+            setInfoFilter(infoFilter)
             onPathLoaded?.invoke(folderFile.path)
             notifyDataSetChanged()
         }
@@ -118,11 +128,11 @@ object DialogFileChooseContent {
         }
 
         override fun getItemCount(): Int {
-            return fileList.size
+            return filteredList.size
         }
 
         override fun onBindViewHolder(holder: FileViewHolder, position: Int) {
-            val item = fileList[position]
+            val item = filteredList[position]
             holder.textView.setTextColor(
                 if (highlight == FileUtil.pathJoin(basePath, item.name)) ColorConst.GREEN_600
                 else Color.BLACK
