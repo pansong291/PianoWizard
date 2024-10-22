@@ -70,4 +70,5 @@
     <string name="early_release">提前释放</string>
     <string name="tap_interval">点击间隔</string>
     <string name="playing_settings">演奏设置</string>
+    <string name="filter">过滤</string>
 </resources>
