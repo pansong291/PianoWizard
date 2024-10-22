@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Piano Wizard</string>
     <string name="accessibility_description">Simulate clicking the screen to realize automatically playing musical instruments.</string>
-    <string name="accessibility_title">Auto Piano Playing</string>
+    <string name="accessibility_title">Auto Piano Playing - Piano Wizard</string>
     <string name="btn_req_file_perm">File IO: %s</string>
     <string name="btn_req_win_perm">Floating win: %s</string>
     <string name="btn_req_accessibility_perm">Accessibility: %s</string>
