@@ -21,6 +21,7 @@ android {
         release {
             isMinifyEnabled = true
             resValue("string", "build_app_name", "@string/app_name")
+            resValue("string", "build_accessibility_title", "@string/accessibility_title")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -33,6 +34,7 @@ android {
             isMinifyEnabled = false
             // 这个函数只能添加资源，无法覆盖原有的同名资源
             resValue("string", "build_app_name", "PianoWizard Debug")
+            resValue("string", "build_accessibility_title", "PianoWizard Debug")
         }
     }
     compileOptions {

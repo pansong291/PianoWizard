@@ -35,7 +35,7 @@
             android:name=".services.ClickAccessibilityService"
             android:enabled="true"
             android:exported="true"
-            android:label="@string/accessibility_title"
+            android:label="@string/build_accessibility_title"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
