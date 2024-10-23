@@ -114,11 +114,11 @@ object MusicPlayer {
     }
 
     fun pause() {
-        controlChannel.trySend(true)
+        if (isPlaying()) controlChannel.trySend(true)
     }
 
     fun resume() {
-        controlChannel.trySend(false)
+        if (isPlaying()) controlChannel.trySend(false)
     }
 
     fun stop() {
