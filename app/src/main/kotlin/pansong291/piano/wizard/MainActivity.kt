@@ -146,6 +146,7 @@ class MainActivity : AppCompatActivity() {
         SkyStudioFileConvertor.onResult = {
             onSuccess()
             MessageDialog(this).apply {
+                setIcon(R.drawable.outline_feedback_32)
                 setTitle(R.string.convert_result)
                 setText(it)
                 show()

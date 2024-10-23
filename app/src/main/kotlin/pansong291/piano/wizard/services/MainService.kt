@@ -312,6 +312,7 @@ class MainService : Service() {
                             updateToneModulation(0)
                             btnPlayPause.setTextColor(Color.RED)
                             MessageDialog(application).apply {
+                                setIcon(R.drawable.outline_error_problem_32)
                                 setText(R.string.layout_unsupported_music_message)
                             }.show()
                         } finally {
