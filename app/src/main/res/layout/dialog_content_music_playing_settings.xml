@@ -6,7 +6,7 @@
     app:alignmentMode="alignMargins"
     app:columnCount="3"
     app:orientation="horizontal"
-    app:rowCount="7">
+    app:rowCount="13">
 
     <TextView
         android:layout_width="wrap_content"
@@ -147,4 +147,86 @@
         app:layout_column="2"
         app:layout_gravity="fill_horizontal"
         app:layout_row="6" />
+
+    <Space
+        android:layout_width="8dp"
+        android:layout_height="16dp"
+        app:layout_column="0"
+        app:layout_row="7" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/pre_play_delay"
+        app:layout_column="0"
+        app:layout_row="8" />
+
+    <com.xw.repo.BubbleSeekBar
+        android:id="@+id/bsb_pre_play_delay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:paddingHorizontal="4dp"
+        app:bsb_max="60"
+        app:bsb_min="0"
+        app:bsb_progress="0"
+        app:bsb_section_text_position="sides"
+        app:bsb_show_thumb_text="true"
+        app:bsb_touch_to_seek="true"
+        app:layout_column="2"
+        app:layout_gravity="fill_horizontal"
+        app:layout_row="8" />
+
+    <Space
+        android:layout_width="8dp"
+        android:layout_height="16dp"
+        app:layout_column="0"
+        app:layout_row="9" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/post_play_delay"
+        app:layout_column="0"
+        app:layout_row="10" />
+
+    <com.xw.repo.BubbleSeekBar
+        android:id="@+id/bsb_post_play_delay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:paddingHorizontal="4dp"
+        app:bsb_max="60"
+        app:bsb_min="0"
+        app:bsb_progress="0"
+        app:bsb_section_text_position="sides"
+        app:bsb_show_thumb_text="true"
+        app:bsb_touch_to_seek="true"
+        app:layout_column="2"
+        app:layout_gravity="fill_horizontal"
+        app:layout_row="10" />
+
+    <Space
+        android:layout_width="8dp"
+        android:layout_height="16dp"
+        app:layout_column="0"
+        app:layout_row="11" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/hide_window"
+        app:layout_column="0"
+        app:layout_row="12" />
+
+    <CheckBox
+        android:id="@+id/cb_hide_window"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="0dp"
+        android:minWidth="0dp"
+        android:text="@string/hide_window_when_playing"
+        app:layout_column="2"
+        app:layout_gravity="fill_horizontal"
+        app:layout_row="12" />
 </androidx.gridlayout.widget.GridLayout>

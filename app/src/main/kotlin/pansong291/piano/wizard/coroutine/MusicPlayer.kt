@@ -62,10 +62,12 @@ object MusicPlayer {
                 }
             }
         }
+        val preDelay = mps.prePlayDelay * 1000L + 200
+        val postDelay = mps.postPlayDelay * 1000L
 
         job = scope.launch {
             var isPaused = false
-            Thread.sleep(200)
+            Thread.sleep(preDelay)
             clickActions.forEach {
                 if (!isActive) return@forEach
                 if (!controlChannel.isEmpty) {
@@ -95,6 +97,7 @@ object MusicPlayer {
                 val rest = it.delay + time - System.currentTimeMillis()
                 if (rest > 0) Thread.sleep(rest)
             }
+            Thread.sleep(postDelay)
         }
         job?.invokeOnCompletion {
             job = null

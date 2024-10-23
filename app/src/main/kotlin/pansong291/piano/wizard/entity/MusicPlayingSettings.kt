@@ -22,6 +22,21 @@ class MusicPlayingSettings {
      * when: [TapMode.RepeatedlyTap]
      */
     var tapInterval: Int = 100
+
+    /**
+     * 演奏前摇
+     */
+    var prePlayDelay: Int = 0
+
+    /**
+     * 演奏后摇
+     */
+    var postPlayDelay: Int = 0
+
+    /**
+     * 隐藏窗口
+     */
+    var hideWindow: Boolean = false
 }
 
 enum class TapMode {
