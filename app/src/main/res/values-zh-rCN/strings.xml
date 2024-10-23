@@ -71,4 +71,8 @@
     <string name="tap_interval">点击间隔</string>
     <string name="playing_settings">演奏设置</string>
     <string name="filter">过滤</string>
+    <string name="pre_play_delay">演奏前摇</string>
+    <string name="post_play_delay">演奏后摇</string>
+    <string name="hide_window">隐藏窗口</string>
+    <string name="hide_window_when_playing">弹奏时隐藏悬浮窗</string>
 </resources>

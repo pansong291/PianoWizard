@@ -627,9 +627,10 @@ class MainService : Service() {
             btnToneMinus12.visibility = View.GONE
             btnTonePlus12.visibility = View.GONE
             btnPlayPause.setText(R.string.pause)
+            controllerWindow.windowVisibility =
+                if (musicPlayingSettings.hideWindow) View.GONE else View.VISIBLE
         } else {
-            if (vgControllerWrapper.visibility == View.VISIBLE)
-                btnControllerSwitch.visibility = View.VISIBLE
+            btnControllerSwitch.visibility = vgControllerWrapper.visibility
             btnStopMusic.visibility = View.GONE
             btnChooseMusic.visibility = View.VISIBLE
             btnOtherSettings.visibility = View.VISIBLE
@@ -639,6 +640,7 @@ class MainService : Service() {
             btnToneMinus12.visibility = View.VISIBLE
             btnTonePlus12.visibility = View.VISIBLE
             btnPlayPause.setText(R.string.start)
+            controllerWindow.windowVisibility = View.VISIBLE
         }
     }
 
