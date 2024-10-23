@@ -3,6 +3,7 @@ package pansong291.piano.wizard.coroutine
 import android.graphics.Point
 import android.os.Handler
 import android.os.Looper
+import android.util.SparseArray
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -41,21 +42,21 @@ object MusicPlayer {
             throw IllegalArgumentException("earlyRelease must be greater than 0")
         if (mps.tapMode == TapMode.RepeatedlyTap && mps.tapInterval <= 0)
             throw IllegalArgumentException("tapInterval must be greater than 0")
-        val keyMap = mutableMapOf<Int, Point>()
+        val pointMap = SparseArray<Point>()
         val baseTime = 60_000f / mn.bpm / mps.tempoRate
 
         // 构建十二平均律到按键点位的映射关系
         kl.points.forEachIndexed { index, point ->
             var note = index + kl.keyOffset
             if (!kl.semitone) note = MusicUtil.basicNoteTo12TET(note)
-            keyMap[note] = Point(
-                (point.x + kl.rawOffset.x).toInt(),
-                (point.y + kl.rawOffset.y).toInt()
+            pointMap.append(
+                note,
+                Point((point.x + kl.rawOffset.x).toInt(), (point.y + kl.rawOffset.y).toInt())
             )
         }
         val clickActions = mn.beats.map {
             ClickAction().apply {
-                points = it.tones.mapNotNull { keyMap[it + mn.keyNote + offset] }
+                points = it.tones.mapNotNull { pointMap[it + mn.keyNote + offset] }
                 delay = (it.durationRate * baseTime).toInt()
                 if (!ignoreMissingKey && points.size < it.tones.size) {
                     throw MissingKeyException()
@@ -76,21 +77,23 @@ object MusicPlayer {
                     Thread.sleep(200)
                 }
                 val time = System.currentTimeMillis()
-                val holdTime = when (mps.tapMode) {
-                    TapMode.TapAndHold -> maxOf(it.delay.toLong() - mps.earlyRelease, 1L)
-                    TapMode.RepeatedlyTap -> maxOf(it.delay.toLong(), 1L)
-                    else -> 1L
-                }
-                if (mps.tapMode == TapMode.RepeatedlyTap) {
-                    val interval = mps.tapInterval.toLong()
-                    var start = 0L
-                    while (start < holdTime) {
-                        if (start > 0) Thread.sleep(interval)
-                        ClickAccessibilityService.click(it.points, 1L)
-                        start += interval
+                if (it.points.isNotEmpty()) {
+                    val holdTime = when (mps.tapMode) {
+                        TapMode.TapAndHold -> maxOf(it.delay.toLong() - mps.earlyRelease, 1L)
+                        TapMode.RepeatedlyTap -> maxOf(it.delay.toLong(), 1L)
+                        else -> 1L
                     }
-                } else {
-                    ClickAccessibilityService.click(it.points, holdTime)
+                    if (mps.tapMode == TapMode.RepeatedlyTap) {
+                        val interval = mps.tapInterval.toLong()
+                        var start = 0L
+                        while (start < holdTime) {
+                            if (start > 0) Thread.sleep(interval)
+                            ClickAccessibilityService.click(it.points, 1L)
+                            start += interval
+                        }
+                    } else {
+                        ClickAccessibilityService.click(it.points, holdTime)
+                    }
                 }
                 val rest = it.delay + time - System.currentTimeMillis()
                 if (rest > 0) Thread.sleep(rest)
