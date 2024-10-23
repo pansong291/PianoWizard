@@ -8,6 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import pansong291.piano.wizard.entity.ClickAction
@@ -63,12 +64,10 @@ object MusicPlayer {
                 }
             }
         }
-        val preDelay = mps.prePlayDelay * 1000L + 200
-        val postDelay = mps.postPlayDelay * 1000L
 
         job = scope.launch {
             var isPaused = false
-            Thread.sleep(preDelay)
+            delay(mps.prePlayDelay * 1000 + 200L)
             clickActions.forEach {
                 if (!isActive) return@forEach
                 if (!controlChannel.isEmpty) {
@@ -76,7 +75,7 @@ object MusicPlayer {
                 }
                 while (isPaused) {
                     isPaused = controlChannel.receive()
-                    Thread.sleep(200)
+                    delay(200)
                 }
                 val time = System.currentTimeMillis()
                 if (it.points.isNotEmpty()) {
@@ -89,7 +88,7 @@ object MusicPlayer {
                         val interval = mps.tapInterval.toLong()
                         var start = 0L
                         while (start < holdTime) {
-                            if (start > 0) Thread.sleep(interval)
+                            if (start > 0) delay(interval)
                             ClickAccessibilityService.click(it.points, 1L)
                             start += interval
                         }
@@ -97,10 +96,9 @@ object MusicPlayer {
                         ClickAccessibilityService.click(it.points, holdTime)
                     }
                 }
-                val rest = it.delay + time - System.currentTimeMillis()
-                if (rest > 0) Thread.sleep(rest)
+                delay(it.delay + time - System.currentTimeMillis())
             }
-            Thread.sleep(postDelay)
+            delay(mps.postPlayDelay * 1000L)
         }
         job?.invokeOnCompletion {
             job = null
