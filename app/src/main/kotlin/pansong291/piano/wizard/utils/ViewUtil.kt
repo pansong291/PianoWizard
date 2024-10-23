@@ -1,15 +1,12 @@
 package pansong291.piano.wizard.utils
 
 import android.content.res.Resources
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.TypedValue
 import android.widget.EditText
 
 object ViewUtil {
-    private val handler = Handler(Looper.getMainLooper())
     private var runnable: Runnable? = null
 
     /**
@@ -54,10 +51,10 @@ object ViewUtil {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                runnable?.also { handler.removeCallbacks(it) }
+                runnable?.also { editText.removeCallbacks(it) }
                 Runnable { consumer(s) }.also {
                     runnable = it
-                    handler.postDelayed(it, interval)
+                    editText.postDelayed(it, interval)
                 }
             }
 

@@ -29,6 +29,11 @@ object DialogFilterInputActions {
             if (toFilter) {
                 input.visibility = View.VISIBLE
                 frame.visibility = View.GONE
+                input.post {
+                    input.requestFocus()
+                    (context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
+                        .showSoftInput(input, InputMethodManager.SHOW_IMPLICIT)
+                }
             } else {
                 input.visibility = View.GONE
                 frame.visibility = View.VISIBLE
