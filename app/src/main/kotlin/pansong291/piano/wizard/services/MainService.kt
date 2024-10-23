@@ -187,11 +187,6 @@ class MainService : Service() {
      */
     private var toneModulation = -1
 
-    /**
-     * 是否暂停
-     */
-    private var pause = false
-
     private val gson = GsonFactory.getSingletonGson()
 
     // 创建一个与 Service 生命周期绑定的 CoroutineScope
@@ -380,7 +375,8 @@ class MainService : Service() {
         btnPlayPause.setOnClickListener {
             withCurrentMusic {
                 if (MusicPlayer.isPlaying()) {
-                    updatePauseState(!pause)
+                    if (MusicPlayer.isPaused()) MusicPlayer.resume()
+                    else MusicPlayer.pause()
                 } else try {
                     MusicPlayer.startPlay(
                         serviceScope,
@@ -412,6 +408,15 @@ class MainService : Service() {
         }
         MusicPlayer.onStopped = {
             updatePlayingState(false)
+        }
+        MusicPlayer.onPaused = {
+            updatePauseState(true)
+        }
+        MusicPlayer.onResume = {
+            updatePauseState(false)
+        }
+        ClickAccessibilityService.onVolumeKeyDown = {
+            MusicPlayer.pause()
         }
     }
 
@@ -645,14 +650,13 @@ class MainService : Service() {
     }
 
     private fun updatePauseState(p: Boolean) {
-        if (pause == p) return
-        pause = p
         if (p) {
             btnPlayPause.setText(R.string.resume)
-            MusicPlayer.pause()
+            controllerWindow.windowVisibility = View.VISIBLE
         } else {
             btnPlayPause.setText(R.string.pause)
-            MusicPlayer.resume()
+            controllerWindow.windowVisibility =
+                if (musicPlayingSettings.hideWindow) View.GONE else View.VISIBLE
         }
     }
 
@@ -728,6 +732,10 @@ class MainService : Service() {
     }
 
     override fun onDestroy() {
+        ClickAccessibilityService.onVolumeKeyDown = null
+        MusicPlayer.onStopped = null
+        MusicPlayer.onResume = null
+        MusicPlayer.onPaused = null
         controllerWindow.recycle()
         layoutWindow.recycle()
         serviceScope.cancel()
