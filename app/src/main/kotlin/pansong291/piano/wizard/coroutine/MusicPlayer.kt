@@ -27,7 +27,10 @@ object MusicPlayer {
     // 使用 CONFLATED 模式，只保存最新状态，未处理的旧状态会被丢弃
     private val controlChannel = Channel<Boolean>(capacity = Channel.CONFLATED)
     private var job: Job? = null
+    private var isPaused: Boolean = false
     var onStopped: (() -> Unit)? = null
+    var onPaused: (() -> Unit)? = null
+    var onResume: (() -> Unit)? = null
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun startPlay(
@@ -38,6 +41,7 @@ object MusicPlayer {
         offset: Int,
         ignoreMissingKey: Boolean = false
     ) {
+        isPaused = false
         if (mps.tempoRate <= 0) throw IllegalArgumentException("tempoRate must be greater than 0")
         if (mps.tapMode == TapMode.TapAndHold && mps.earlyRelease <= 0)
             throw IllegalArgumentException("earlyRelease must be greater than 0")
@@ -66,15 +70,16 @@ object MusicPlayer {
         }
 
         job = scope.launch {
-            var isPaused = false
             delay(mps.prePlayDelay * 1000 + 200L)
             clickActions.forEach {
                 if (!isActive) return@forEach
                 if (!controlChannel.isEmpty) {
                     isPaused = controlChannel.receive()
+                    if (isPaused) onPaused?.let { handler.post(it) }
                 }
                 while (isPaused) {
                     isPaused = controlChannel.receive()
+                    if (!isPaused) onResume?.let { handler.post(it) }
                     delay(200)
                 }
                 val time = System.currentTimeMillis()
@@ -107,20 +112,25 @@ object MusicPlayer {
     }
 
     fun pause() {
-        controlChannel.trySend(true)
+        if (isPlaying()) controlChannel.trySend(true)
     }
 
     fun resume() {
-        controlChannel.trySend(false)
+        if (isPlaying()) controlChannel.trySend(false)
     }
 
     fun stop() {
         job?.cancel()
         job = null
+        isPaused = false
     }
 
     fun isPlaying(): Boolean {
         return job != null
+    }
+
+    fun isPaused(): Boolean {
+        return isPaused
     }
 
     fun playKeyNote(key: Int, kl: KeyLayout, offset: Int) {
