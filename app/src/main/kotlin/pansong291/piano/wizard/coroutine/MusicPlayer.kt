@@ -71,18 +71,14 @@ object MusicPlayer {
 
         job = scope.launch {
             while (!controlChannel.isEmpty) controlChannel.tryReceive()
-            delay(mps.prePlayDelay * 1000 + 200L)
+            for (i in 0 until mps.prePlayDelay * 2) {
+                delay(500L)
+                checkPauseSignal()
+            }
+            delay(200L)
             clickActions.forEach {
                 if (!isActive) return@forEach
-                if (!controlChannel.isEmpty) {
-                    isPaused = controlChannel.receive()
-                    if (isPaused) onPaused?.let { handler.post(it) }
-                }
-                while (isPaused) {
-                    isPaused = controlChannel.receive()
-                    if (!isPaused) onResume?.let { handler.post(it) }
-                    delay(200)
-                }
+                checkPauseSignal(200)
                 val time = System.currentTimeMillis()
                 if (it.points.isNotEmpty()) {
                     val holdTime = when (mps.tapMode) {
@@ -104,11 +100,27 @@ object MusicPlayer {
                 }
                 delay(it.delay + time - System.currentTimeMillis())
             }
-            delay(mps.postPlayDelay * 1000L)
+            for (i in 0 until mps.postPlayDelay * 2) {
+                delay(500L)
+                checkPauseSignal()
+            }
         }
         job?.invokeOnCompletion {
             job = null
             onStopped?.let { handler.post(it) }
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private suspend inline fun checkPauseSignal(delayWhenResume: Long = 0) {
+        if (!controlChannel.isEmpty) {
+            isPaused = controlChannel.receive()
+            if (isPaused) onPaused?.let { handler.post(it) }
+        }
+        while (isPaused) {
+            isPaused = controlChannel.receive()
+            if (!isPaused) onResume?.let { handler.post(it) }
+            delay(delayWhenResume)
         }
     }
 
