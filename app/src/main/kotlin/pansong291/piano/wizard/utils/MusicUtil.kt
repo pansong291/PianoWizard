@@ -17,9 +17,8 @@ object MusicUtil {
     private val spaceCharRegex = Regex("\\s+")
     private val musicSyntaxRegex =
         Regex("^\\[1=([A-G][#b]?),\\d+/\\d+,(\\d+)](\\d(?:[+-]\\d?(?:[#b]\\d?)?|[#b]\\d?(?:[+-]\\d?)?)?(?:&\\d(?:[+-]\\d?(?:[#b]\\d?)?|[#b]\\d?(?:[+-]\\d?)?)?)*(?:\\*\\d+)?(?:/\\d+)?(?:,\\d(?:[+-]\\d?(?:[#b]\\d?)?|[#b]\\d?(?:[+-]\\d?)?)?(?:&\\d(?:[+-]\\d?(?:[#b]\\d?)?|[#b]\\d?(?:[+-]\\d?)?)?)*(?:\\*\\d+)?(?:/\\d+)?)*),?$")
-    private val musicBeatRegex = Regex("^([^*/]+)((?:[*/]\\d*)*)\$")
-    private val startsWithNumberRegex = Regex("^\\d+")
-    private val anyFollowByNANRegex = Regex("\\D.*")
+    private val musicBeatRegex = Regex("^([^*/]+)((?:[*/]\\d+)*)\$")
+    private val startsWithNumberRegex = Regex("^(\\d+)?(.*)$")
 
     /**
      * 判断是否是半音（钢琴黑键）
@@ -120,11 +119,11 @@ object MusicUtil {
     private fun parseRate(str: String?, acc: Float): Float {
         if (str.isNullOrEmpty()) return acc
         // *21/5  乘除后面的数字是必有的
-        val rest = str.substring(1)
-        val n = startsWithNumberRegex.find(rest)?.value?.toIntOrNull()?.takeIf { it > 0 }
+        val rest = startsWithNumberRegex.find(str.substring(1))?.groupValues
+        val n = rest?.getOrNull(1)?.toIntOrNull()?.takeIf { it > 0 }
             ?: throw ServiceException(R.string.music_syntax_error_message)
         return parseRate(
-            anyFollowByNANRegex.find(rest)?.value,
+            rest.getOrNull(2),
             if (str[0] == '/') acc / n else acc * n
         )
     }
@@ -133,7 +132,7 @@ object MusicUtil {
      * 解析音符
      */
     private fun parseNote(str: String): Int? {
-        val note = str[0].minus('0')
+        val note = str[0] - '0'
         if (note < 0 || note > 7) throw ServiceException(R.string.unsupported_note_message, note)
         if (note == 0) return null
         // 这里减 1 使其变为从 0 开始，再转为十二平均律
@@ -148,15 +147,15 @@ object MusicUtil {
         // +2b  表示升 2 个八度，降半调
         // -#2  表示降一个八度，升 2 个半调
         // 数字省略则为 1
-        val rest = str.substring(1)
-        var n = startsWithNumberRegex.find(rest)?.value?.toIntOrNull() ?: 1
+        val rest = startsWithNumberRegex.find(str.substring(1))?.groupValues
+        var n = rest?.getOrNull(1)?.toIntOrNull() ?: 1
         // 都用十二平均律来表示，所以升降八度是以 12 作倍数
         when (str[0]) {
             '+' -> n *= 12
             '-' -> n *= -12
             'b' -> n = -n
         }
-        return parseAccidental(anyFollowByNANRegex.find(rest)?.value, acc + n)
+        return parseAccidental(rest?.getOrNull(2), acc + n)
     }
 
     /**
@@ -180,8 +179,7 @@ object MusicUtil {
             octaveShift > 0 -> "+$octaveShift"
             else -> octaveShift.toString()
         }
-        val result = "$note$octave"
-        return if (isSemi) "$result#" else result
+        return if (isSemi) "$note$octave#" else "$note$octave"
     }
 }
 
