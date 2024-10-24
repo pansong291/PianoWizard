@@ -74,4 +74,10 @@
     <string name="post_play_delay">Post-play\ndelay</string>
     <string name="hide_window">Hide window</string>
     <string name="hide_window_when_playing">Hide window when playing</string>
+    <string name="convert_midi_file">Convert midi file</string>
+    <string name="merge">Merge</string>
+    <string name="select_channel">Select channels</string>
+    <string name="require_channel_selected_message">No channel selected</string>
+    <string name="convert_success">Convert success</string>
+    <string name="select_midi_file">Select midi file</string>
 </resources>

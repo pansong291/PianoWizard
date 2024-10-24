@@ -46,15 +46,24 @@
 
     <Button
         android:id="@+id/btn_main_about"
+        style="@style/Widget.Material3.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/about" />
 
     <Button
         android:id="@+id/btn_main_convert_sky_studio"
+        style="@style/Widget.Material3.Button.TonalButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/convert_sky_studio_sheet" />
+
+    <Button
+        android:id="@+id/btn_main_convert_midi"
+        style="@style/Widget.Material3.Button.TonalButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/convert_midi_file" />
 
     <LinearLayout
         android:layout_width="match_parent"

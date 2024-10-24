@@ -109,7 +109,7 @@ object MusicUtil {
         if (values == null || values.size < 3) throw ServiceException(R.string.music_syntax_error_message)
         return Beat().apply {
             durationRate = parseRate(values[2], 1f)
-            tones = values[1].split('&').mapNotNull(::parseNote)
+            tones = values[1].split('&').mapNotNull(::parseNote).distinct()
         }
     }
 
@@ -180,6 +180,19 @@ object MusicUtil {
             else -> octaveShift.toString()
         }
         return if (isSemi) "$note$octave#" else "$note$octave"
+    }
+
+    fun appendBeat(strBuilder: StringBuilder, notes: CharSequence, duration: Long, baseTime: Long) {
+        var rateA = duration
+        var rateB = baseTime
+        val gcd = LangUtil.gcd(rateA, rateB)
+        rateA /= gcd
+        rateB /= gcd
+        if (rateA > 0) strBuilder.append(notes).apply {
+            if (rateA != 1L) append('*').append(rateA)
+            if (rateB != 1L) append('/').append(rateB)
+            append(',')
+        }
     }
 }
 

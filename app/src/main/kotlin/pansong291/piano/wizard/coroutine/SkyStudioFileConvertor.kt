@@ -32,8 +32,10 @@ object SkyStudioFileConvertor {
                 val messages = mutableListOf<String>()
                 if (file.isDirectory) {
                     file.listFiles(FileFilter {
-                        it.isFile && (it.name.endsWith(StringConst.SKY_STUDIO_SHEET_FILE_EXT) &&
-                                !it.name.endsWith(StringConst.MUSIC_NOTATION_FILE_EXT))
+                        it.isFile && it.name.endsWith(
+                            StringConst.SKY_STUDIO_SHEET_FILE_EXT,
+                            true
+                        ) && !it.name.endsWith(StringConst.MUSIC_NOTATION_FILE_EXT, true)
                     })?.forEach {
                         messages.add(convert(it))
                     }
@@ -73,13 +75,13 @@ object SkyStudioFileConvertor {
                 ?: throw ServiceException(R.string.target_must_gt_zero_message, "bpm")
             val pitchLevel = (sheet.pitchLevel?.toInt() ?: 0).takeIf { it >= 0 }
                 ?: throw ServiceException(R.string.target_must_gte_zero_message, "pitchLevel")
-            val baseTime = 60_000.0 / bpm
+            val baseTime = (60_000.0 / bpm).toLong()
             val songNotes = sheet.songNotes
             if (songNotes.isNullOrEmpty())
                 throw ServiceException(R.string.target_cannot_empty_message, "songNotes")
             val notesList = songNotes.groupByTo(LinkedHashMap()) {
                 // 按时间分组，相同时间的 key 构成和弦
-                (it.time ?: .0).takeIf { it >= 0 }
+                (it.time?.toLong() ?: 0).takeIf { it >= 0 }
                     ?: throw ServiceException(R.string.target_must_gte_zero_message, "time")
             }.mapTo(mutableListOf()) {
                 it.key to it.value.map {
@@ -102,23 +104,19 @@ object SkyStudioFileConvertor {
                 // FIXME 节拍待填入
                 append(",4/4,").append(bpm.toLong()).append("]\n")
             }
-            var last = .0 to "0"
+            var last = 0L to "0"
             for (i in 0..notesList.size) {
                 if (i == notesList.size) {
                     strBuilder.append(last.second).append(',')
                     break
                 }
                 val note = notesList[i]
-                var rateA = (note.first - last.first).toLong()
-                var rateB = baseTime.toLong()
-                val gcd = LangUtil.gcd(rateA, rateB)
-                rateA /= gcd
-                rateB /= gcd
-                if (rateA > 0) strBuilder.append(last.second).apply {
-                    if (rateA != 1L) append('*').append(rateA)
-                    if (rateB != 1L) append('/').append(rateB)
-                    append(',')
-                }
+                MusicUtil.appendBeat(
+                    strBuilder,
+                    last.second,
+                    note.first - last.first,
+                    baseTime
+                )
                 last = note.first to note.second.joinToString("&") {
                     MusicUtil.compileNote(MusicUtil.basicNoteTo12TET(it))
                 }

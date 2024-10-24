@@ -287,9 +287,10 @@ class MainService : Service() {
         btnChooseMusic.setOnClickListener {
             withCurrentLayout {
                 val mfcd = MusicFileChooseDialog(application)
-                mfcd.onFileChose = { path, filename ->
+                mfcd.setOnFileChose { path, filename ->
                     tryAlert {
-                        val index = filename.lastIndexOf(StringConst.MUSIC_NOTATION_FILE_EXT)
+                        val index =
+                            filename.lastIndexOf(StringConst.MUSIC_NOTATION_FILE_EXT, 0, true)
                         val file = File(path, filename)
                         // 解析乐谱并置为当前
                         updateCurrentMusic(
@@ -315,13 +316,11 @@ class MainService : Service() {
                         }
                     }
                 }
-                currentMusic?.also { mn ->
-                    mfcd.setHighlight(mn.filepath)
-                    mfcd.scrollTo = { path, info ->
-                        mn.filepath == FileUtil.pathJoin(path, info.name)
-                    }
-                }
+                mfcd.setHighlight(currentMusic?.filepath)
                 mfcd.show()
+                mfcd.scrollTo { path, info ->
+                    currentMusic?.filepath == FileUtil.pathJoin(path, info.name)
+                }
             }
         }
         // 其他设置

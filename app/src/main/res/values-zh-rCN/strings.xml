@@ -75,4 +75,10 @@
     <string name="post_play_delay">演奏后摇</string>
     <string name="hide_window">隐藏窗口</string>
     <string name="hide_window_when_playing">弹奏时隐藏悬浮窗</string>
+    <string name="convert_midi_file">转换 midi 文件</string>
+    <string name="merge">合并</string>
+    <string name="select_channel">选择通道</string>
+    <string name="require_channel_selected_message">未选择任何通道</string>
+    <string name="convert_success">转换成功</string>
+    <string name="select_midi_file">选择 midi 文件</string>
 </resources>

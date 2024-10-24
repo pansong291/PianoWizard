@@ -18,16 +18,20 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
+import com.hjq.toast.Toaster
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import pansong291.piano.wizard.consts.ColorConst
 import pansong291.piano.wizard.consts.StringConst
+import pansong291.piano.wizard.coroutine.MidiConvertor
 import pansong291.piano.wizard.coroutine.SkyStudioFileConvertor
 import pansong291.piano.wizard.dialog.ConfirmDialog
 import pansong291.piano.wizard.dialog.LoadingDialog
 import pansong291.piano.wizard.dialog.MessageDialog
+import pansong291.piano.wizard.dialog.MidiFileChooseDialog
+import pansong291.piano.wizard.dialog.SelectChannelListDialog
 import pansong291.piano.wizard.dialog.SkyStudioSheetChooseDialog
 import pansong291.piano.wizard.services.ClickAccessibilityService
 import pansong291.piano.wizard.services.MainService
@@ -39,6 +43,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnAccessibilityPerm: Button
     private lateinit var btnAbout: Button
     private lateinit var btnConvertSkyStudio: Button
+    private lateinit var btnConvertMidiFile: Button
     private lateinit var btnStart: Button
     private lateinit var btnStop: Button
 
@@ -54,6 +59,7 @@ class MainActivity : AppCompatActivity() {
         btnAccessibilityPerm = findViewById(R.id.btn_main_accessibility_perm)
         btnAbout = findViewById(R.id.btn_main_about)
         btnConvertSkyStudio = findViewById(R.id.btn_main_convert_sky_studio)
+        btnConvertMidiFile = findViewById(R.id.btn_main_convert_midi)
         btnStart = findViewById(R.id.btn_main_start)
         btnStop = findViewById(R.id.btn_main_stop)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -107,7 +113,7 @@ class MainActivity : AppCompatActivity() {
         }
         btnConvertSkyStudio.setOnClickListener {
             val ssscd = SkyStudioSheetChooseDialog(this)
-            ssscd.onFileChose = { path, file ->
+            ssscd.setOnFileChose { path, file ->
                 showLoadingAndConvertSkyStudioFile(File(path, file), ssscd::reload)
             }
             ssscd.onFolderChose = { path ->
@@ -120,6 +126,35 @@ class MainActivity : AppCompatActivity() {
                 cd.show()
             }
             ssscd.show()
+        }
+        btnConvertMidiFile.setOnClickListener {
+            val mfcd = MidiFileChooseDialog(this)
+            mfcd.setOnFileChose { path, file ->
+                MidiConvertor.onParseFinished = LoadingDialog(this).apply { show() }::destroy
+                MidiConvertor.onParseResult = { result, message ->
+                    if (result != null) {
+                        val scld = SelectChannelListDialog(this, result.keys.toList())
+                        scld.onConfirmed = { keys, merge ->
+                            if (keys.isEmpty()) Toaster.show(R.string.require_channel_selected_message)
+                            else {
+                                MidiConvertor.onConvertFinished =
+                                    LoadingDialog(this).apply { show() }::destroy
+                                MidiConvertor.onConvertResult = {
+                                    if (message != null)
+                                        MessageDialog.showErrorMessage(this, message)
+                                    else Toaster.show(R.string.convert_success)
+                                }
+                                MidiConvertor.convert(activityScope, result.filter {
+                                    keys.contains(it.key)
+                                }, file, path, merge)
+                            }
+                        }
+                        scld.show()
+                    } else if (message != null) MessageDialog.showErrorMessage(this, message)
+                }
+                MidiConvertor.parse(activityScope, File(path, file))
+            }
+            mfcd.show()
         }
         btnStart.setOnClickListener {
             startService(Intent(this, MainService::class.java))
@@ -140,9 +175,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showLoadingAndConvertSkyStudioFile(file: File, onSuccess: () -> Unit) {
-        val ld = LoadingDialog(this)
-        ld.show()
-        SkyStudioFileConvertor.onFinished = ld::destroy
+        SkyStudioFileConvertor.onFinished = LoadingDialog(this).apply { show() }::destroy
         SkyStudioFileConvertor.onResult = {
             onSuccess()
             MessageDialog(this).apply {

@@ -32,6 +32,11 @@ object StringConst {
     const val SP_DATA_KEY_SKY_STUDIO_SHEET_LAST_FOLDER = "sky_studio_sheet_last_folder"
 
     /**
+     * Midi 文件的上次选择目录
+     */
+    const val SP_DATA_KEY_MIDI_FILE_LAST_FOLDER = "midi_file_last_folder"
+
+    /**
      * 演奏设置
      */
     const val SP_DATA_KEY_MUSIC_PLAYING_SETTINGS = "music_playing_settings"
@@ -40,6 +45,11 @@ object StringConst {
      * SkyStudio 乐谱的文件后缀
      */
     const val SKY_STUDIO_SHEET_FILE_EXT = ".txt"
+
+    /**
+     * Midi 文件的后缀
+     */
+    const val MIDI_FILE_EXT = ".mid"
 
     const val ABOUT_QQ_GROUP_NUMBER = "906654380"
     const val ABOUT_REPOSITORY_LINK = "https://github.com/pansong291/PianoWizard"
