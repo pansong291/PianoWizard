@@ -70,6 +70,7 @@ object MusicPlayer {
         }
 
         job = scope.launch {
+            while (!controlChannel.isEmpty) controlChannel.tryReceive()
             delay(mps.prePlayDelay * 1000 + 200L)
             clickActions.forEach {
                 if (!isActive) return@forEach
