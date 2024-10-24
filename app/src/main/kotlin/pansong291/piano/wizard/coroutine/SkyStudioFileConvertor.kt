@@ -64,7 +64,7 @@ object SkyStudioFileConvertor {
 
     private fun convert(sheet: SkyStudioSheet, path: String): String {
         return tryResult {
-            var name = sheet.name ?: application.getString(R.string.unknow_music)
+            var name = sheet.name ?: application.getString(R.string.unknown_music)
             if (!sheet.author.isNullOrEmpty()) name += " - ${sheet.author}"
             if (!sheet.arrangedBy.isNullOrEmpty()) name += " + ${sheet.arrangedBy}"
             if (!sheet.transcribedBy.isNullOrEmpty()) name += " ~ ${sheet.transcribedBy}"
