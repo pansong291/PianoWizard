@@ -32,7 +32,8 @@ object SkyStudioFileConvertor {
                 val messages = mutableListOf<String>()
                 if (file.isDirectory) {
                     file.listFiles(FileFilter {
-                        it.isFile && it.name.endsWith(StringConst.SKY_STUDIO_SHEET_FILE_EXT)
+                        it.isFile && (it.name.endsWith(StringConst.SKY_STUDIO_SHEET_FILE_EXT) &&
+                                !it.name.endsWith(StringConst.MUSIC_NOTATION_FILE_EXT))
                     })?.forEach {
                         messages.add(convert(it))
                     }
