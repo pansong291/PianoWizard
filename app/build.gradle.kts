@@ -11,8 +11,8 @@ android {
         applicationId = "pansong291.piano.wizard"
         minSdk = 24
         targetSdk = 34
-        versionCode = 20241025
-        versionName = "1.5.1-beta"
+        versionCode = 20241026
+        versionName = "1.6.0-alpha"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
