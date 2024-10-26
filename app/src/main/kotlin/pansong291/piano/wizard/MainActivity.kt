@@ -133,7 +133,7 @@ class MainActivity : AppCompatActivity() {
                 MidiConvertor.onParseFinished = LoadingDialog(this).apply { show() }::destroy
                 MidiConvertor.onParseResult = { result, message ->
                     if (result != null) {
-                        val scld = SelectChannelListDialog(this, result.keys.toList())
+                        val scld = SelectChannelListDialog(this, result.keys.sorted())
                         scld.onConfirmed = { keys, merge ->
                             if (keys.isEmpty()) Toaster.show(R.string.require_channel_selected_message)
                             else {
