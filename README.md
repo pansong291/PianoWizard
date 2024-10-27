@@ -12,10 +12,15 @@
 
 <img src="https://github.com/pansong291/Pictures/raw/master/github/pansong291/piano/wizard/Screenshot_2024-09-29-19-56-36-501_com.netease.harrypotter.jpg" width="800" alt="哈利波特：魔法觉醒" />
 
-<img src="https://github.com/pansong291/Pictures/raw/master/github/pansong291/piano/wizard/Screenshot_20241020-190747.png" width="800" alt="演奏设置" />
+<img src="https://github.com/pansong291/Pictures/raw/master/github/pansong291/piano/wizard/Screenshot_2024-10-27-01-51-03-416_com.gamestar.perfectpiano.jpg" width="800" alt="完美钢琴" />
+
+<img src="https://github.com/pansong291/Pictures/raw/master/github/pansong291/piano/wizard/Screenshot_2024-10-25-09-57-10-740_pansong291.piano.wizard.jpg" width="400" alt="浏览乐谱" />
+
+<img src="https://github.com/pansong291/Pictures/raw/master/github/pansong291/piano/wizard/Screenshot_2024-10-25-09-54-53-927_pansong291.piano.wizard.jpg" width="400" alt="演奏设置" />
 
 ### Bilibili 视频演示
 
+* 完美钢琴 88 键 - Numb： https://www.bilibili.com/video/BV15j1MYPEtT
 * 心动小镇 37 键 - 星河万里： https://www.bilibili.com/video/BV1otxmeJERy
 * 元梦之星 21 键 - 穿越时空的思念： https://www.bilibili.com/video/BV1PRxieAEUf
 
@@ -47,13 +52,16 @@
 
 5. 支持倍速调整和三种不同的点击模式：点触、按住和连点。
 
+6. 支持转换 Midi 文件。
+
+7. 支持设置演奏前后摇，隐藏控制窗口。
+
 ### 其他
 
 目前游界琴魔只有基础的自动弹奏功能。后续会开发更多功能，目前已规划功能有：
 
-1. 支持转换 midi 音乐文件。
-2. 支持手动打谱（简谱）。
-3. 支持一个简单的在线乐谱搜索服务。
+1. 支持手动打谱（简谱）。
+2. 支持一个简单的在线乐谱搜索服务。
 
 ### 遇到的问题
 
