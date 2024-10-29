@@ -80,4 +80,7 @@
     <string name="require_channel_selected_message">No channel selected</string>
     <string name="convert_success">Convert success</string>
     <string name="select_midi_file">Select midi file</string>
+    <string name="demo_video">Demo video</string>
+    <string name="link_operation_demo_video">https://youtu.be/ETLv10iMvRE</string>
+    <string name="link_midi_demo_video">https://youtu.be/gurdiKIJNsI</string>
 </resources>

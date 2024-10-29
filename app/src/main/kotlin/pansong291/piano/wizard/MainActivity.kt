@@ -103,11 +103,10 @@ class MainActivity : AppCompatActivity() {
                     )
                 }
                 .setNegativeButton(R.string.about_goto_repository) { _, _ ->
-                    val intent = Intent(Intent.ACTION_VIEW)
-                    intent.setData(Uri.parse(StringConst.ABOUT_REPOSITORY_LINK))
-                    if (intent.resolveActivity(packageManager) != null) {
-                        startActivity(intent)
-                    }
+                    openUrl(StringConst.ABOUT_REPOSITORY_LINK)
+                }
+                .setNeutralButton(R.string.demo_video) { _, _ ->
+                    openUrl(getString(R.string.link_operation_demo_video))
                 }
                 .show()
         }
@@ -172,6 +171,14 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         activityScope.cancel()
         super.onDestroy()
+    }
+
+    private fun openUrl(url: String) {
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.setData(Uri.parse(url))
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivity(intent)
+        }
     }
 
     private fun showLoadingAndConvertSkyStudioFile(file: File, onSuccess: () -> Unit) {
