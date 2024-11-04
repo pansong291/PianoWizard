@@ -11,7 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
-import com.google.gson.reflect.TypeToken
 import com.hjq.gson.factory.GsonFactory
 import com.hjq.toast.Toaster
 import com.hjq.window.EasyWindow
@@ -22,6 +21,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import pansong291.piano.wizard.R
 import pansong291.piano.wizard.consts.StringConst
+import pansong291.piano.wizard.consts.TypeConst
 import pansong291.piano.wizard.coroutine.MusicPlayer
 import pansong291.piano.wizard.dialog.ConfirmDialog
 import pansong291.piano.wizard.dialog.KeyLayoutListDialog
@@ -199,7 +199,7 @@ class MainService : Service() {
         sharedPreferences = getSharedPreferences(StringConst.SHARED_PREFERENCES_NAME, MODE_PRIVATE)
         keyLayouts = gson.fromJson(
             sharedPreferences.getString(StringConst.SP_DATA_KEY_KEY_LAYOUTS, null),
-            object : TypeToken<List<KeyLayout>>() {}.type
+            TypeConst.listOfKeyLayout.type
         ) ?: emptyList()
         sharedPreferences.getString(StringConst.SP_DATA_KEY_MUSIC_PLAYING_SETTINGS, null)?.let {
             musicPlayingSettings = gson.fromJson(it, MusicPlayingSettings::class.java)

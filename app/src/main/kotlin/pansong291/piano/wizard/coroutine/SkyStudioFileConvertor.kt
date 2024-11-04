@@ -4,12 +4,12 @@ import android.app.Application
 import android.os.Environment
 import android.os.Handler
 import android.os.Looper
-import com.google.gson.reflect.TypeToken
 import com.hjq.gson.factory.GsonFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import pansong291.piano.wizard.R
 import pansong291.piano.wizard.consts.StringConst
+import pansong291.piano.wizard.consts.TypeConst
 import pansong291.piano.wizard.entity.SkyStudioSheet
 import pansong291.piano.wizard.exceptions.ServiceException
 import pansong291.piano.wizard.utils.FileUtil
@@ -57,7 +57,7 @@ object SkyStudioFileConvertor {
             } ?: Charsets.UTF_8)
             val sheets = GsonFactory.getSingletonGson().fromJson<List<SkyStudioSheet>>(
                 text,
-                object : TypeToken<List<SkyStudioSheet>>() {}.type
+                TypeConst.listOfSkyStudioSheet.type
             )
             sheets.joinToString("\n") {
                 "    " + convert(it, file.parent ?: Environment.getExternalStorageDirectory().path)
