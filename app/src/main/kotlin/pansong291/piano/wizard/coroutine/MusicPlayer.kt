@@ -70,38 +70,45 @@ object MusicPlayer {
         }
 
         job = scope.launch {
+            val blockedUnit = 500L
             while (!controlChannel.isEmpty) controlChannel.tryReceive()
             for (i in 0 until mps.prePlayDelay * 2) {
-                delay(500L)
+                delay(blockedUnit)
                 checkPauseSignal()
             }
-            delay(200L)
+            delay(200)
             clickActions.forEach {
                 if (!isActive) return@forEach
                 checkPauseSignal(200)
                 val time = System.currentTimeMillis()
                 if (it.points.isNotEmpty()) {
                     val holdTime = when (mps.tapMode) {
-                        TapMode.TapAndHold -> maxOf(it.delay.toLong() - mps.earlyRelease, 1L)
-                        TapMode.RepeatedlyTap -> maxOf(it.delay.toLong(), 1L)
-                        else -> 1L
-                    }
+                        TapMode.TapAndHold -> maxOf(it.delay - mps.earlyRelease, 1)
+                        TapMode.RepeatedlyTap -> maxOf(it.delay, 1)
+                        else -> 1
+                    }.toLong()
                     if (mps.tapMode == TapMode.RepeatedlyTap) {
                         val interval = mps.tapInterval.toLong()
                         var start = 0L
                         while (start < holdTime) {
                             if (start > 0) delay(interval)
-                            ClickAccessibilityService.click(it.points, 1L)
+                            ClickAccessibilityService.click(it.points, 1)
                             start += interval
                         }
                     } else {
                         ClickAccessibilityService.click(it.points, holdTime)
                     }
                 }
-                delay(it.delay + time - System.currentTimeMillis())
+                val rest = it.delay + time - System.currentTimeMillis()
+                val chunk = rest / blockedUnit
+                for (i in 0 until chunk) {
+                    delay(blockedUnit)
+                    checkPauseSignal()
+                }
+                delay(rest % blockedUnit)
             }
             for (i in 0 until mps.postPlayDelay * 2) {
-                delay(500L)
+                delay(blockedUnit)
                 checkPauseSignal()
             }
         }
