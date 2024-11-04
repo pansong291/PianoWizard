@@ -75,6 +75,11 @@ object SkyStudioFileConvertor {
                 ?: throw ServiceException(R.string.target_must_gt_zero_message, "bpm")
             val pitchLevel = (sheet.pitchLevel?.toInt() ?: 0).takeIf { it >= 0 }
                 ?: throw ServiceException(R.string.target_must_gte_zero_message, "pitchLevel")
+            val numerator = when (sheet.bitsPerPage?.toInt()) {
+                4 -> 1
+                12 -> 3
+                else -> 4
+            }
             val baseTime = (60_000.0 / bpm).toLong()
             val songNotes = sheet.songNotes
             if (songNotes.isNullOrEmpty())
@@ -101,8 +106,8 @@ object SkyStudioFileConvertor {
                 append("\n * transcribedBy: ").append(sheet.transcribedBy)
                 append("\n */\n[1=").append(baseNote)
                 if (isSemi) append('#')
-                // FIXME 节拍待填入
-                append(",4/4,").append(bpm.toLong()).append("]\n")
+                append(',').append(numerator).append("/4,")
+                append(bpm.toLong()).append("]\n")
             }
             var last = 0L to "0"
             for (i in 0..notesList.size) {
