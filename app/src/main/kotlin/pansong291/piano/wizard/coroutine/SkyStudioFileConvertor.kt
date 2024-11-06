@@ -17,7 +17,6 @@ import pansong291.piano.wizard.utils.LangUtil
 import pansong291.piano.wizard.utils.MusicUtil
 import java.io.File
 import java.io.FileFilter
-import java.nio.charset.Charset
 
 object SkyStudioFileConvertor {
     private val handler = Handler(Looper.getMainLooper())
@@ -52,9 +51,7 @@ object SkyStudioFileConvertor {
 
     private fun convert(file: File): String {
         return file.name + " ->\n" + tryResult {
-            val text = file.readText(FileUtil.detectFileEncoding(file)?.let {
-                Charset.forName(it)
-            } ?: Charsets.UTF_8)
+            val text = file.readText(FileUtil.detectFileEncoding(file))
             val sheets = GsonFactory.getSingletonGson().fromJson<List<SkyStudioSheet>>(
                 text,
                 TypeConst.listOfSkyStudioSheet.type

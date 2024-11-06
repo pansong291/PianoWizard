@@ -4,10 +4,11 @@ import android.os.Build
 import org.mozilla.universalchardet.UniversalDetector
 import java.io.File
 import java.io.FileInputStream
+import java.nio.charset.Charset
 import java.nio.file.Paths
 
 object FileUtil {
-    fun detectFileEncoding(file: File): String? {
+    fun detectFileEncoding(file: File): Charset {
         val buffer = ByteArray(4096)
         val detector = UniversalDetector(null)
         FileInputStream(file).use { fis ->
@@ -17,7 +18,7 @@ object FileUtil {
             }
             detector.dataEnd()
         }
-        return detector.detectedCharset
+        return detector.detectedCharset?.let { Charset.forName(it) } ?: Charset.defaultCharset()
     }
 
     fun findAvailableFileName(path: String, name: String, ext: String): String {

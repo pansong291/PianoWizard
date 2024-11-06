@@ -297,7 +297,7 @@ class MainService : Service() {
                             MusicUtil.parseMusicNotation(
                                 file.path,
                                 if (index > 0) filename.substring(0, index) else filename,
-                                file.readText()
+                                file.readText(FileUtil.detectFileEncoding(file))
                             )
                         )
                         // 尝试找到可完整演奏的最小变调值
