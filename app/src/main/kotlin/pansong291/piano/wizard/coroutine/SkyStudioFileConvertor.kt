@@ -55,7 +55,7 @@ object SkyStudioFileConvertor {
             val sheets = GsonFactory.getSingletonGson().fromJson<List<SkyStudioSheet>>(
                 text,
                 TypeConst.listOfSkyStudioSheet.type
-            )
+            ).filter { it.isEncrypted != true }
             sheets.joinToString("\n") {
                 "    " + convert(it, file.parent ?: Environment.getExternalStorageDirectory().path)
             }

@@ -12,6 +12,7 @@ package pansong291.piano.wizard.entity
  *     "bpm": 240,
  *     "bitsPerPage": 16,
  *     "pitchLevel": 0,
+ *     "isEncrypted": false,
  *     "songNotes": [
  *       { "time": 250, "key": "1Key0" },
  *       { "time": 500, "key": "1Key1" },
@@ -42,6 +43,7 @@ class SkyStudioSheet {
     var bpm: Double? = null
     var bitsPerPage: Double? = null
     var pitchLevel: Double? = null
+    var isEncrypted: Boolean? = null
     var songNotes: List<SongNote>? = null
 
     class SongNote {
