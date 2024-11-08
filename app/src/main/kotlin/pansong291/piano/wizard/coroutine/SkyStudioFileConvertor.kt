@@ -51,7 +51,7 @@ object SkyStudioFileConvertor {
 
     private fun convert(file: File): String {
         return file.name + " ->\n" + tryResult {
-            val text = file.readText(FileUtil.detectFileEncoding(file))
+            val text = FileUtil.readNoBOMText(file)
             val sheets = GsonFactory.getSingletonGson().fromJson<List<SkyStudioSheet>>(
                 text,
                 TypeConst.listOfSkyStudioSheet.type

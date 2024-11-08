@@ -8,6 +8,10 @@ import java.nio.charset.Charset
 import java.nio.file.Paths
 
 object FileUtil {
+    fun readNoBOMText(file: File): String {
+        return removeBOM(file.readText(detectFileEncoding(file)))
+    }
+
     fun detectFileEncoding(file: File): Charset {
         val buffer = ByteArray(4096)
         val detector = UniversalDetector(null)
@@ -19,6 +23,12 @@ object FileUtil {
             detector.dataEnd()
         }
         return detector.detectedCharset?.let { Charset.forName(it) } ?: Charset.defaultCharset()
+    }
+
+    fun removeBOM(text: String): String {
+        return text.removePrefix("\ufeff") // UTF_8, UTF_16 (LE/BE)
+            .removePrefix("\ufffe\u0000\u0000") // UTF_32LE
+            .removePrefix("\u0000\u0000\ufeff") // UTF_32BE
     }
 
     fun findAvailableFileName(path: String, name: String, ext: String): String {
