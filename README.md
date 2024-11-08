@@ -20,6 +20,7 @@
 
 ### Bilibili 视频演示
 
+* 布局教程: https://www.bilibili.com/video/BV18jDvY2E5p
 * 完美钢琴 88 键 - Numb： https://www.bilibili.com/video/BV15j1MYPEtT
 * 心动小镇 37 键 - 星河万里： https://www.bilibili.com/video/BV1otxmeJERy
 * 元梦之星 21 键 - 穿越时空的思念： https://www.bilibili.com/video/BV1PRxieAEUf

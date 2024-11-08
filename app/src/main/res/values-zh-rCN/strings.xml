@@ -82,6 +82,6 @@
     <string name="convert_success">转换成功</string>
     <string name="select_midi_file">选择 midi 文件</string>
     <string name="demo_video">演示视频</string>
-    <string name="link_operation_demo_video">https://www.bilibili.com/video/BV1otxmeJERy</string>
+    <string name="link_operation_demo_video">https://www.bilibili.com/video/BV18jDvY2E5p</string>
     <string name="link_midi_demo_video">https://www.bilibili.com/video/BV15j1MYPEtT</string>
 </resources>
