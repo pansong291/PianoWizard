@@ -8,6 +8,8 @@ import java.nio.charset.Charset
 import java.nio.file.Paths
 
 object FileUtil {
+    val regex_filename_sanitize = Regex("[/\\\\:*?\"<>|\\x00-\\x1F]")
+
     fun readNoBOMText(file: File): String {
         return removeBOM(file.readText(detectFileEncoding(file)))
     }
@@ -31,14 +33,19 @@ object FileUtil {
             .removePrefix("\u0000\u0000\ufeff") // UTF_32BE
     }
 
+    fun sanitizeFileName(name: String): String {
+        return name.replace(regex_filename_sanitize, "_")
+    }
+
     fun findAvailableFileName(path: String, name: String, ext: String): String {
+        val fixName = sanitizeFileName(name)
         var i = 0
-        var fname = name + ext
-        while (File(path, fname).exists()) {
+        var filename = fixName + ext
+        while (File(path, filename).exists()) {
             i++
-            fname = "$name ($i)$ext"
+            filename = "$fixName ($i)$ext"
         }
-        return fname
+        return filename
     }
 
     fun pathJoin(parent: String, child: String): String {
