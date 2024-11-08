@@ -51,6 +51,11 @@ object StringConst {
      */
     const val MIDI_FILE_EXT = ".mid"
 
+    /**
+     * 备份文件的后缀
+     */
+    const val BAK_FILE_EXT = ".bak"
+
     const val ABOUT_QQ_GROUP_NUMBER = "906654380"
     const val ABOUT_REPOSITORY_LINK = "https://github.com/pansong291/PianoWizard"
 }

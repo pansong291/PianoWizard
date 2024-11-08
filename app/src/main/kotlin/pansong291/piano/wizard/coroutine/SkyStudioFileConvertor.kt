@@ -1,7 +1,6 @@
 package pansong291.piano.wizard.coroutine
 
 import android.app.Application
-import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import com.hjq.gson.factory.GsonFactory
@@ -27,7 +26,7 @@ object SkyStudioFileConvertor {
     fun convert(application: Application, scope: CoroutineScope, file: File) {
         this.application = application
         scope.launch {
-            val result = tryResult {
+            val pair = tryResult {
                 val messages = mutableListOf<String>()
                 if (file.isDirectory) {
                     file.listFiles(FileFilter {
@@ -43,7 +42,7 @@ object SkyStudioFileConvertor {
                 }
                 messages.joinToString("\n\n")
             }
-            onResult?.also { handler.post { it(result) } }
+            onResult?.also { handler.post { it(pair.second) } }
         }.invokeOnCompletion {
             onFinished?.also { handler.post(it) }
         }
@@ -56,13 +55,26 @@ object SkyStudioFileConvertor {
                 text,
                 TypeConst.listOfSkyStudioSheet.type
             ).filter { it.isEncrypted != true }
-            sheets.joinToString("\n") {
-                "    " + convert(it, file.parent ?: Environment.getExternalStorageDirectory().path)
+            var success = true
+            val result = sheets.joinToString("\n") {
+                val pair =
+                    convert(it, file.parent!!)
+                if (!pair.first) success = false
+                "    " + pair.second
             }
-        }
+            if (success) {
+                val bakName = FileUtil.findAvailableFileName(
+                    file.parent!!,
+                    file.name,
+                    StringConst.BAK_FILE_EXT
+                )
+                file.renameTo(File(file.parent!!, bakName))
+            }
+            result
+        }.second
     }
 
-    private fun convert(sheet: SkyStudioSheet, path: String): String {
+    private fun convert(sheet: SkyStudioSheet, path: String): Pair<Boolean, String> {
         return tryResult {
             var name = sheet.name ?: application.getString(R.string.unknown_music)
             if (!sheet.author.isNullOrEmpty()) name += " - ${sheet.author}"
@@ -130,12 +142,12 @@ object SkyStudioFileConvertor {
         }
     }
 
-    private fun tryResult(block: () -> String): String {
+    private fun tryResult(block: () -> String): Pair<Boolean, String> {
         return try {
-            block()
+            true to block()
         } catch (e: Throwable) {
             val cause = e.cause ?: e
-            if (cause is ServiceException)
+            false to if (cause is ServiceException)
                 "${application.getString(R.string.error)}: ${cause.getI18NMessage(application)}"
             else "${cause.javaClass.simpleName}: ${cause.message}"
         }
