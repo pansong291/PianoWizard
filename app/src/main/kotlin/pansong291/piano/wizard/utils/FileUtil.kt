@@ -2,6 +2,7 @@ package pansong291.piano.wizard.utils
 
 import android.os.Build
 import org.mozilla.universalchardet.UniversalDetector
+import pansong291.piano.wizard.consts.StringConst
 import java.io.File
 import java.io.FileInputStream
 import java.nio.charset.Charset
@@ -46,6 +47,11 @@ object FileUtil {
             filename = "$fixName ($i)$ext"
         }
         return filename
+    }
+
+    fun renameToBakFile(file: File): Boolean {
+        val bakName = findAvailableFileName(file.parent!!, file.name, StringConst.BAK_FILE_EXT)
+        return file.renameTo(File(file.parent!!, bakName))
     }
 
     fun pathJoin(parent: String, child: String): String {

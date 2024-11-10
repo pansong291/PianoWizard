@@ -50,27 +50,26 @@ object SkyStudioFileConvertor {
 
     private fun convert(file: File): String {
         return file.name + " ->\n" + tryResult {
-            val text = FileUtil.readNoBOMText(file)
-            val sheets = GsonFactory.getSingletonGson().fromJson<List<SkyStudioSheet>>(
-                text,
-                TypeConst.listOfSkyStudioSheet.type
-            ).filter { it.isEncrypted != true }
-            var success = true
-            val result = sheets.joinToString("\n") {
-                val pair =
-                    convert(it, file.parent!!)
-                if (!pair.first) success = false
-                "    " + pair.second
-            }
-            if (success) {
-                val bakName = FileUtil.findAvailableFileName(
-                    file.parent!!,
-                    file.name,
-                    StringConst.BAK_FILE_EXT
-                )
-                file.renameTo(File(file.parent!!, bakName))
-            }
-            result
+            val text = FileUtil.readNoBOMText(file).trim()
+            "    " + if (text.startsWith('[') && text.endsWith(']')) {
+                val sheets = GsonFactory.getSingletonGson().fromJson<List<SkyStudioSheet>>(
+                    text,
+                    TypeConst.listOfSkyStudioSheet.type
+                ).filter { it.isEncrypted != true }
+                var success = true
+                val result = sheets.joinToString("\n") {
+                    val pair =
+                        convert(it, file.parent!!)
+                    if (!pair.first) success = false
+                    pair.second
+                }
+                if (success) FileUtil.renameToBakFile(file)
+                result
+            } else if (text.startsWith('<')) {
+                val pair = convert(text, file)
+                if (pair.first) FileUtil.renameToBakFile(file)
+                pair.second
+            } else throw Exception("Unsupported content")
         }.second
     }
 
@@ -140,6 +139,95 @@ object SkyStudioFileConvertor {
             File(path, filename).writeText(strBuilder.toString())
             filename
         }
+    }
+
+    private fun convert(text: String, file: File): Pair<Boolean, String> {
+        return tryResult {
+            val gtInd = text.indexOf('>')
+            if (gtInd < 0) throw Exception("symbol '>' not found")
+            val lfInd = text.indexOf('\n', gtInd)
+            if (lfInd < 0) throw Exception("line separator '\\n' not found")
+            val firstLine = text.substring(gtInd + 1, lfInd).trim()
+            val rest = text.substring(lfInd + 1).trim()
+            if (rest.isEmpty()) throw Exception("songNotes is empty")
+            val infoList = firstLine.split(' ').filterNot { it.isBlank() }
+            val keyList = rest.split(' ').filterNot { it.isBlank() }
+
+            val bpm = infoList.getOrNull(0)?.toDoubleOrNull()?.takeIf { it > 0 } ?: 120.0
+            val pitchLevel = (infoList.getOrNull(1)?.toInt() ?: 0).takeIf { it >= 0 } ?: 0
+            val numerator = when (infoList.getOrNull(2)?.toInt()) {
+                4 -> 1
+                12 -> 3
+                else -> 4
+            }
+            val author = infoList.getOrNull(3)
+            val transcribedBy = infoList.getOrNull(4)
+
+            var name = file.name.substringBeforeLast('.')
+
+            val isSemi = MusicUtil.isSemitone(pitchLevel)
+            val basePitch = MusicUtil.naturals.indexOf(if (isSemi) pitchLevel - 1 else pitchLevel)
+            val baseNote = if (basePitch < 5) 'C' + basePitch else 'A' + basePitch - 5
+            val strBuilder = StringBuilder().apply {
+                append("/**\n * name: ").append(name)
+                append("\n * author: ").append(author)
+                append("\n * arrangedBy: null")
+                append("\n * transcribedBy: ").append(transcribedBy)
+                append("\n */\n[1=").append(baseNote)
+                if (isSemi) append('#')
+                append(',').append(numerator).append("/4,")
+                append(bpm.toLong()).append("]\n")
+            }
+
+            var dotCount = 0
+            val notes = mutableListOf<Int>()
+            keyList.forEach { key ->
+                if (key == ".") {
+                    dotCount++
+                    return@forEach
+                }
+                appendNotes(notes, strBuilder, dotCount)
+                dotCount = 0
+                var note: Int? = null
+                key.forEach { ch ->
+                    note?.also {
+                        if (ch in '1'..'5') {
+                            notes.add(it * 5 + (ch - '1'))
+                            note = null
+                        } else throw unknownKeyException(key)
+                    } ?: run {
+                        note = if (ch in 'A'..'C') ch - 'A'
+                        else throw unknownKeyException(key)
+                    }
+                }
+                if (note != null) throw unknownKeyException(key)
+            }
+            appendNotes(notes, strBuilder, dotCount)
+            if (!author.isNullOrEmpty()) name += " - $author"
+            if (!transcribedBy.isNullOrEmpty()) name += " ~ $transcribedBy"
+            val filename = FileUtil.findAvailableFileName(
+                file.parent!!,
+                name,
+                StringConst.MUSIC_NOTATION_FILE_EXT
+            )
+            File(file.parent!!, filename).writeText(strBuilder.toString())
+            filename
+        }
+    }
+
+    private fun appendNotes(notes: MutableList<Int>, strBuilder: StringBuilder, dotCount: Int) {
+        if (notes.isNotEmpty()) {
+            strBuilder.append(notes.joinToString("&") {
+                MusicUtil.compileNote(MusicUtil.basicNoteTo12TET(it))
+            })
+            if (dotCount > 0) strBuilder.append('*').append(dotCount + 1)
+            strBuilder.append(',')
+            notes.clear()
+        }
+    }
+
+    private fun unknownKeyException(key: String): Exception {
+        return Exception("Unknown key: $key")
     }
 
     private fun tryResult(block: () -> String): Pair<Boolean, String> {
