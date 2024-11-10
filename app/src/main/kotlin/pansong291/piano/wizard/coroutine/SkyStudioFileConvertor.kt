@@ -79,10 +79,8 @@ object SkyStudioFileConvertor {
             val author = omitUnknownText(sheet.author)
             val arrangedBy = omitUnknownText(sheet.arrangedBy)
             val transcribedBy = omitUnknownText(sheet.transcribedBy)
-            val bpm = sheet.bpm?.takeIf { it > 0 }
-                ?: throw ServiceException(R.string.target_must_gt_zero_message, "bpm")
-            val pitchLevel = (sheet.pitchLevel?.toInt() ?: 0).takeIf { it >= 0 }
-                ?: throw ServiceException(R.string.target_must_gte_zero_message, "pitchLevel")
+            val bpm = sheet.bpm?.takeIf { it > 0 } ?: 120.0
+            val pitchLevel = (sheet.pitchLevel?.toInt() ?: 0).takeIf { it >= 0 } ?: 0
             val numerator = when (sheet.bitsPerPage?.toInt()) {
                 4 -> 1
                 12 -> 3
@@ -95,11 +93,15 @@ object SkyStudioFileConvertor {
             val notesList = songNotes.groupByTo(LinkedHashMap()) {
                 // 按时间分组，相同时间的 key 构成和弦
                 (it.time?.toLong() ?: 0).takeIf { it >= 0 }
-                    ?: throw ServiceException(R.string.target_must_gte_zero_message, "time")
+                    ?: throw ServiceException(
+                        R.string.target_must_gte_zero_message,
+                        "time",
+                        it.time.toString()
+                    )
             }.mapTo(mutableListOf()) {
                 it.key to it.value.map {
                     it.key?.split("Key")?.getOrNull(1)?.toIntOrNull()
-                        ?: throw ServiceException(R.string.target_format_incorrect_message, "key")
+                        ?: throw keyFormatException(it.key.toString())
                 }
             }
             // 排序
@@ -155,7 +157,8 @@ object SkyStudioFileConvertor {
             if (lfInd < 0) throw Exception("line separator '\\n' not found")
             val firstLine = text.substring(gtInd + 1, lfInd).trim()
             val rest = text.substring(lfInd + 1).trim()
-            if (rest.isEmpty()) throw Exception("songNotes is empty")
+            if (rest.isEmpty())
+                throw ServiceException(R.string.target_cannot_empty_message, "songNotes")
             val infoList = firstLine.split(' ').filterNot { it.isBlank() }
             val keyList = rest.split(' ').filterNot { it.isBlank() }
 
@@ -200,13 +203,13 @@ object SkyStudioFileConvertor {
                         if (ch in '1'..'5') {
                             notes.add(it * 5 + (ch - '1'))
                             note = null
-                        } else throw unknownKeyException(key)
+                        } else throw keyFormatException(key)
                     } ?: run {
                         note = if (ch in 'A'..'C') ch - 'A'
-                        else throw unknownKeyException(key)
+                        else throw keyFormatException(key)
                     }
                 }
-                if (note != null) throw unknownKeyException(key)
+                if (note != null) throw keyFormatException(key)
             }
             appendNotes(notes, strBuilder, dotCount)
             if (author.isNotEmpty()) name += " - $author"
@@ -232,8 +235,8 @@ object SkyStudioFileConvertor {
         }
     }
 
-    private fun unknownKeyException(key: String): Exception {
-        return Exception("Unknown key: $key")
+    private fun keyFormatException(key: String): Exception {
+        return ServiceException(R.string.target_format_incorrect_message, "key", key)
     }
 
     private fun omitUnknownText(text: String?): String {
