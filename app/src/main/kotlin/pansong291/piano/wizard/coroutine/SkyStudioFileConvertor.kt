@@ -59,7 +59,7 @@ object SkyStudioFileConvertor {
                 var success = true
                 val result = sheets.joinToString("\n") {
                     val pair =
-                        convert(it, file.parent!!)
+                        convert(it, file)
                     if (!pair.first) success = false
                     pair.second
                 }
@@ -73,12 +73,12 @@ object SkyStudioFileConvertor {
         }.second
     }
 
-    private fun convert(sheet: SkyStudioSheet, path: String): Pair<Boolean, String> {
+    private fun convert(sheet: SkyStudioSheet, file: File): Pair<Boolean, String> {
         return tryResult {
-            var name = sheet.name ?: application.getString(R.string.unknown_music)
-            if (!sheet.author.isNullOrEmpty()) name += " - ${sheet.author}"
-            if (!sheet.arrangedBy.isNullOrEmpty()) name += " + ${sheet.arrangedBy}"
-            if (!sheet.transcribedBy.isNullOrEmpty()) name += " ~ ${sheet.transcribedBy}"
+            var name = omitUnknownText(sheet.name).ifBlank { file.name.substringBeforeLast('.') }
+            val author = omitUnknownText(sheet.author)
+            val arrangedBy = omitUnknownText(sheet.arrangedBy)
+            val transcribedBy = omitUnknownText(sheet.transcribedBy)
             val bpm = sheet.bpm?.takeIf { it > 0 }
                 ?: throw ServiceException(R.string.target_must_gt_zero_message, "bpm")
             val pitchLevel = (sheet.pitchLevel?.toInt() ?: 0).takeIf { it >= 0 }
@@ -108,10 +108,10 @@ object SkyStudioFileConvertor {
             val basePitch = MusicUtil.naturals.indexOf(if (isSemi) pitchLevel - 1 else pitchLevel)
             val baseNote = if (basePitch < 5) 'C' + basePitch else 'A' + basePitch - 5
             val strBuilder = StringBuilder().apply {
-                append("/**\n * name: ").append(sheet.name)
-                append("\n * author: ").append(sheet.author)
-                append("\n * arrangedBy: ").append(sheet.arrangedBy)
-                append("\n * transcribedBy: ").append(sheet.transcribedBy)
+                append("/**\n * name: ").append(name)
+                append("\n * author: ").append(author)
+                append("\n * arrangedBy: ").append(arrangedBy)
+                append("\n * transcribedBy: ").append(transcribedBy)
                 append("\n */\n[1=").append(baseNote)
                 if (isSemi) append('#')
                 append(',').append(numerator).append("/4,")
@@ -134,9 +134,15 @@ object SkyStudioFileConvertor {
                     MusicUtil.compileNote(MusicUtil.basicNoteTo12TET(it))
                 }
             }
-            val filename =
-                FileUtil.findAvailableFileName(path, name, StringConst.MUSIC_NOTATION_FILE_EXT)
-            File(path, filename).writeText(strBuilder.toString())
+            if (author.isNotEmpty()) name += " - $author"
+            if (arrangedBy.isNotEmpty()) name += " + $arrangedBy"
+            if (transcribedBy.isNotEmpty()) name += " ~ $transcribedBy"
+            val filename = FileUtil.findAvailableFileName(
+                file.parent!!,
+                name,
+                StringConst.MUSIC_NOTATION_FILE_EXT
+            )
+            File(file.parent!!, filename).writeText(strBuilder.toString())
             filename
         }
     }
@@ -160,8 +166,8 @@ object SkyStudioFileConvertor {
                 12 -> 3
                 else -> 4
             }
-            val author = infoList.getOrNull(3)
-            val transcribedBy = infoList.getOrNull(4)
+            val author = omitUnknownText(infoList.getOrNull(3))
+            val transcribedBy = omitUnknownText(infoList.getOrNull(4))
 
             var name = file.name.substringBeforeLast('.')
 
@@ -171,7 +177,7 @@ object SkyStudioFileConvertor {
             val strBuilder = StringBuilder().apply {
                 append("/**\n * name: ").append(name)
                 append("\n * author: ").append(author)
-                append("\n * arrangedBy: null")
+                append("\n * arrangedBy: ")
                 append("\n * transcribedBy: ").append(transcribedBy)
                 append("\n */\n[1=").append(baseNote)
                 if (isSemi) append('#')
@@ -203,8 +209,8 @@ object SkyStudioFileConvertor {
                 if (note != null) throw unknownKeyException(key)
             }
             appendNotes(notes, strBuilder, dotCount)
-            if (!author.isNullOrEmpty()) name += " - $author"
-            if (!transcribedBy.isNullOrEmpty()) name += " ~ $transcribedBy"
+            if (author.isNotEmpty()) name += " - $author"
+            if (transcribedBy.isNotEmpty()) name += " ~ $transcribedBy"
             val filename = FileUtil.findAvailableFileName(
                 file.parent!!,
                 name,
@@ -228,6 +234,10 @@ object SkyStudioFileConvertor {
 
     private fun unknownKeyException(key: String): Exception {
         return Exception("Unknown key: $key")
+    }
+
+    private fun omitUnknownText(text: String?): String {
+        return text?.takeUnless { it == "Unknown" || it == "Untitle" }.orEmpty()
     }
 
     private fun tryResult(block: () -> String): Pair<Boolean, String> {

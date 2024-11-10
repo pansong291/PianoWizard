@@ -52,7 +52,6 @@
     <string name="convert_sky_studio_sheet">Convert SkyStudio sheet</string>
     <string name="select_sky_studio_sheet_file">Select SkyStudio sheet file</string>
     <string name="current_folder">The current folder</string>
-    <string name="unknown_music">Unknown music</string>
     <string name="target_must_gt_zero_message">The %s must be greater than 0</string>
     <string name="target_must_gte_zero_message">The %s must be greater than or equal to 0</string>
     <string name="target_cannot_empty_message">The %s cannot be empty</string>
