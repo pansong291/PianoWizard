@@ -133,7 +133,7 @@ object SkyStudioFileConvertor {
                     baseTime
                 )
                 last = note.first to note.second.joinToString("&") {
-                    MusicUtil.compileNote(MusicUtil.basicNoteTo12TET(it))
+                    MusicUtil.compileBasicNote(it)
                 }
             }
             if (author.isNotEmpty()) name += " - $author"
@@ -226,9 +226,7 @@ object SkyStudioFileConvertor {
 
     private fun appendNotes(notes: MutableList<Int>, strBuilder: StringBuilder, dotCount: Int) {
         if (notes.isNotEmpty()) {
-            strBuilder.append(notes.joinToString("&") {
-                MusicUtil.compileNote(MusicUtil.basicNoteTo12TET(it))
-            })
+            strBuilder.append(notes.joinToString("&") { MusicUtil.compileBasicNote(it) })
             if (dotCount > 0) strBuilder.append('*').append(dotCount + 1)
             strBuilder.append(',')
             notes.clear()

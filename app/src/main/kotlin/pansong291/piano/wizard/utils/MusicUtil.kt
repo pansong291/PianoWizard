@@ -161,7 +161,7 @@ object MusicUtil {
     /**
      * 将十二平均律编译为音符
      */
-    fun compileNote(tet12: Int): String {
+    fun compile12TETNote(tet12: Int): String {
         var octaveShift = tet12 / 12
         var tet12Rang = tet12 % 12
         if (tet12Rang < 0) {
@@ -180,6 +180,26 @@ object MusicUtil {
             else -> octaveShift.toString()
         }
         return if (isSemi) "$note$octave#" else "$note$octave"
+    }
+
+    /**
+     * 将基本音级编译为音符
+     */
+    fun compileBasicNote(basic: Int): String {
+        var octaveShift = basic / 7
+        var basicRange = basic % 7
+        if (basicRange < 0) {
+            basicRange += 7
+            octaveShift--
+        }
+        val octave = when {
+            octaveShift == 0 -> ""
+            octaveShift == 1 -> "+"
+            octaveShift == -1 -> "-"
+            octaveShift > 0 -> "+$octaveShift"
+            else -> octaveShift.toString()
+        }
+        return "${basicRange + 1}$octave"
     }
 
     fun appendBeat(strBuilder: StringBuilder, notes: CharSequence, duration: Long, baseTime: Long) {
@@ -246,10 +266,10 @@ fun main() {
     println("\nbasic -> 12TET -> note")
     for (i in -14..20) {
         val tet12 = MusicUtil.basicNoteTo12TET(i)
-        println("$i -> $tet12 -> ${MusicUtil.compileNote(tet12)}")
+        println("$i -> $tet12 -> ${MusicUtil.compile12TETNote(tet12)}")
     }
     println("\n12TET -> note")
     for (i in -24..35) {
-        println("$i -> ${MusicUtil.compileNote(i)}")
+        println("$i -> ${MusicUtil.compile12TETNote(i)}")
     }
 }
