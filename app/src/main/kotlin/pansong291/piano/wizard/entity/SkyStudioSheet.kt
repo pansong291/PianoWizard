@@ -43,7 +43,9 @@ class SkyStudioSheet {
     var bpm: Double? = null
     var bitsPerPage: Double? = null
     var pitchLevel: Double? = null
+    var isComposed: Boolean? = null
     var isEncrypted: Boolean? = null
+    var keyVersion: Double? = null
     var songNotes: List<SongNote>? = null
 
     class SongNote {

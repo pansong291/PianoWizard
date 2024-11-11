@@ -188,7 +188,7 @@ object MidiConvertor {
                 )
             }
             MusicUtil.appendBeat(strBuilder, it.joinToString("&") {
-                MusicUtil.compileNote(it.note - MIDI_BASE_NOTE)
+                MusicUtil.compile12TETNote(it.note - MIDI_BASE_NOTE)
             }, tickToMilliseconds(duration), baseTime)
             lastTick = tick + duration
         }
