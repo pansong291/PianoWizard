@@ -72,10 +72,7 @@ object MusicPlayer {
         job = scope.launch {
             val blockedUnit = 500L
             while (!controlChannel.isEmpty) controlChannel.tryReceive()
-            for (i in 0 until mps.prePlayDelay * 2) {
-                delay(blockedUnit)
-                checkPauseSignal()
-            }
+            pausableDelay(mps.prePlayDelay * 2, blockedUnit)
             delay(200)
             clickActions.forEach {
                 if (!isActive) return@forEach
@@ -101,16 +98,10 @@ object MusicPlayer {
                 }
                 val rest = it.delay + time - System.currentTimeMillis()
                 val chunk = rest / blockedUnit
-                for (i in 0 until chunk) {
-                    delay(blockedUnit)
-                    checkPauseSignal()
-                }
+                pausableDelay(chunk.toInt(), blockedUnit)
                 delay(rest % blockedUnit)
             }
-            for (i in 0 until mps.postPlayDelay * 2) {
-                delay(blockedUnit)
-                checkPauseSignal()
-            }
+            pausableDelay(mps.postPlayDelay * 2, blockedUnit)
         }
         job?.invokeOnCompletion {
             job = null
@@ -118,8 +109,15 @@ object MusicPlayer {
         }
     }
 
+    private suspend fun pausableDelay(count: Int, delayUnit: Long) {
+        for (i in 0 until count) {
+            delay(delayUnit)
+            checkPauseSignal()
+        }
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
-    private suspend inline fun checkPauseSignal(delayWhenResume: Long = 0) {
+    private suspend fun checkPauseSignal(delayWhenResume: Long = 0) {
         if (!controlChannel.isEmpty) {
             isPaused = controlChannel.receive()
             if (isPaused) onPaused?.let { handler.post(it) }
