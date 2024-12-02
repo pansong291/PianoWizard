@@ -26,11 +26,13 @@ import kotlinx.coroutines.cancel
 import pansong291.piano.wizard.consts.ColorConst
 import pansong291.piano.wizard.consts.StringConst
 import pansong291.piano.wizard.coroutine.MidiConvertor
+import pansong291.piano.wizard.coroutine.MusicSheetsExtractor
 import pansong291.piano.wizard.coroutine.SkyStudioFileConvertor
 import pansong291.piano.wizard.dialog.ConfirmDialog
 import pansong291.piano.wizard.dialog.LoadingDialog
 import pansong291.piano.wizard.dialog.MessageDialog
 import pansong291.piano.wizard.dialog.MidiFileChooseDialog
+import pansong291.piano.wizard.dialog.ProgressDialog
 import pansong291.piano.wizard.dialog.SelectChannelListDialog
 import pansong291.piano.wizard.dialog.SkyStudioSheetChooseDialog
 import pansong291.piano.wizard.services.ClickAccessibilityService
@@ -42,6 +44,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnWinPerm: Button
     private lateinit var btnAccessibilityPerm: Button
     private lateinit var btnAbout: Button
+    private lateinit var btnExtractMusic: Button
     private lateinit var btnConvertSkyStudio: Button
     private lateinit var btnConvertMidiFile: Button
     private lateinit var btnStart: Button
@@ -58,6 +61,7 @@ class MainActivity : AppCompatActivity() {
         btnWinPerm = findViewById(R.id.btn_main_win_perm)
         btnAccessibilityPerm = findViewById(R.id.btn_main_accessibility_perm)
         btnAbout = findViewById(R.id.btn_main_about)
+        btnExtractMusic = findViewById(R.id.btn_main_extract_music)
         btnConvertSkyStudio = findViewById(R.id.btn_main_convert_sky_studio)
         btnConvertMidiFile = findViewById(R.id.btn_main_convert_midi)
         btnStart = findViewById(R.id.btn_main_start)
@@ -109,6 +113,9 @@ class MainActivity : AppCompatActivity() {
                     openUrl(getString(R.string.link_operation_demo_video))
                 }
                 .show()
+        }
+        btnExtractMusic.setOnClickListener {
+            checkAndExtractAssets()
         }
         btnConvertSkyStudio.setOnClickListener {
             val ssscd = SkyStudioSheetChooseDialog(this)
@@ -251,5 +258,38 @@ class MainActivity : AppCompatActivity() {
             e.printStackTrace()
         }
         return false
+    }
+
+    private fun checkAndExtractAssets() {
+        if (!XXPermissions.isGranted(this, Permission.MANAGE_EXTERNAL_STORAGE)) {
+            MessageDialog(this).apply {
+                setIcon(R.drawable.outline_error_problem_32)
+                setTitle(R.string.error)
+                setText(R.string.require_file_perm_message)
+                show()
+            }
+            return
+        }
+
+        val pd = ProgressDialog(this).apply { show() }
+        MusicSheetsExtractor.onProgress = pd::updateProgress
+        MusicSheetsExtractor.onFinished = pd::destroy
+        MusicSheetsExtractor.onSuccess = {
+            MessageDialog(this).apply {
+                setIcon(R.drawable.outline_info_32)
+                setTitle(R.string.hint)
+                setText(R.string.extract_success)
+                show()
+            }
+        }
+        MusicSheetsExtractor.onError = {
+            MessageDialog(this).apply {
+                setIcon(R.drawable.outline_error_problem_32)
+                setTitle(R.string.error)
+                setText(it)
+                show()
+            }
+        }
+        MusicSheetsExtractor.startExtraction(this, activityScope)
     }
 }

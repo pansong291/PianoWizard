@@ -237,7 +237,7 @@ class MainService : Service() {
             sharedPreferences.getString(
                 StringConst.SP_DATA_KEY_DEFAULT_FOLDER,
                 null
-            )
+            ) ?: File(getExternalFilesDir(null), "yp").path
         )
     }
 

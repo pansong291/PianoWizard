@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Piano Wizard</string>
+    <string name="app_name">Piano Wizard Idiot</string>
     <string name="accessibility_description">Simulate clicking the screen to realize automatically playing musical instruments.</string>
     <string name="accessibility_title">Auto Piano Playing - Piano Wizard</string>
     <string name="btn_req_file_perm">File IO: %s</string>
@@ -81,6 +81,11 @@
     <string name="demo_video">Demo video</string>
     <string name="link_operation_demo_video">https://youtu.be/tU5OIt_g4E0</string>
     <string name="link_midi_demo_video">https://youtu.be/gurdiKIJNsI</string>
+    <string name="idiot_extract_music_sheet">Extract music sheet</string>
+    <string name="require_file_perm_message">File read and write permissions need to be granted.</string>
+    <string name="hint">Hint</string>
+    <string name="extract_success">Extract success</string>
+    <string name="goto_default_folder">Go to default</string>
     <string name="go_to">Go to</string>
     <string name="invalid_path_message">Invalid path</string>
     <string name="select_folder">Select folder</string>

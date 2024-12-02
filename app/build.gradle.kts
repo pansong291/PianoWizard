@@ -8,7 +8,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "pansong291.piano.wizard"
+        applicationId = "pansong291.piano.wizard.idiot"
         minSdk = 24
         targetSdk = 35
         versionCode = 20250501
