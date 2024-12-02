@@ -27,13 +27,12 @@
 
 ### 下载
 
-软件： https://wwid.lanzouw.com/b00wm08fmb
+https://url56.ctfile.com/d/62103256-63818110-e3e527?p=2624
 
-密码：`a7jt`
+密码: `2624`
 
-一部分琴谱： https://wwid.lanzouw.com/b00wm0bzwj
-
-密码：`1khr`
+* 懒人版首次启动会自动解压乐谱，无需手动解压。
+* 普通版需要自己解压乐谱。
 
 ### 功能特性
 
