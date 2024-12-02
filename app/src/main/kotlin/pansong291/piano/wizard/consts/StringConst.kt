@@ -49,6 +49,11 @@ object StringConst {
     const val SP_DATA_KEY_MUSIC_PLAYING_SETTINGS = "music_playing_settings"
 
     /**
+     * 打开过教程
+     */
+    const val SP_DATA_KEY_TUTORIAL_OPENED = "tutorial_opened"
+
+    /**
      * SkyStudio 乐谱的文件后缀
      */
     const val SKY_STUDIO_SHEET_FILE_EXT = ".txt"

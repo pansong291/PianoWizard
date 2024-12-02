@@ -237,7 +237,7 @@ class MainService : Service() {
             sharedPreferences.getString(
                 StringConst.SP_DATA_KEY_DEFAULT_FOLDER,
                 null
-            )
+            ) ?: File(getExternalFilesDir(null), "yp").path
         )
     }
 
@@ -458,6 +458,7 @@ class MainService : Service() {
             klld.onAction = onAction@{ index, actionId ->
                 // 保存
                 if (actionId == R.id.btn_save) {
+                    checkTwoOctaveKeys()
                     sharedPreferences.edit().putString(
                         StringConst.SP_DATA_KEY_KEY_LAYOUTS,
                         gson.toJson(keyLayouts)
@@ -798,5 +799,16 @@ class MainService : Service() {
         layoutWindow.recycle()
         serviceScope.cancel()
         super.onDestroy()
+    }
+
+    /** 当仅有两个八度时，自动增加一个点位 */
+    private fun checkTwoOctaveKeys() {
+        keyLayouts.forEach {
+            val period = if (it.semitone) 12 else 7
+            if (it.keyOffset % period == 0 && it.points.size == 2 * period) {
+                val p = it.points.last()
+                it.points += p
+            }
+        }
     }
 }

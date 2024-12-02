@@ -3,6 +3,7 @@ package pansong291.piano.wizard
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Bundle
@@ -29,11 +30,13 @@ import kotlinx.coroutines.cancel
 import pansong291.piano.wizard.consts.ColorConst
 import pansong291.piano.wizard.consts.StringConst
 import pansong291.piano.wizard.coroutine.MidiConvertor
+import pansong291.piano.wizard.coroutine.MusicSheetsExtractor
 import pansong291.piano.wizard.coroutine.SkyStudioFileConvertor
 import pansong291.piano.wizard.dialog.ConfirmDialog
 import pansong291.piano.wizard.dialog.LoadingDialog
 import pansong291.piano.wizard.dialog.MessageDialog
 import pansong291.piano.wizard.dialog.MidiFileChooseDialog
+import pansong291.piano.wizard.dialog.ProgressDialog
 import pansong291.piano.wizard.dialog.SelectChannelListDialog
 import pansong291.piano.wizard.dialog.SkyStudioSheetChooseDialog
 import pansong291.piano.wizard.services.ClickAccessibilityService
@@ -42,15 +45,19 @@ import java.io.File
 
 class MainActivity : AppCompatActivity() {
     private val handler = Handler(Looper.getMainLooper())
+    private lateinit var sharedPreferences: SharedPreferences
     private lateinit var btnFilePerm: Button
     private lateinit var btnWinPerm: Button
     private lateinit var btnAccessibilityPerm: Button
     private lateinit var btnAbout: Button
+    private lateinit var btnExtractMusic: Button
     private lateinit var btnConvertSkyStudio: Button
     private lateinit var btnConvertMidiFile: Button
     private lateinit var btnStart: Button
     private lateinit var btnStop: Button
     private var accessibilityEnabled = false
+    private var permFlag = 0
+    private var openTutorial = false
 
     // 创建一个与 Activity 生命周期绑定的 CoroutineScope
     private val activityScope = CoroutineScope(Dispatchers.IO + Job())
@@ -59,10 +66,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
+        sharedPreferences = getSharedPreferences(StringConst.SHARED_PREFERENCES_NAME, MODE_PRIVATE)
+        openTutorial = sharedPreferences.getBoolean(StringConst.SP_DATA_KEY_TUTORIAL_OPENED, false)
         btnFilePerm = findViewById(R.id.btn_main_file_perm)
         btnWinPerm = findViewById(R.id.btn_main_win_perm)
         btnAccessibilityPerm = findViewById(R.id.btn_main_accessibility_perm)
         btnAbout = findViewById(R.id.btn_main_about)
+        btnExtractMusic = findViewById(R.id.btn_main_extract_music)
         btnConvertSkyStudio = findViewById(R.id.btn_main_convert_sky_studio)
         btnConvertMidiFile = findViewById(R.id.btn_main_convert_midi)
         btnStart = findViewById(R.id.btn_main_start)
@@ -112,8 +122,14 @@ class MainActivity : AppCompatActivity() {
                 }
                 .setNeutralButton(R.string.demo_video) { _, _ ->
                     openUrl(getString(R.string.link_operation_demo_video))
+                    openTutorial = true
+                    sharedPreferences.edit()
+                        .putBoolean(StringConst.SP_DATA_KEY_TUTORIAL_OPENED, true).apply()
                 }
                 .show()
+        }
+        btnExtractMusic.setOnClickListener {
+            checkAndExtractAssets()
         }
         btnConvertSkyStudio.setOnClickListener {
             val ssscd = SkyStudioSheetChooseDialog(this, activityScope)
@@ -161,6 +177,33 @@ class MainActivity : AppCompatActivity() {
             mfcd.show()
         }
         btnStart.setOnClickListener {
+            if (permFlag != 7) {
+                MessageDialog(this).apply {
+                    setIcon(R.drawable.outline_error_problem_32)
+                    setTitle(R.string.error)
+                    setText(R.string.require_all_perm_message)
+                    show()
+                }
+                return@setOnClickListener
+            }
+            if (!File(getExternalFilesDir(null), "yp").isDirectory) {
+                MessageDialog(this).apply {
+                    setIcon(R.drawable.outline_error_problem_32)
+                    setTitle(R.string.error)
+                    setText(R.string.require_extract_sheet_message)
+                    show()
+                }
+                return@setOnClickListener
+            }
+            if (!openTutorial) {
+                MessageDialog(this).apply {
+                    setIcon(R.drawable.outline_info_32)
+                    setTitle(R.string.hint)
+                    setText(R.string.require_view_tutorial_message)
+                    show()
+                }
+                return@setOnClickListener
+            }
             startService(Intent(this, MainService::class.java))
         }
         btnStop.setOnClickListener {
@@ -229,17 +272,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updatePermState(flags: Int, success: Boolean? = null) {
+        permFlag = 0
         if (flags and 1 == 1) {
             val s = success ?: XXPermissions.isGranted(this, Permission.MANAGE_EXTERNAL_STORAGE)
             btnFilePerm.text = getString(R.string.btn_req_file_perm, getOnOffString(s))
             btnFilePerm.backgroundTintList =
                 ColorStateList.valueOf(if (s) ColorConst.GREEN_800 else ColorConst.RED_800)
+            if (s) permFlag += 1
         }
         if (flags and 2 == 2) {
             val s = success ?: XXPermissions.isGranted(this, Permission.SYSTEM_ALERT_WINDOW)
             btnWinPerm.text = getString(R.string.btn_req_win_perm, getOnOffString(s))
             btnWinPerm.backgroundTintList =
                 ColorStateList.valueOf(if (s) ColorConst.GREEN_800 else ColorConst.RED_800)
+            if (s) permFlag += 2
         }
         if (flags and 4 == 4) {
             val s = success ?: isAccessibilityEnabled()
@@ -247,6 +293,7 @@ class MainActivity : AppCompatActivity() {
                 getString(R.string.btn_req_accessibility_perm, getOnOffString(s))
             btnAccessibilityPerm.backgroundTintList =
                 ColorStateList.valueOf(if (s) ColorConst.GREEN_800 else ColorConst.RED_800)
+            if (s) permFlag += 4
         }
     }
 
@@ -297,5 +344,38 @@ class MainActivity : AppCompatActivity() {
 
     private fun isAccessibilityPerformSuccess(): Boolean {
         return ClickAccessibilityService.checkAccessibility(resources.getResourceName(R.id.btn_main_accessibility_perm))
+    }
+
+    private fun checkAndExtractAssets() {
+        if (permFlag % 2 == 0) {
+            MessageDialog(this).apply {
+                setIcon(R.drawable.outline_error_problem_32)
+                setTitle(R.string.error)
+                setText(R.string.require_file_perm_message)
+                show()
+            }
+            return
+        }
+
+        val pd = ProgressDialog(this).apply { show() }
+        MusicSheetsExtractor.onProgress = pd::updateProgress
+        MusicSheetsExtractor.onFinished = pd::destroy
+        MusicSheetsExtractor.onSuccess = {
+            MessageDialog(this).apply {
+                setIcon(R.drawable.outline_info_32)
+                setTitle(R.string.hint)
+                setText(R.string.extract_success)
+                show()
+            }
+        }
+        MusicSheetsExtractor.onError = {
+            MessageDialog(this).apply {
+                setIcon(R.drawable.outline_error_problem_32)
+                setTitle(R.string.error)
+                setText(it)
+                show()
+            }
+        }
+        MusicSheetsExtractor.startExtraction(this, activityScope)
     }
 }
