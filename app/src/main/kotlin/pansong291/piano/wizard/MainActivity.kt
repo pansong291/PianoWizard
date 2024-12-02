@@ -25,6 +25,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import pansong291.piano.wizard.consts.ColorConst
 import pansong291.piano.wizard.consts.StringConst
+import pansong291.piano.wizard.coroutine.AssetsExtractor
 import pansong291.piano.wizard.coroutine.MidiConvertor
 import pansong291.piano.wizard.coroutine.SkyStudioFileConvertor
 import pansong291.piano.wizard.dialog.ConfirmDialog
@@ -161,6 +162,7 @@ class MainActivity : AppCompatActivity() {
         btnStop.setOnClickListener {
             stopService(Intent(this, MainService::class.java))
         }
+        checkAndExtractAssets()
     }
 
     override fun onStart() {
@@ -251,5 +253,21 @@ class MainActivity : AppCompatActivity() {
             e.printStackTrace()
         }
         return false
+    }
+
+    private fun checkAndExtractAssets() {
+        val ypFolder = File(getExternalFilesDir(null), "yp")
+        if (ypFolder.exists() || !ypFolder.mkdirs()) return
+
+        AssetsExtractor.onFinished = LoadingDialog(this).apply { show() }::destroy
+        AssetsExtractor.onError = {
+            MessageDialog(this).apply {
+                setIcon(R.drawable.outline_error_problem_32)
+                setTitle(R.string.error)
+                setText(it)
+                show()
+            }
+        }
+        AssetsExtractor.startExtraction(this, activityScope)
     }
 }
