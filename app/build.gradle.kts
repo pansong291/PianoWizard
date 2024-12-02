@@ -8,11 +8,11 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "pansong291.piano.wizard"
+        applicationId = "pansong291.piano.wizard.idiot"
         minSdk = 24
         targetSdk = 35
-        versionCode = 20250309
-        versionName = "1.7.0-beta"
+        versionCode = 20250331
+        versionName = "1.7.0-beta.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

@@ -1,15 +1,18 @@
 package pansong291.piano.wizard.dialog
 
 import android.content.Context
-import android.view.View
 import pansong291.piano.wizard.R
 import pansong291.piano.wizard.consts.StringConst
+import java.io.File
 import java.io.FileFilter
 
 class MusicFileChooseDialog(context: Context) : FileChooseDialog(context) {
     init {
         initialize { ok ->
-            ok.visibility = View.GONE
+            ok.setText(R.string.goto_default_folder)
+            ok.setOnClickListener {
+                adapter.gotoFolder(File(context.getExternalFilesDir(null), "yp"))
+            }
         }
         setIcon(R.drawable.outline_music_file_32)
         setTitle(R.string.select_music)
