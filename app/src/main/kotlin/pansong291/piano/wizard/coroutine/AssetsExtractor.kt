@@ -18,17 +18,19 @@ object AssetsExtractor {
     var onFinished: (() -> Unit)? = null
 
     fun startExtraction(context: Context, scope: CoroutineScope) {
-        scope.launch {
-            val targetDir = context.getExternalFilesDir(null) ?: return@launch
-            copyAssetsFolder(context.assets, "", targetDir)
-            firstException?.run {
-                onError?.also {
-                    handler.post { it((this.cause ?: this).message ?: "Unknown Error") }
+        handler.postDelayed({
+            scope.launch {
+                val targetDir = context.getExternalFilesDir(null) ?: return@launch
+                copyAssetsFolder(context.assets, "", targetDir)
+                firstException?.run {
+                    onError?.also {
+                        handler.post { it((this.cause ?: this).message ?: "Unknown Error") }
+                    }
                 }
+            }.invokeOnCompletion {
+                onFinished?.also { handler.post(it) }
             }
-        }.invokeOnCompletion {
-            onFinished?.also { handler.post(it) }
-        }
+        }, 100)
     }
 
     private fun copyAssetsFolder(assets: AssetManager, folder: String, targetDir: File) {
