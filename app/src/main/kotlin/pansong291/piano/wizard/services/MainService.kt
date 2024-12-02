@@ -169,7 +169,11 @@ class MainService : Service() {
         keyLayouts = gson.fromJson(
             sharedPreferences.getString(StringConst.SP_DATA_KEY_KEY_LAYOUTS, null),
             TypeConst.listOfKeyLayout.type
-        ) ?: emptyList()
+        ) ?: listOf(KeyLayout().apply {
+            name = "点击下方加号按钮自行添加布局"
+        }, KeyLayout().apply {
+            name = "到 \"关于\" 按钮中查看视频教程"
+        })
         sharedPreferences.getString(StringConst.SP_DATA_KEY_MUSIC_PLAYING_SETTINGS, null)?.let {
             musicPlayingSettings = gson.fromJson(it, MusicPlayingSettings::class.java)
         }
@@ -229,7 +233,7 @@ class MainService : Service() {
         setupKeysLayoutController()
 
         // 初始化布局
-        sharedPreferences.getInt(StringConst.SP_DATA_KEY_LAST_LAYOUT, 0).takeIf {
+        sharedPreferences.getInt(StringConst.SP_DATA_KEY_LAST_LAYOUT, -1).takeIf {
             it >= 0 && it < keyLayouts.size
         }?.let { updateCurrentLayout(keyLayouts[it]) }
         // 初始化目录
