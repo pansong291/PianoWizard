@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">游界琴魔</string>
+    <string name="app_name">游界琴魔傻瓜版</string>
     <string name="accessibility_description">模拟点击屏幕以实现自动弹奏乐器。</string>
     <string name="accessibility_title">自动弹琴 - 游界琴魔</string>
     <string name="btn_req_file_perm">文件 IO：%s</string>

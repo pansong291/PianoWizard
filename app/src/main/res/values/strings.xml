@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Piano Wizard</string>
+    <string name="app_name">Piano Wizard Idiot</string>
     <string name="accessibility_description">Simulate clicking the screen to realize automatically playing musical instruments.</string>
     <string name="accessibility_title">Auto Piano Playing - Piano Wizard</string>
     <string name="btn_req_file_perm">File IO: %s</string>
