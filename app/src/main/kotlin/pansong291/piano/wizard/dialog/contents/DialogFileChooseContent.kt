@@ -63,6 +63,7 @@ object DialogFileChooseContent {
         var onPathLoaded: ((path: String) -> Unit)? = null
         var onPathChanged: ((path: String) -> Unit)? = null
         private var infoFilter: ((FileInfo) -> Boolean)? = null
+        private val dataFolder = context.getExternalFilesDir(null)?.parentFile
 
         fun reload() {
             loadFileList(null)
@@ -103,19 +104,25 @@ object DialogFileChooseContent {
         @SuppressLint("NotifyDataSetChanged")
         private fun loadFileList(folder: File?) {
             val folderFile = folder ?: File(basePath)
-            infoList = folderFile.listFiles(fileFilter)?.map {
+            val childFiles = folderFile.listFiles(fileFilter)?.toMutableList() ?: mutableListOf()
+            dataFolder?.run {
+                if (folderFile.path == this.parent && childFiles.indexOfFirst { it.name == this.name } < 0) {
+                    childFiles += this
+                }
+            }
+            infoList = childFiles.map {
                 FileInfo().apply {
                     icon = if (it.isDirectory) R.drawable.outline_folder_24
                     else R.drawable.outline_file_24
                     name = it.name
                 }
-            }?.sortedWith { p, q ->
+            }.sortedWith { p, q ->
                 when (p.icon) {
                     q.icon -> p.name.compareTo(q.name)
                     R.drawable.outline_folder_24 -> -1
                     else -> 1
                 }
-            } ?: emptyList()
+            }
             setInfoFilter(infoFilter)
             onPathLoaded?.invoke(folderFile.path)
             notifyDataSetChanged()
