@@ -267,8 +267,6 @@ class MainService : Service() {
         updateToneModulation(0)
         // 初始勾选显示序号
         cbDisplayNumber.isChecked = keysLayoutView.isShowNum()
-        // 展开、收起 长按
-        btnCollapse.setOnLongClickListener { true }
         // 展开、收起
         btnCollapse.setOnClickListener {
             updateCollapse(vgControllerWrapper.visibility == View.VISIBLE)
