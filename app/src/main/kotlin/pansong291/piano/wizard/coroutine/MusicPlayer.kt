@@ -163,7 +163,7 @@ object MusicPlayer {
                             (point.x + kl.rawOffset.x).toInt(),
                             (point.y + kl.rawOffset.y).toInt()
                         )
-                    ), 1
+                    ), 50
                 )
                 return
             }
