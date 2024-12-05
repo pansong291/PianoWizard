@@ -4,7 +4,6 @@ import android.os.Build
 import org.mozilla.universalchardet.UniversalDetector
 import pansong291.piano.wizard.consts.StringConst
 import java.io.File
-import java.io.FileInputStream
 import java.nio.charset.Charset
 import java.nio.file.Paths
 
@@ -18,12 +17,15 @@ object FileUtil {
     fun detectFileEncoding(file: File): Charset {
         val buffer = ByteArray(4096)
         val detector = UniversalDetector(null)
-        FileInputStream(file).use { fis ->
+        val fis = file.inputStream()
+        try {
             var bytesRead: Int
             while (fis.read(buffer).also { bytesRead = it } > 0 && !detector.isDone) {
                 detector.handleData(buffer, 0, bytesRead)
             }
             detector.dataEnd()
+        } finally {
+            fis.runCatching { close() }
         }
         return detector.detectedCharset?.let { Charset.forName(it) } ?: Charset.defaultCharset()
     }
