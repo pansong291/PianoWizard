@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">游界琴魔傻瓜版</string>
+    <string name="app_name">游界琴魔懒人版</string>
     <string name="accessibility_description">模拟点击屏幕以实现自动弹奏乐器。</string>
     <string name="accessibility_title">自动弹琴 - 游界琴魔</string>
     <string name="btn_req_file_perm">文件 IO：%s</string>
@@ -82,4 +82,6 @@
     <string name="demo_video">演示视频</string>
     <string name="link_operation_demo_video">https://www.bilibili.com/video/BV18jDvY2E5p</string>
     <string name="link_midi_demo_video">https://www.bilibili.com/video/BV15j1MYPEtT</string>
+    <string name="idiot_extract_music_sheet">解压乐谱</string>
+    <string name="require_file_perm_message">需要开启文件读写权限。</string>
 </resources>

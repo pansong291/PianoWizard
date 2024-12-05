@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnWinPerm: Button
     private lateinit var btnAccessibilityPerm: Button
     private lateinit var btnAbout: Button
+    private lateinit var btnExtractMusic: Button
     private lateinit var btnConvertSkyStudio: Button
     private lateinit var btnConvertMidiFile: Button
     private lateinit var btnStart: Button
@@ -59,6 +60,7 @@ class MainActivity : AppCompatActivity() {
         btnWinPerm = findViewById(R.id.btn_main_win_perm)
         btnAccessibilityPerm = findViewById(R.id.btn_main_accessibility_perm)
         btnAbout = findViewById(R.id.btn_main_about)
+        btnExtractMusic = findViewById(R.id.btn_main_extract_music)
         btnConvertSkyStudio = findViewById(R.id.btn_main_convert_sky_studio)
         btnConvertMidiFile = findViewById(R.id.btn_main_convert_midi)
         btnStart = findViewById(R.id.btn_main_start)
@@ -111,6 +113,9 @@ class MainActivity : AppCompatActivity() {
                 }
                 .show()
         }
+        btnExtractMusic.setOnClickListener {
+            checkAndExtractAssets()
+        }
         btnConvertSkyStudio.setOnClickListener {
             val ssscd = SkyStudioSheetChooseDialog(this)
             ssscd.setOnFileChose { path, file ->
@@ -162,7 +167,6 @@ class MainActivity : AppCompatActivity() {
         btnStop.setOnClickListener {
             stopService(Intent(this, MainService::class.java))
         }
-        checkAndExtractAssets()
     }
 
     override fun onStart() {
@@ -256,8 +260,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkAndExtractAssets() {
-        val ypFolder = File(getExternalFilesDir(null), "yp")
-        if (ypFolder.exists() || !ypFolder.mkdirs()) return
+        if (!XXPermissions.isGranted(this, Permission.MANAGE_EXTERNAL_STORAGE)) {
+            MessageDialog(this).apply {
+                setIcon(R.drawable.outline_error_problem_32)
+                setTitle(R.string.error)
+                setText(R.string.require_file_perm_message)
+                show()
+            }
+            return
+        }
 
         AssetsExtractor.onFinished = LoadingDialog(this).apply { show() }::destroy
         AssetsExtractor.onError = {
@@ -268,6 +279,6 @@ class MainActivity : AppCompatActivity() {
                 show()
             }
         }
-        AssetsExtractor.startExtraction(this, activityScope)
+        AssetsExtractor.startExtraction(this, activityScope, "yp")
     }
 }

@@ -5,7 +5,9 @@ import android.content.res.AssetManager
 import android.os.Handler
 import android.os.Looper
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -17,11 +19,15 @@ object AssetsExtractor {
     var onError: ((message: String) -> Unit)? = null
     var onFinished: (() -> Unit)? = null
 
-    fun startExtraction(context: Context, scope: CoroutineScope) {
+    fun startExtraction(context: Context, scope: CoroutineScope, folder: String) {
         handler.postDelayed({
             scope.launch {
-                val targetDir = context.getExternalFilesDir(null) ?: return@launch
-                copyAssetsFolder(context.assets, "", targetDir)
+                withContext(Dispatchers.IO) {
+                    val filesDir = context.getExternalFilesDir(null) ?: return@withContext
+                    val targetDir = if (folder.isEmpty()) filesDir else File(filesDir, folder)
+                    overrideAsFolder(targetDir)
+                    copyAssetsFolder(context.assets, folder, targetDir)
+                }
                 firstException?.run {
                     onError?.also {
                         handler.post { it((this.cause ?: this).message ?: "Unknown Error") }
@@ -35,18 +41,18 @@ object AssetsExtractor {
 
     private fun copyAssetsFolder(assets: AssetManager, folder: String, targetDir: File) {
         try {
-            val fileList = assets.list(folder) ?: return
-            for (fileName in fileList) {
-                val fullAssetPath = if (folder.isEmpty()) fileName else "$folder/$fileName"
+            assets.list(folder)?.forEach {
+                val fullAssetPath = if (folder.isEmpty()) it else "$folder/$it"
                 val isDirectory = isDirectoryInAssets(assets, fullAssetPath)
+                val subFile = File(targetDir, it)
                 if (isDirectory) {
-                    val subDir = File(targetDir, fileName)
-                    subDir.mkdirs()
-                    copyAssetsFolder(assets, fullAssetPath, subDir)
+                    overrideAsFolder(subFile)
+                    copyAssetsFolder(assets, fullAssetPath, subFile)
                 } else {
+                    subFile.deleteRecursively()
                     copyFile(
                         assets.open(fullAssetPath),
-                        FileOutputStream(File(targetDir, fileName))
+                        FileOutputStream(subFile)
                     )
                 }
             }
@@ -54,6 +60,12 @@ object AssetsExtractor {
             e.printStackTrace()
             if (firstException == null) firstException = e
         }
+    }
+
+    private fun overrideAsFolder(folder: File) {
+        if (folder.isDirectory) return
+        if (folder.exists()) folder.delete()
+        folder.mkdirs()
     }
 
     private fun isDirectoryInAssets(assets: AssetManager, path: String): Boolean {
@@ -66,7 +78,7 @@ object AssetsExtractor {
 
     private fun copyFile(inputStream: InputStream, outputStream: OutputStream) {
         try {
-            val buffer = ByteArray(1024)
+            val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
             var length: Int
             while (inputStream.read(buffer).also { length = it } > 0) {
                 outputStream.write(buffer, 0, length)
@@ -76,12 +88,8 @@ object AssetsExtractor {
             e.printStackTrace()
             if (firstException == null) firstException = e
         } finally {
-            try {
-                inputStream.close()
-                outputStream.close()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+            inputStream.runCatching { close() }
+            outputStream.runCatching { close() }
         }
     }
 }
