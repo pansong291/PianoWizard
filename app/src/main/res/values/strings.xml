@@ -81,4 +81,6 @@
     <string name="demo_video">Demo video</string>
     <string name="link_operation_demo_video">https://youtu.be/tU5OIt_g4E0</string>
     <string name="link_midi_demo_video">https://youtu.be/gurdiKIJNsI</string>
+    <string name="idiot_extract_music_sheet">Extract music sheet</string>
+    <string name="require_file_perm_message">File read and write permissions need to be granted.</string>
 </resources>
