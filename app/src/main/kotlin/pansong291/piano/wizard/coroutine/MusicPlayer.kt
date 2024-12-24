@@ -27,7 +27,18 @@ object MusicPlayer {
     // 使用 CONFLATED 模式，只保存最新状态，未处理的旧状态会被丢弃
     private val controlChannel = Channel<Boolean>(capacity = Channel.CONFLATED)
     private var job: Job? = null
-    private var isPaused: Boolean = false
+
+    /**
+     * 是否弹奏中 (无视暂停状态)
+     */
+    val isPlaying get() = job != null
+
+    /**
+     * 是否已暂停
+     */
+    var isPaused: Boolean = false
+        private set
+
     var onStopped: (() -> Unit)? = null
     var onPaused: (() -> Unit)? = null
     var onResume: (() -> Unit)? = null
@@ -130,25 +141,17 @@ object MusicPlayer {
     }
 
     fun pause() {
-        if (isPlaying()) controlChannel.trySend(true)
+        if (isPlaying) controlChannel.trySend(true)
     }
 
     fun resume() {
-        if (isPlaying()) controlChannel.trySend(false)
+        if (isPlaying) controlChannel.trySend(false)
     }
 
     fun stop() {
         job?.cancel()
         job = null
         isPaused = false
-    }
-
-    fun isPlaying(): Boolean {
-        return job != null
-    }
-
-    fun isPaused(): Boolean {
-        return isPaused
     }
 
     fun playKeyNote(key: Int, kl: KeyLayout, offset: Int) {

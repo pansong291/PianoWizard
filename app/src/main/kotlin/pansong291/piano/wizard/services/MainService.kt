@@ -372,8 +372,8 @@ class MainService : Service() {
         // 开始暂停
         btnPlayPause.setOnClickListener {
             withCurrentMusic {
-                if (MusicPlayer.isPlaying()) {
-                    if (MusicPlayer.isPaused()) MusicPlayer.resume()
+                if (MusicPlayer.isPlaying) {
+                    if (MusicPlayer.isPaused) MusicPlayer.resume()
                     else MusicPlayer.pause()
                 } else try {
                     MusicPlayer.startPlay(
@@ -383,7 +383,7 @@ class MainService : Service() {
                         musicPlayingSettings,
                         toneModulation
                     )
-                    updatePlayingState(MusicPlayer.isPlaying())
+                    updatePlayingState(MusicPlayer.isPlaying)
                 } catch (e: MissingKeyException) {
                     val cd = ConfirmDialog(application)
                     cd.setIcon(R.drawable.outline_error_problem_32)
@@ -398,7 +398,7 @@ class MainService : Service() {
                             toneModulation,
                             true
                         )
-                        updatePlayingState(MusicPlayer.isPlaying())
+                        updatePlayingState(MusicPlayer.isPlaying)
                     }
                     cd.show()
                 }
@@ -666,7 +666,7 @@ class MainService : Service() {
             btnCollapse.setText(R.string.expand)
         } else {
             vgControllerWrapper.visibility = View.VISIBLE
-            if (MusicPlayer.isPlaying()) {
+            if (MusicPlayer.isPlaying) {
                 btnControllerSwitch.visibility = View.GONE
                 btnStopMusic.visibility = View.VISIBLE
             } else {
@@ -715,11 +715,7 @@ class MainService : Service() {
         } catch (e: Throwable) {
             val msg = if (e is ServiceException) e.getI18NMessage(this)
             else e.cause?.message ?: e.message ?: getString(R.string.unknown_error)
-            MessageDialog(application).apply {
-                setIcon(R.drawable.outline_error_problem_32)
-                setTitle(R.string.error)
-                setText(msg)
-            }.show()
+            MessageDialog.showErrorMessage(application, msg)
         }
     }
 
