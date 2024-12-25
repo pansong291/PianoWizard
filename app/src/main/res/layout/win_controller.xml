@@ -114,13 +114,19 @@
             </LinearLayout>
 
             <Button
-                android:id="@+id/btn_play_pause"
+                android:id="@+id/btn_start_music"
                 style="@style/WindowButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/start" />
-
         </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_pause_music"
+            style="@style/WindowButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/pause" />
 
         <LinearLayout
             android:id="@+id/key_layout_controller_wrapper"

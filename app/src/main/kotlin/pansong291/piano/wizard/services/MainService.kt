@@ -78,14 +78,19 @@ class MainService : Service() {
     private lateinit var vgControllerWrapper: ViewGroup
 
     /**
-     * 布局控制器父容器
-     */
-    private lateinit var vgKeyLayoutControllerWrapper: ViewGroup
-
-    /**
      * 乐谱控制器父容器
      */
     private lateinit var vgMusicScoreControllerWrapper: ViewGroup
+
+    /**
+     * 暂停弹奏按钮
+     */
+    private lateinit var btnPauseMusic: Button
+
+    /**
+     * 布局控制器父容器
+     */
+    private lateinit var vgKeyLayoutControllerWrapper: ViewGroup
 
     /**
      * 选择布局按钮
@@ -158,9 +163,9 @@ class MainService : Service() {
     private lateinit var btnTonePlus12: Button
 
     /**
-     * 开始暂停按钮
+     * 开始弹奏按钮
      */
-    private lateinit var btnPlayPause: Button
+    private lateinit var btnStartMusic: Button
 
     /**
      * 全部布局
@@ -219,10 +224,11 @@ class MainService : Service() {
             btnControllerSwitch = contentView.findViewById(R.id.btn_controller_switch)
             btnStopMusic = contentView.findViewById(R.id.btn_stop_music)
             vgControllerWrapper = contentView.findViewById(R.id.controller_wrapper)
-            vgKeyLayoutControllerWrapper =
-                contentView.findViewById(R.id.key_layout_controller_wrapper)
             vgMusicScoreControllerWrapper =
                 contentView.findViewById(R.id.music_score_controller_wrapper)
+            btnPauseMusic = contentView.findViewById(R.id.btn_pause_music)
+            vgKeyLayoutControllerWrapper =
+                contentView.findViewById(R.id.key_layout_controller_wrapper)
             btnChooseLayout = contentView.findViewById(R.id.btn_choose_key_layout)
             btnResetIndicator = contentView.findViewById(R.id.btn_reset_indicator)
             cbDisplayNumber = contentView.findViewById(R.id.cb_display_number)
@@ -237,7 +243,7 @@ class MainService : Service() {
             btnTonePlus1 = contentView.findViewById(R.id.btn_tone_plus_1)
             btnToneMinus12 = contentView.findViewById(R.id.btn_tone_minus_12)
             btnTonePlus12 = contentView.findViewById(R.id.btn_tone_plus_12)
-            btnPlayPause = contentView.findViewById(R.id.btn_play_pause)
+            btnStartMusic = contentView.findViewById(R.id.btn_start_music)
         }
         layoutWindow = EasyWindow.with(application).apply {
             setAnimStyle(android.R.style.Animation_Dialog)
@@ -250,6 +256,13 @@ class MainService : Service() {
 
         setupBasicController()
         setupMusicScoreController()
+        // 暂停弹奏
+        btnPauseMusic.setOnClickListener {
+            if (MusicPlayer.isPlaying) {
+                if (MusicPlayer.isPaused) MusicPlayer.resume()
+                else MusicPlayer.pause()
+            }
+        }
         setupKeysLayoutController()
 
         // 初始化布局
@@ -263,6 +276,8 @@ class MainService : Service() {
         updateCollapse(false)
         // 初始切换到乐谱控制器
         updateSwitchMusic(true)
+        // 初始化为未弹奏状态
+        updatePlayingState(false)
         // 初始化变调为 0
         updateToneModulation(0)
         // 初始勾选显示序号
@@ -275,6 +290,7 @@ class MainService : Service() {
         btnControllerSwitch.setOnClickListener {
             updateSwitchMusic(vgKeyLayoutControllerWrapper.visibility == View.VISIBLE)
         }
+        // 停止弹奏
         btnStopMusic.setOnClickListener {
             MusicPlayer.stop()
         }
@@ -301,10 +317,10 @@ class MainService : Service() {
                         // 尝试找到可完整演奏的最小变调值
                         try {
                             updateToneModulation(MusicPlayer.findSuitableOffset(currentMusic!!, it))
-                            btnPlayPause.setTextColor(Color.WHITE)
+                            btnStartMusic.setTextColor(Color.WHITE)
                         } catch (e: MissingKeyException) {
                             updateToneModulation(0)
-                            btnPlayPause.setTextColor(Color.RED)
+                            btnStartMusic.setTextColor(Color.RED)
                             MessageDialog(application).apply {
                                 setIcon(R.drawable.outline_error_problem_32)
                                 setText(R.string.layout_unsupported_music_message)
@@ -369,13 +385,10 @@ class MainService : Service() {
                 playToneModulation()
             }
         }
-        // 开始暂停
-        btnPlayPause.setOnClickListener {
+        // 开始弹奏
+        btnStartMusic.setOnClickListener {
             withCurrentMusic {
-                if (MusicPlayer.isPlaying) {
-                    if (MusicPlayer.isPaused) MusicPlayer.resume()
-                    else MusicPlayer.pause()
-                } else try {
+                if (!MusicPlayer.isPlaying) try {
                     MusicPlayer.startPlay(
                         serviceScope,
                         it,
@@ -598,7 +611,7 @@ class MainService : Service() {
         }
     }
 
-    private fun withCurrentLayout(block: (c: KeyLayout) -> Unit) {
+    private inline fun withCurrentLayout(block: (c: KeyLayout) -> Unit) {
         currentLayout?.also(block) ?: Toaster.show(R.string.layout_empty_warn_message)
     }
 
@@ -622,37 +635,25 @@ class MainService : Service() {
         if (p) {
             btnControllerSwitch.visibility = View.GONE
             btnStopMusic.visibility = View.VISIBLE
-            btnChooseMusic.visibility = View.GONE
-            btnOtherSettings.visibility = View.GONE
-            btnModulation.visibility = View.GONE
-            btnToneMinus1.visibility = View.GONE
-            btnTonePlus1.visibility = View.GONE
-            btnToneMinus12.visibility = View.GONE
-            btnTonePlus12.visibility = View.GONE
-            btnPlayPause.setText(R.string.pause)
+            vgMusicScoreControllerWrapper.visibility = View.GONE
+            btnPauseMusic.visibility = View.VISIBLE
             controllerWindow.windowVisibility =
                 if (musicPlayingSettings.hideWindow) View.GONE else View.VISIBLE
         } else {
             btnControllerSwitch.visibility = vgControllerWrapper.visibility
             btnStopMusic.visibility = View.GONE
-            btnChooseMusic.visibility = View.VISIBLE
-            btnOtherSettings.visibility = View.VISIBLE
-            btnModulation.visibility = View.VISIBLE
-            btnToneMinus1.visibility = View.VISIBLE
-            btnTonePlus1.visibility = View.VISIBLE
-            btnToneMinus12.visibility = View.VISIBLE
-            btnTonePlus12.visibility = View.VISIBLE
-            btnPlayPause.setText(R.string.start)
+            vgMusicScoreControllerWrapper.visibility = View.VISIBLE
+            btnPauseMusic.visibility = View.GONE
             controllerWindow.windowVisibility = View.VISIBLE
         }
     }
 
     private fun updatePauseState(p: Boolean) {
         if (p) {
-            btnPlayPause.setText(R.string.resume)
+            btnPauseMusic.setText(R.string.resume)
             controllerWindow.windowVisibility = View.VISIBLE
         } else {
-            btnPlayPause.setText(R.string.pause)
+            btnPauseMusic.setText(R.string.pause)
             controllerWindow.windowVisibility =
                 if (musicPlayingSettings.hideWindow) View.GONE else View.VISIBLE
         }
@@ -697,7 +698,7 @@ class MainService : Service() {
         }
     }
 
-    private fun withCurrentMusic(block: (c: MusicNotation) -> Unit) {
+    private inline fun withCurrentMusic(block: (c: MusicNotation) -> Unit) {
         currentMusic?.also(block) ?: Toaster.show(R.string.music_empty_warn_message)
     }
 
@@ -709,7 +710,7 @@ class MainService : Service() {
         }
     }
 
-    private fun tryAlert(func: () -> Unit) {
+    private inline fun tryAlert(func: () -> Unit) {
         try {
             func()
         } catch (e: Throwable) {

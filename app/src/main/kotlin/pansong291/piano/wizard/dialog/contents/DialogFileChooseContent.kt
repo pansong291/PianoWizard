@@ -32,6 +32,11 @@ object DialogFileChooseContent {
         val backwardItem = content.findViewById<AppCompatTextView>(android.R.id.undo).apply {
             ellipsize = TextUtils.TruncateAt.START
             setOnClickListener { adapter.backwardFolder() }
+            setOnLongClickListener {
+                // TODO 支持路径跳转, 如果其不以内部存储路径开头, 则不关闭输入框并提示路径非法,
+                //  如果目标是文件, 则跳转至其父目录, 否则跳转至其内
+                false
+            }
         }
         adapter.onPathLoaded = {
             backwardItem.text = it
