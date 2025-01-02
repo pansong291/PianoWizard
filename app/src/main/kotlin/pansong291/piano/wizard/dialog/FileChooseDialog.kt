@@ -11,6 +11,7 @@ import pansong291.piano.wizard.dialog.actions.DialogFilterInputActions
 import pansong291.piano.wizard.dialog.base.BaseDialog
 import pansong291.piano.wizard.dialog.contents.DialogFileChooseContent
 import pansong291.piano.wizard.utils.ViewUtil
+import java.io.File
 import java.io.FileFilter
 
 @SuppressLint("NotifyDataSetChanged")
@@ -51,18 +52,11 @@ open class FileChooseDialog(context: Context) : BaseDialog(context) {
     }
 
     fun setHighlight(path: String?) {
-        adapter.highlight = path
+        adapter.highlight = path?.let { File(path) }
     }
 
     fun reload() {
         adapter.reload()
-    }
-
-    fun scrollTo(locate: (String, DialogFileChooseContent.FileInfo) -> Boolean) {
-        val position = adapter.findItemPosition { info ->
-            locate(adapter.basePath, info)
-        }
-        if (position >= 0) recyclerView.scrollToPosition(position)
     }
 
     override fun show() {

@@ -332,9 +332,6 @@ class MainService : Service() {
                 }
                 mfcd.setHighlight(currentMusic?.filepath)
                 mfcd.show()
-                mfcd.scrollTo { path, info ->
-                    currentMusic?.filepath == FileUtil.pathJoin(path, info.name)
-                }
             }
         }
         // 其他设置

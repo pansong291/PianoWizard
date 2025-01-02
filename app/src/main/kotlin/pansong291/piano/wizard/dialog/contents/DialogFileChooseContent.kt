@@ -15,7 +15,6 @@ import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
 import pansong291.piano.wizard.R
 import pansong291.piano.wizard.consts.ColorConst
 import pansong291.piano.wizard.dialog.base.IDialog
-import pansong291.piano.wizard.utils.FileUtil
 import java.io.File
 import java.io.FileFilter
 
@@ -38,14 +37,21 @@ object DialogFileChooseContent {
                 false
             }
         }
-        adapter.onPathLoaded = {
-            backwardItem.text = it
-        }
         val recyclerView = content.findViewById<FastScrollRecyclerView>(android.R.id.list)
         recyclerView.layoutManager = LinearLayoutManager(context).apply {
             orientation = LinearLayoutManager.VERTICAL
         }
         recyclerView.adapter = adapter
+        adapter.onPathLoaded = {
+            backwardItem.text = it
+            // 滚动到高亮条目使其在列表的可见范围内
+            if (adapter.highlight?.parent == adapter.basePath) {
+                val position = adapter.findItemPosition { info ->
+                    adapter.highlight?.name == info.name
+                }
+                if (position >= 0) recyclerView.scrollToPosition(position)
+            }
+        }
         return recyclerView to adapter
     }
 
@@ -61,7 +67,7 @@ object DialogFileChooseContent {
     ) : RecyclerView.Adapter<FileViewHolder>() {
         private lateinit var infoList: List<FileInfo>
         private lateinit var filteredList: List<FileInfo>
-        var highlight: String? = null
+        var highlight: File? = null
         var basePath: String = Environment.getExternalStorageDirectory().path
         var fileFilter: FileFilter = FileFilter { true }
         var onFileChose: ((path: String, file: String) -> Unit)? = null
@@ -84,17 +90,11 @@ object DialogFileChooseContent {
             val cur = File(basePath)
             if (Environment.getExternalStorageDirectory() == cur) return
             loadFileList(cur.parentFile)
-            cur.parent?.let {
-                basePath = it
-                onPathChanged?.invoke(it)
-            }
         }
 
         fun forwardFolder(folder: String) {
             val file = File(basePath, folder)
             loadFileList(file)
-            basePath = file.path
-            onPathChanged?.invoke(basePath)
         }
 
         fun findItemPosition(predicate: (FileInfo) -> Boolean): Int {
@@ -108,6 +108,10 @@ object DialogFileChooseContent {
         @SuppressLint("NotifyDataSetChanged")
         private fun loadFileList(folder: File?) {
             val folderFile = folder ?: File(basePath)
+            if (folderFile.path != basePath) {
+                basePath = folderFile.path
+                onPathChanged?.invoke(basePath)
+            }
             infoList = folderFile.listFiles(fileFilter)?.map {
                 FileInfo().apply {
                     icon = if (it.isDirectory) R.drawable.outline_folder_24
@@ -122,8 +126,8 @@ object DialogFileChooseContent {
                 }
             } ?: emptyList()
             setInfoFilter(infoFilter)
-            onPathLoaded?.invoke(folderFile.path)
             notifyDataSetChanged()
+            onPathLoaded?.invoke(folderFile.path)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FileViewHolder {
@@ -139,7 +143,7 @@ object DialogFileChooseContent {
         override fun onBindViewHolder(holder: FileViewHolder, position: Int) {
             val item = filteredList[position]
             holder.textView.setTextColor(
-                if (highlight == FileUtil.pathJoin(basePath, item.name)) ColorConst.GREEN_600
+                if (highlight?.parent == basePath && highlight?.name == item.name) ColorConst.GREEN_600
                 else Color.BLACK
             )
             holder.textView.text = item.name
