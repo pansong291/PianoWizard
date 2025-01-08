@@ -26,6 +26,9 @@
 * 完美钢琴 88 键 - Numb： https://www.bilibili.com/video/BV15j1MYPEtT
 * 心动小镇 37 键 - 星河万里： https://www.bilibili.com/video/BV1otxmeJERy
 * 元梦之星 21 键 - 穿越时空的思念： https://www.bilibili.com/video/BV1PRxieAEUf
+* 无限暖暖 14 键 - 向云端： https://www.bilibili.com/video/BV1Dg6WYREYi
+* 奥比岛 22 键 - 诀别书： https://www.bilibili.com/video/BV1Wn6HYgE1r
+* 会玩 21 键 - 暖暖： https://www.bilibili.com/video/BV12frXYBESo
 
 ### 下载
 

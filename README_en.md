@@ -25,8 +25,9 @@
 * Layout Tutorial: https://youtu.be/tU5OIt_g4E0
 * Perfect Piano 88 Keys - Numb: https://youtu.be/gurdiKIJNsI
 * Heartbeat Town 37 Keys - Stars in the Galaxy: https://youtu.be/ETLv10iMvRE
-* Yuanmeng Zhixing 21 Keys - Missing You Through Time and
-  Space: https://www.bilibili.com/video/BV1PRxieAEUf
+* Fun Party 21 Keys - Missing You Through Time and Space: https://youtu.be/qwCzs1ayqaA
+* Infinity Nikki 14 keys - Up to the Clouds: https://youtu.be/bwg7DywU3Dc
+* Obb Island: Dreamland 22 keys - Farewell Letter: https://youtu.be/YjBJ-2MXL8o
 
 ### Download
 
@@ -43,11 +44,11 @@ Password: `2624`
 1. Fully customizable key layouts, which theoretically apply to all games.
     * For example, in "Sky: Children of the Light", there are only 15 keys, with the lowest note
       being C and going up to C two octaves higher.
-    * The piano in "Yuanmeng Zhixing" has 21 keys, which are the natural notes of three octaves.
+   * The piano in "Fun Party" has 21 keys, which are the natural notes of three octaves.
     * The piano in "Harry Potter: Magic Awakened" has 36 keys and contains semitones, which is the
       equal temperament of three octaves.
     * Something special about "Justice Online" is that apart from the keyboards mentioned above,
-      some of its instruments are not even based on the C key, such as the flute and the xiao. There
+      some of its instruments are not even based on the C key, such as the flute and the Xiao. There
       may be a few more or fewer low notes. And this can be solved by setting the key offset, so
       PianoWizard is also applicable to "Justice Online".
 
@@ -76,9 +77,9 @@ developed in the future. The functions that have been planned so far are:
 
 ### Problems Encountered
 
-1. The guzheng in "Justice Online" is really laggy and often disrupts the rhythm of the music. That
+1. The Gu Zheng in "Justice Online" is really laggy and often disrupts the rhythm of the music. That
    is, sometimes there is a delay, causing it to combine with the next syllable.
-2. In "Yuanmeng Zhixing", the same key cannot be pressed continuously in a short period of time. You
+2. In "Fun Party", the same key cannot be pressed continuously in a short period of time. You
    can try it yourself. If you quickly press a key three times, it will only sound twice.
 3. So far, there haven't been any problems encountered in "Sky: Children of the Light", "Heartbeat
    Town", and "Harry Potter: Magic Awakened".
