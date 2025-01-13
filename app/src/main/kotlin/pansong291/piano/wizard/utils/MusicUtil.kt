@@ -16,7 +16,7 @@ object MusicUtil {
     private val lineCommentRegex = Regex("//[^\\n]*")
     private val spaceCharRegex = Regex("\\s+")
     private val musicSyntaxRegex =
-        Regex("^\\[1=([A-G][#b]?),\\d+/\\d+,(\\d+)](\\d(?:[+-]\\d?(?:[#b]\\d?)?|[#b]\\d?(?:[+-]\\d?)?)?(?:&\\d(?:[+-]\\d?(?:[#b]\\d?)?|[#b]\\d?(?:[+-]\\d?)?)?)*(?:\\*\\d+)?(?:/\\d+)?(?:,\\d(?:[+-]\\d?(?:[#b]\\d?)?|[#b]\\d?(?:[+-]\\d?)?)?(?:&\\d(?:[+-]\\d?(?:[#b]\\d?)?|[#b]\\d?(?:[+-]\\d?)?)?)*(?:\\*\\d+)?(?:/\\d+)?)*),?$")
+        Regex("^\\[1=([A-G][#b]?),\\d+/\\d+,(\\d+)](\\d(?:[-+#b]\\d*)*(?:&\\d(?:[-+#b]\\d*)*)*(?:[*/]\\d+)*(?:,\\d(?:[-+#b]\\d*)*(?:&\\d(?:[-+#b]\\d*)*)*(?:[*/]\\d+)*)*),?$")
     private val musicBeatRegex = Regex("^([^*/]+)((?:[*/]\\d+)*)\$")
     private val startsWithNumberRegex = Regex("^(\\d+)?(.*)$")
 
