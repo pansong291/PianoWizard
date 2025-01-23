@@ -145,7 +145,7 @@ object MidiConvertor {
         if (index > 0) name = filename.substring(0, index)
         val channels = mutableListOf<Int>()
         val combinedNotes = mutableListOf<MidiNote>()
-        channelNotes.forEach { channel, list ->
+        channelNotes.forEach { (channel, list) ->
             if (merge) {
                 channels.add(channel)
                 combinedNotes.addAll(list)
