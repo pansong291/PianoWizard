@@ -8,7 +8,7 @@ class MusicPlayingSettings(
     var playbackRate: Float = 1f,
 
     /** 点击模式 */
-    var tapMode: TapMode = TapMode.Tap,
+    var tapMode: TapMode = TapMode.TapAndHold,
 
     /**
      * 提前释放
