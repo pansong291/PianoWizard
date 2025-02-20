@@ -14,15 +14,25 @@ class ClickAccessibilityService : AccessibilityService() {
         private var aService: ClickAccessibilityService? = null
 
         fun click(points: List<Point>, duration: Long) {
-            if (points.isEmpty()) return
-            aService?.apply {
-                dispatchGesture(GestureDescription.Builder().apply {
-                    points.forEach {
-                        addStroke(GestureDescription.StrokeDescription(Path().apply {
-                            moveTo(it.x.toFloat(), it.y.toFloat())
-                        }, 0, duration))
-                    }
-                }.build(), null, null)
+            catching {
+                if (points.isEmpty()) return
+                aService?.apply {
+                    dispatchGesture(GestureDescription.Builder().apply {
+                        points.forEach {
+                            addStroke(GestureDescription.StrokeDescription(Path().apply {
+                                moveTo(it.x.toFloat(), it.y.toFloat())
+                            }, 0, duration))
+                        }
+                    }.build(), null, null)
+                }
+            }
+        }
+
+        private inline fun catching(block: () -> Unit) {
+            try {
+                block()
+            } catch (e: Throwable) {
+                e.printStackTrace()
             }
         }
     }
@@ -37,10 +47,12 @@ class ClickAccessibilityService : AccessibilityService() {
     override fun onInterrupt() {}
 
     override fun onKeyEvent(event: KeyEvent?): Boolean {
-        when (event?.keyCode) {
-            KeyEvent.KEYCODE_VOLUME_UP, KeyEvent.KEYCODE_VOLUME_DOWN -> {
-                if (event.action == KeyEvent.ACTION_DOWN) {
-                    onVolumeKeyDown?.invoke()
+        catching {
+            when (event?.keyCode) {
+                KeyEvent.KEYCODE_VOLUME_UP, KeyEvent.KEYCODE_VOLUME_DOWN -> {
+                    if (event.action == KeyEvent.ACTION_DOWN) {
+                        onVolumeKeyDown?.invoke()
+                    }
                 }
             }
         }
