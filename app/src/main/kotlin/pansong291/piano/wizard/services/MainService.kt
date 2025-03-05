@@ -251,7 +251,7 @@ class MainService : Service() {
             setOutsideTouchable(false)
             setWidth(ViewGroup.LayoutParams.MATCH_PARENT)
             setHeight(ViewGroup.LayoutParams.MATCH_PARENT)
-            windowVisibility = View.GONE
+            setWinVisible(this, View.GONE)
         }
 
         setupBasicController()
@@ -634,25 +634,29 @@ class MainService : Service() {
             btnStopMusic.visibility = View.VISIBLE
             vgMusicScoreControllerWrapper.visibility = View.GONE
             btnPauseMusic.visibility = View.VISIBLE
-            controllerWindow.windowVisibility =
+            setWinVisible(
+                controllerWindow,
                 if (musicPlayingSettings.hideWindow) View.GONE else View.VISIBLE
+            )
         } else {
             btnControllerSwitch.visibility = vgControllerWrapper.visibility
             btnStopMusic.visibility = View.GONE
             vgMusicScoreControllerWrapper.visibility = View.VISIBLE
             btnPauseMusic.visibility = View.GONE
-            controllerWindow.windowVisibility = View.VISIBLE
+            setWinVisible(controllerWindow, View.VISIBLE)
         }
     }
 
     private fun updatePauseState(p: Boolean) {
         if (p) {
             btnPauseMusic.setText(R.string.resume)
-            controllerWindow.windowVisibility = View.VISIBLE
+            setWinVisible(controllerWindow, View.VISIBLE)
         } else {
             btnPauseMusic.setText(R.string.pause)
-            controllerWindow.windowVisibility =
+            setWinVisible(
+                controllerWindow,
                 if (musicPlayingSettings.hideWindow) View.GONE else View.VISIBLE
+            )
         }
     }
 
@@ -679,12 +683,12 @@ class MainService : Service() {
         if (m) {
             vgKeyLayoutControllerWrapper.visibility = View.GONE
             vgMusicScoreControllerWrapper.visibility = View.VISIBLE
-            layoutWindow.windowVisibility = View.GONE
+            setWinVisible(layoutWindow, View.GONE)
             btnControllerSwitch.setText(R.string.key_layout)
         } else {
             vgKeyLayoutControllerWrapper.visibility = View.VISIBLE
             vgMusicScoreControllerWrapper.visibility = View.GONE
-            layoutWindow.windowVisibility = View.VISIBLE
+            setWinVisible(layoutWindow, View.VISIBLE)
             btnControllerSwitch.setText(R.string.music_score)
             keysLayoutView.post {
                 if (keysLayoutView.isIndicatorOutOfView()) {
@@ -705,6 +709,11 @@ class MainService : Service() {
         } catch (e: MissingKeyException) {
             if (showError) Toaster.show(R.string.key_note_absent_message)
         }
+    }
+
+    private fun setWinVisible(win: EasyWindow<*>, visibility: Int) {
+        win.windowVisibility = visibility
+        win.update()
     }
 
     private inline fun tryAlert(func: () -> Unit) {
