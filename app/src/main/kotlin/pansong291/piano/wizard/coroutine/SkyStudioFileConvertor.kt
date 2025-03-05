@@ -122,7 +122,8 @@ object SkyStudioFileConvertor {
             var last = 0L to "0"
             for (i in 0..notesList.size) {
                 if (i == notesList.size) {
-                    strBuilder.append(last.second).append(',')
+                    // 结尾节拍当作一个全音符
+                    strBuilder.append(last.second).append("*4,")
                     break
                 }
                 val note = notesList[i]
@@ -211,7 +212,8 @@ object SkyStudioFileConvertor {
                 }
                 if (note != null) throw keyFormatException(key)
             }
-            appendNotes(notes, strBuilder, dotCount)
+            // 结尾节拍至少一个全音符
+            appendNotes(notes, strBuilder, maxOf(dotCount, 3))
             if (author.isNotEmpty()) name += " - $author"
             if (transcribedBy.isNotEmpty()) name += " ~ $transcribedBy"
             val filename = FileUtil.findAvailableFileName(
