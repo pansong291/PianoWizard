@@ -12,6 +12,7 @@ import android.view.View
 import pansong291.piano.wizard.utils.MusicUtil
 import pansong291.piano.wizard.utils.ViewUtil.dp
 import pansong291.piano.wizard.utils.ViewUtil.sp
+import kotlin.math.absoluteValue
 
 @SuppressLint("ClickableViewAccessibility")
 class KeysLayoutView(context: Context) : View(context) {
@@ -48,10 +49,11 @@ class KeysLayoutView(context: Context) : View(context) {
     private val marker = Point(-1, -1)
     private val touchStart = PointF()
     private val markerStart = Point()
+    private val handleThickness = 24.dp()
+    private var activeMaker = ActiveMaker.NONE
     val rawOffset = PointF()
 
     init {
-        markerPaint.color = Color.RED
         markerPaint.style = Paint.Style.STROKE
         markerPaint.strokeWidth = 1.dp()
 
@@ -72,15 +74,32 @@ class KeysLayoutView(context: Context) : View(context) {
                     rawOffset.set(event.rawX - event.x, event.rawY - event.y)
                     touchStart.set(event.x, event.y)
                     markerStart.set(marker.x, marker.y)
+                    val offsetX = (markerStart.x - touchStart.x).absoluteValue
+                    val offsetY = (markerStart.y - touchStart.y).absoluteValue
+                    activeMaker = if (offsetX <= handleThickness && offsetY > handleThickness)
+                        ActiveMaker.VERTICAL
+                    else if (offsetY <= handleThickness && offsetX > handleThickness)
+                        ActiveMaker.HORIZONTAL
+                    else ActiveMaker.BOTH
+                    postInvalidate()
                 }
 
                 MotionEvent.ACTION_MOVE -> {
-                    setMarker(
-                        Point(
-                            (markerStart.x + event.x - touchStart.x).toInt(),
-                            (markerStart.y + event.y - touchStart.y).toInt()
-                        )
+                    val newPoint = Point(
+                        (event.x + markerStart.x - touchStart.x).toInt(),
+                        (event.y + markerStart.y - touchStart.y).toInt()
                     )
+                    when (activeMaker) {
+                        ActiveMaker.VERTICAL -> newPoint.y = markerStart.y
+                        ActiveMaker.HORIZONTAL -> newPoint.x = markerStart.x
+                        else -> {}
+                    }
+                    setMarker(newPoint)
+                }
+
+                MotionEvent.ACTION_UP -> {
+                    activeMaker = ActiveMaker.NONE
+                    postInvalidate()
                 }
             }
             true
@@ -97,7 +116,7 @@ class KeysLayoutView(context: Context) : View(context) {
             val pfx = p.x.toFloat()
             val pfy = p.y.toFloat()
             val note = i + pointOffset
-            toggleColor(note)
+            toggleNotePointColor(note)
             if (showNum) {
                 canvas.drawCircle(pfx, pfy, largeRadius, fillPaint)
                 canvas.drawText(note.toString(), pfx, pfy - textCenterY, textPaint)
@@ -107,25 +126,37 @@ class KeysLayoutView(context: Context) : View(context) {
             }
         }
         // 绘制定位线
-        canvas.drawLine(0f, fy, width.toFloat(), fy, markerPaint)
-        canvas.drawLine(fx, 0f, fx, height.toFloat(), markerPaint)
+        markerPaint.color = if (activeMaker == ActiveMaker.BOTH) Color.YELLOW else Color.RED
+        when (activeMaker) {
+            ActiveMaker.VERTICAL -> {
+                canvas.drawLine(0f, fy, width.toFloat(), fy, markerPaint)
+                markerPaint.color = Color.YELLOW
+                canvas.drawLine(fx, 0f, fx, height.toFloat(), markerPaint)
+            }
+
+            ActiveMaker.HORIZONTAL -> {
+                canvas.drawLine(fx, 0f, fx, height.toFloat(), markerPaint)
+                markerPaint.color = Color.YELLOW
+                canvas.drawLine(0f, fy, width.toFloat(), fy, markerPaint)
+            }
+
+            else -> {
+                canvas.drawLine(0f, fy, width.toFloat(), fy, markerPaint)
+                canvas.drawLine(fx, 0f, fx, height.toFloat(), markerPaint)
+            }
+        }
     }
 
-    private fun toggleColor(i: Int) {
-        if (semitone && MusicUtil.isSemitone(i)) useSemitoneColor()
-        else useNaturalColor()
-    }
-
-    private fun useNaturalColor() {
-        textPaint.color = Color.BLACK
-        fillPaint.color = Color.WHITE
-        strokePaint.color = Color.BLACK
-    }
-
-    private fun useSemitoneColor() {
-        textPaint.color = Color.WHITE
-        fillPaint.color = Color.BLACK
-        strokePaint.color = Color.WHITE
+    private fun toggleNotePointColor(i: Int) {
+        if (semitone && MusicUtil.isSemitone(i)) {
+            textPaint.color = Color.WHITE
+            fillPaint.color = Color.BLACK
+            strokePaint.color = Color.WHITE
+        } else {
+            textPaint.color = Color.BLACK
+            fillPaint.color = Color.WHITE
+            strokePaint.color = Color.BLACK
+        }
     }
 
     fun isMarkerOutOfView(): Boolean {
@@ -142,5 +173,9 @@ class KeysLayoutView(context: Context) : View(context) {
     fun setMarker(p: Point) {
         marker.set(p.x, p.y)
         postInvalidate()
+    }
+
+    private enum class ActiveMaker {
+        NONE, BOTH, VERTICAL, HORIZONTAL
     }
 }
