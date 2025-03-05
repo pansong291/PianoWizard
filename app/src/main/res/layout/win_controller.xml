@@ -142,11 +142,11 @@
                 android:text="@string/select_layout" />
 
             <Button
-                android:id="@+id/btn_reset_indicator"
+                android:id="@+id/btn_reset_marker"
                 style="@style/WindowButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/reset_indicator" />
+                android:text="@string/reset_marker" />
 
             <CheckBox
                 android:id="@+id/cb_display_number"

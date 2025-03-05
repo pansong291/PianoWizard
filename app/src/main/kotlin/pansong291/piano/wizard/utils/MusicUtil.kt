@@ -1,10 +1,15 @@
 package pansong291.piano.wizard.utils
 
+import android.util.SparseIntArray
 import com.hjq.gson.factory.GsonFactory
 import pansong291.piano.wizard.R
 import pansong291.piano.wizard.entity.Beat
+import pansong291.piano.wizard.entity.HitAction
+import pansong291.piano.wizard.entity.KeyLayout
 import pansong291.piano.wizard.entity.MusicNotation
+import pansong291.piano.wizard.exceptions.MissingKeyException
 import pansong291.piano.wizard.exceptions.ServiceException
+import java.util.TreeSet
 
 object MusicUtil {
     // 以 0 开始的十二平均律和对应的自然音
@@ -92,13 +97,13 @@ object MusicUtil {
             '#' -> keyNote++
             'b' -> keyNote--
         }
-        return MusicNotation().also {
-            it.name = name
-            it.filepath = filepath
-            it.keyNote = keyNote
-            it.bpm = triple.second.toInt()
-            it.beats = triple.third.split(",").filter(String::isNotEmpty).map(::parseBeat)
-        }
+        return MusicNotation(
+            name = name,
+            filepath = filepath,
+            keyNote = keyNote,
+            bpm = triple.second.toInt(),
+            beats = triple.third.split(",").filter(String::isNotEmpty).map(::parseBeat),
+        )
     }
 
     /**
@@ -107,10 +112,10 @@ object MusicUtil {
     private fun parseBeat(str: String): Beat {
         val values = musicBeatRegex.find(str)?.groupValues
         if (values == null || values.size < 3) throw ServiceException(R.string.music_syntax_error_message)
-        return Beat().apply {
-            durationRate = parseRate(values[2], 1f)
-            tones = values[1].split('&').mapNotNull(::parseNote).distinct()
-        }
+        return Beat(
+            durationRate = parseRate(values[2], 1f),
+            tones = values[1].split('&').mapNotNull(::parseNote).distinct(),
+        )
     }
 
     /**
@@ -212,6 +217,63 @@ object MusicUtil {
             if (rateA != 1L) append('*').append(rateA)
             if (rateB != 1L) append('/').append(rateB)
             append(',')
+        }
+    }
+
+    fun findSuitableOffset(mn: MusicNotation, kl: KeyLayout): Int {
+        val producer = kl.points.mapIndexedTo(TreeSet()) { index, _ ->
+            val note = index + kl.keyOffset
+            if (kl.semitone) note else basicNoteTo12TET(note)
+        }
+        val consumer = mn.beats.flatMapTo(TreeSet()) {
+            it.tones.map { it + mn.keyNote }
+        }
+        val minProducer = producer.firstOrNull() ?: throw MissingKeyException()
+        val maxProducer = producer.last()
+        val minConsumer = consumer.first()
+        val maxConsumer = consumer.last()
+        // minOffset 是使 consumer 的最小值对齐 producer 的最小值，maxOffset 同理
+        val minOffset = minProducer - minConsumer
+        val maxOffset = maxProducer - maxConsumer
+        var offset = maxOf(0, minOffset)
+        while (offset <= maxOffset) {
+            if (consumer.all { producer.contains(it + offset) }) return offset
+            offset++
+        }
+        offset = minOf(-1, maxOffset)
+        while (offset >= minOffset) {
+            if (consumer.all { producer.contains(it + offset) }) return offset
+            offset--
+        }
+        throw MissingKeyException()
+    }
+
+    fun getHitActions(
+        mn: MusicNotation,
+        kl: KeyLayout,
+        offset: Int,
+        ignoreMissingKey: Boolean = false,
+        playbackRate: Float = 1f
+    ): List<HitAction> {
+        val locationMap = SparseIntArray()
+        val baseTime = 60_000f / mn.bpm / playbackRate
+
+        // 构建十二平均律到点位的映射关系
+        repeat(kl.points.size) {
+            var note = it + kl.keyOffset
+            if (!kl.semitone) note = basicNoteTo12TET(note)
+            locationMap.append(note, it)
+        }
+        return mn.beats.map {
+            HitAction(
+                locations = it.tones.mapNotNull {
+                    val id = locationMap.indexOfKey(it + mn.keyNote + offset)
+                    if (id >= 0) locationMap.valueAt(id)
+                    else if (ignoreMissingKey) null
+                    else throw MissingKeyException()
+                },
+                postDelay = (it.durationRate * baseTime).toInt(),
+            )
         }
     }
 }

@@ -22,7 +22,7 @@
         app:layout_row="0" />
 
     <com.xw.repo.BubbleSeekBar
-        android:id="@+id/bsb_tempo_rate"
+        android:id="@+id/bsb_playback_rate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="3dp"

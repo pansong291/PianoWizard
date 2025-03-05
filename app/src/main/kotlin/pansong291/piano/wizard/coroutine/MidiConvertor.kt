@@ -85,7 +85,7 @@ object MidiConvertor {
         sequence.tracks.forEach { track ->
             // 存储音符开始的事件 (NOTE_ON)，以便计算持续时间
             val channelNoteMap = mutableMapOf<Int, SparseArray<Long>>()
-            for (i in 0 until track.size()) {
+            repeat(track.size()) { i ->
                 val event = track[i]
                 val tick = event.tick // 当前 tick 时间
                 when (val message = event.message) {

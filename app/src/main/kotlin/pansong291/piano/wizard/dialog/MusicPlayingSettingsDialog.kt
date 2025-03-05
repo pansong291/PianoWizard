@@ -16,7 +16,7 @@ import pansong291.piano.wizard.entity.TapMode
 import pansong291.piano.wizard.utils.ViewUtil.dpInt
 
 class MusicPlayingSettingsDialog(context: Context) : BaseDialog(context) {
-    private val bsbTempoRate: BubbleSeekBar
+    private val bsbPlaybackRate: BubbleSeekBar
     private val rgTapMode: RadioGroup
     private val bsbEarlyRelease: BubbleSeekBar
     private val bsbTapInterval: BubbleSeekBar
@@ -41,7 +41,7 @@ class MusicPlayingSettingsDialog(context: Context) : BaseDialog(context) {
         findContentWrapper().addView(scrollView)
         val root = LayoutInflater.from(context)
             .inflate(R.layout.dialog_content_music_playing_settings, scrollView)
-        bsbTempoRate = root.findViewById(R.id.bsb_tempo_rate)
+        bsbPlaybackRate = root.findViewById(R.id.bsb_playback_rate)
         rgTapMode = root.findViewById(R.id.rg_tap_mode)
         bsbEarlyRelease = root.findViewById(R.id.bsb_early_release)
         bsbTapInterval = root.findViewById(R.id.bsb_tap_interval)
@@ -50,7 +50,7 @@ class MusicPlayingSettingsDialog(context: Context) : BaseDialog(context) {
         cbHideWindow = root.findViewById(R.id.cb_hide_window)
 
         scrollView.setOnScrollChangeListener { _, _, _, _, _ ->
-            bsbTempoRate.correctOffsetWhenContainerOnScrolling()
+            bsbPlaybackRate.correctOffsetWhenContainerOnScrolling()
             bsbEarlyRelease.correctOffsetWhenContainerOnScrolling()
             bsbTapInterval.correctOffsetWhenContainerOnScrolling()
             bsbPrePlayDelay.correctOffsetWhenContainerOnScrolling()
@@ -63,7 +63,7 @@ class MusicPlayingSettingsDialog(context: Context) : BaseDialog(context) {
     }
 
     fun setSettings(settings: MusicPlayingSettings) {
-        bsbTempoRate.setProgress(settings.tempoRate)
+        bsbPlaybackRate.setProgress(settings.playbackRate)
         rgTapMode.check(
             when (settings.tapMode) {
                 TapMode.Tap -> android.R.id.button1
@@ -81,19 +81,19 @@ class MusicPlayingSettingsDialog(context: Context) : BaseDialog(context) {
     }
 
     fun getSettings(): MusicPlayingSettings {
-        return MusicPlayingSettings().apply {
-            tempoRate = bsbTempoRate.progressFloat
+        return MusicPlayingSettings(
+            playbackRate = bsbPlaybackRate.progressFloat,
             tapMode = when (rgTapMode.checkedRadioButtonId) {
                 android.R.id.button2 -> TapMode.TapAndHold
                 android.R.id.button3 -> TapMode.RepeatedlyTap
                 else -> TapMode.Tap
-            }
-            earlyRelease = bsbEarlyRelease.progress
-            tapInterval = bsbTapInterval.progress
-            prePlayDelay = bsbPrePlayDelay.progress
-            postPlayDelay = bsbPostPlayDelay.progress
-            hideWindow = cbHideWindow.isChecked
-        }
+            },
+            earlyRelease = bsbEarlyRelease.progress,
+            tapInterval = bsbTapInterval.progress,
+            prePlayDelay = bsbPrePlayDelay.progress,
+            postPlayDelay = bsbPostPlayDelay.progress,
+            hideWindow = cbHideWindow.isChecked,
+        )
     }
 
     private fun setBubbleSeekBarEnabled(bsb: BubbleSeekBar, enabled: Boolean) {

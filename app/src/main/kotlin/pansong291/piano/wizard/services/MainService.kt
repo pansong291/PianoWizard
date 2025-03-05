@@ -98,9 +98,9 @@ class MainService : Service() {
     private lateinit var btnChooseLayout: Button
 
     /**
-     * 重置指示器按钮
+     * 重置定位线按钮
      */
-    private lateinit var btnResetIndicator: Button
+    private lateinit var btnResetMarker: Button
 
     /**
      * 显示序号复选框
@@ -230,7 +230,7 @@ class MainService : Service() {
             vgKeyLayoutControllerWrapper =
                 contentView.findViewById(R.id.key_layout_controller_wrapper)
             btnChooseLayout = contentView.findViewById(R.id.btn_choose_key_layout)
-            btnResetIndicator = contentView.findViewById(R.id.btn_reset_indicator)
+            btnResetMarker = contentView.findViewById(R.id.btn_reset_marker)
             cbDisplayNumber = contentView.findViewById(R.id.cb_display_number)
             cbEnableSemitone = contentView.findViewById(R.id.cb_enable_semitone)
             btnKeyLayoutOffset = contentView.findViewById(R.id.btn_key_layout_offset)
@@ -281,7 +281,7 @@ class MainService : Service() {
         // 初始化变调为 0
         updateToneModulation(0)
         // 初始勾选显示序号
-        cbDisplayNumber.isChecked = keysLayoutView.isShowNum()
+        cbDisplayNumber.isChecked = keysLayoutView.showNum
         // 展开、收起
         btnCollapse.setOnClickListener {
             updateCollapse(vgControllerWrapper.visibility == View.VISIBLE)
@@ -316,14 +316,14 @@ class MainService : Service() {
                         )
                         // 尝试找到可完整演奏的最小变调值
                         try {
-                            updateToneModulation(MusicPlayer.findSuitableOffset(currentMusic!!, it))
+                            updateToneModulation(MusicUtil.findSuitableOffset(currentMusic!!, it))
                             btnStartMusic.setTextColor(Color.WHITE)
                         } catch (e: MissingKeyException) {
                             updateToneModulation(0)
                             btnStartMusic.setTextColor(Color.RED)
                             MessageDialog(application).apply {
                                 setIcon(R.drawable.outline_error_problem_32)
-                                setText(R.string.layout_unsupported_music_message)
+                                setText(R.string.layout_lack_key_message)
                             }.show()
                         } finally {
                             mfcd.destroy()
@@ -456,9 +456,7 @@ class MainService : Service() {
                             Toaster.show(R.string.require_name_message)
                             return@onTextConfirmed
                         }
-                        val kl = KeyLayout()
-                        kl.name = it.toString()
-                        keyLayouts += kl
+                        keyLayouts += KeyLayout(name = it.toString())
                         klld.reloadData(keyLayouts, null)
                         tid.destroy()
                     }
@@ -521,18 +519,18 @@ class MainService : Service() {
             }
             klld.show()
         }
-        // 重置指示器
-        btnResetIndicator.setOnClickListener {
-            keysLayoutView.resetIndicator()
+        // 重置定位线
+        btnResetMarker.setOnClickListener {
+            keysLayoutView.resetMarker()
         }
         // 显示序号
         cbDisplayNumber.setOnCheckedChangeListener { _, isChecked ->
-            keysLayoutView.setShowNum(isChecked)
+            keysLayoutView.showNum = isChecked
         }
         // 启用半音
         cbEnableSemitone.setOnCheckedChangeListener { _, isChecked ->
             withCurrentLayout {
-                keysLayoutView.setSemitone(isChecked)
+                keysLayoutView.semitone = isChecked
                 it.semitone = isChecked
                 updateCurrentMusic(null)
             }
@@ -550,7 +548,7 @@ class MainService : Service() {
                         Toaster.show(R.string.require_correct_integer_message)
                         return@onTextConfirmed
                     }
-                    keysLayoutView.setPointOffset(o)
+                    keysLayoutView.pointOffset = o
                     btnKeyLayoutOffset.text = application.getString(R.string.key_layout_offset, o)
                     kl.keyOffset = o
                     updateCurrentMusic(null)
@@ -566,17 +564,17 @@ class MainService : Service() {
                 val mPoints = it.points.toMutableList()
                 val last = mPoints.removeLast()
                 it.points = mPoints
-                keysLayoutView.setIndicator(last)
-                keysLayoutView.setPoints(mPoints)
+                keysLayoutView.setMarker(last)
+                keysLayoutView.points = mPoints
                 updateCurrentMusic(null)
             }
         }
         // 增加点位
         btnPointAdd.setOnClickListener {
             withCurrentLayout {
-                it.points += Point(keysLayoutView.getIndicator())
+                it.points += Point(keysLayoutView.getMarker())
                 it.rawOffset.set(keysLayoutView.rawOffset)
-                keysLayoutView.setPoints(it.points)
+                keysLayoutView.points = it.points
                 updateCurrentMusic(null)
             }
         }
@@ -591,9 +589,9 @@ class MainService : Service() {
             cbEnableSemitone.isChecked = it.semitone
             btnKeyLayoutOffset.text =
                 application.getString(R.string.key_layout_offset, it.keyOffset)
-            keysLayoutView.setPoints(it.points)
-            keysLayoutView.setSemitone(it.semitone)
-            keysLayoutView.setPointOffset(it.keyOffset)
+            keysLayoutView.points = it.points
+            keysLayoutView.semitone = it.semitone
+            keysLayoutView.pointOffset = it.keyOffset
             oldKl?.apply {
                 // 键盘的键数或半音不一样，则置空当前乐谱
                 if (this.points.size != it.points.size || this.semitone != it.semitone)
@@ -603,7 +601,7 @@ class MainService : Service() {
             }
         } ?: run {
             btnChooseLayout.setText(R.string.select_layout)
-            keysLayoutView.setPoints(emptyList())
+            keysLayoutView.points = emptyList()
             updateCurrentMusic(null)
         }
     }
@@ -691,9 +689,9 @@ class MainService : Service() {
             setWinVisible(layoutWindow, View.VISIBLE)
             btnControllerSwitch.setText(R.string.music_score)
             keysLayoutView.post {
-                if (keysLayoutView.isIndicatorOutOfView()) {
-                    // 重置指示器
-                    keysLayoutView.resetIndicator()
+                if (keysLayoutView.isMarkerOutOfView()) {
+                    // 重置定位线
+                    keysLayoutView.resetMarker()
                 }
             }
         }

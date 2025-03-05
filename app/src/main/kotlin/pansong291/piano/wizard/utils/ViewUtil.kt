@@ -7,25 +7,31 @@ import android.util.TypedValue
 import android.widget.EditText
 
 object ViewUtil {
+    private val dp1 by lazy {
+        TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            1f,
+            Resources.getSystem().displayMetrics
+        )
+    }
+    private val sp1 by lazy {
+        TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_SP,
+            1f,
+            Resources.getSystem().displayMetrics
+        )
+    }
     private var runnable: Runnable? = null
 
     /**
      * 将 dp 单位转换为 px 单位
      */
-    fun Float.dp() = TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_DIP,
-        this,
-        Resources.getSystem().displayMetrics
-    )
+    fun Float.dp() = this * dp1
 
     /**
      * 将 sp 单位转换为 px 单位
      */
-    fun Float.sp() = TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_SP,
-        this,
-        Resources.getSystem().displayMetrics
-    )
+    fun Float.sp() = this * sp1
 
     fun Int.dp() = this.toFloat().dp()
 

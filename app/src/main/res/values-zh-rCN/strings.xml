@@ -14,7 +14,7 @@
     <string name="expand">展开</string>
     <string name="collapse">收起</string>
     <string name="display_number">序号</string>
-    <string name="reset_indicator">重置指示器</string>
+    <string name="reset_marker">重置定位线</string>
     <string name="semitone">半音</string>
     <string name="layout_empty_warn_message">当前布局为空，请先选择一个布局</string>
     <string name="select_layout">选择布局</string>
@@ -41,7 +41,7 @@
     <string name="missing_key_note_confirm_message">当前设置无法完整演奏此音乐，确定继续吗？</string>
     <string name="resume">继续</string>
     <string name="key_note_absent_message">当前布局不存在此音符</string>
-    <string name="layout_unsupported_music_message">当前键盘布局无法完整演奏此音乐</string>
+    <string name="layout_lack_key_message">当前键盘布局缺少完整演奏此音乐所需的按键</string>
     <string name="about">关于</string>
     <string name="about_message">开源地址：%s\n\nQQ交流群：%s</string>
     <string name="about_goto_repository">跳转仓库</string>

@@ -3,14 +3,14 @@ package pansong291.piano.wizard.entity
 /**
  * 节拍
  */
-class Beat {
+class Beat(
     /**
      * 时值倍率；例如 0.5 表示为基础时值的一半
      */
-    var durationRate: Float = 1f
+    var durationRate: Float = 1f,
 
     /**
      * 音调，支持和弦，为空时表示休止或停顿
      */
-    var tones: List<Int> = emptyList()
-}
+    var tones: List<Int> = emptyList(),
+)

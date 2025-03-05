@@ -13,7 +13,7 @@
     <string name="expand">Expand</string>
     <string name="collapse">Collapse</string>
     <string name="display_number">Number</string>
-    <string name="reset_indicator">Reset indicator</string>
+    <string name="reset_marker">Reset marker</string>
     <string name="semitone">Semitone</string>
     <string name="layout_empty_warn_message">The current layout is empty. Please select a layout first</string>
     <string name="select_layout">Select layout</string>
@@ -40,7 +40,7 @@
     <string name="missing_key_note_confirm_message">The current settings cannot play this music completely. Are you sure you want to continue?</string>
     <string name="resume">Resume</string>
     <string name="key_note_absent_message">The current layout does not contain this note</string>
-    <string name="layout_unsupported_music_message">The current keyboard layout cannot fully perform this piece of music</string>
+    <string name="layout_lack_key_message">The current keyboard layout lacks the necessary keys to fully play this music</string>
     <string name="about">About</string>
     <string name="about_message">Open-source repository: %s\n\nQQ group: %s</string>
     <string name="about_goto_repository">Go to the repo</string>

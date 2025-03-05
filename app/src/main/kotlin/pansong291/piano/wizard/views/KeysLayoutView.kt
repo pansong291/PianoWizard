@@ -15,12 +15,28 @@ import pansong291.piano.wizard.utils.ViewUtil.sp
 
 @SuppressLint("ClickableViewAccessibility")
 class KeysLayoutView(context: Context) : View(context) {
-    private var showNum = true
-    private var points: List<Point> = emptyList()
-    private var semitone: Boolean = false
-    private var pointOffset: Int = 0
+    var showNum = true
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+    var points: List<Point> = emptyList()
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+    var semitone: Boolean = false
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+    var pointOffset = 0
+        set(value) {
+            field = value
+            postInvalidate()
+        }
 
-    private val indicatorPaint = Paint()
+    private val markerPaint = Paint()
     private val textPaint = Paint()
     private val fillPaint = Paint()
     private val strokePaint = Paint()
@@ -29,16 +45,15 @@ class KeysLayoutView(context: Context) : View(context) {
     private val smallRadius = 4.dp()
     private val textCenterY: Float
 
-    private val indicator = Point(-1, -1)
+    private val marker = Point(-1, -1)
     private val touchStart = PointF()
-    private val indicatorStart = Point()
+    private val markerStart = Point()
     val rawOffset = PointF()
 
     init {
-        val dp1 = 1.dp()
-        indicatorPaint.color = Color.RED
-        indicatorPaint.style = Paint.Style.STROKE
-        indicatorPaint.strokeWidth = dp1
+        markerPaint.color = Color.RED
+        markerPaint.style = Paint.Style.STROKE
+        markerPaint.strokeWidth = 1.dp()
 
         textPaint.style = Paint.Style.FILL
         textPaint.textSize = 18.sp()
@@ -47,7 +62,7 @@ class KeysLayoutView(context: Context) : View(context) {
 
         fillPaint.style = Paint.Style.FILL
         strokePaint.style = Paint.Style.STROKE
-        strokePaint.strokeWidth = dp1
+        strokePaint.strokeWidth = 1.dp()
         // 计算文字高度中心点的偏移
         textCenterY = (textPaint.fontMetrics.ascent + textPaint.fontMetrics.descent) / 2
 
@@ -56,15 +71,16 @@ class KeysLayoutView(context: Context) : View(context) {
                 MotionEvent.ACTION_DOWN -> {
                     rawOffset.set(event.rawX - event.x, event.rawY - event.y)
                     touchStart.set(event.x, event.y)
-                    indicatorStart.set(indicator.x, indicator.y)
+                    markerStart.set(marker.x, marker.y)
                 }
 
                 MotionEvent.ACTION_MOVE -> {
-                    indicator.set(
-                        (indicatorStart.x + event.x - touchStart.x).toInt(),
-                        (indicatorStart.y + event.y - touchStart.y).toInt()
+                    setMarker(
+                        Point(
+                            (markerStart.x + event.x - touchStart.x).toInt(),
+                            (markerStart.y + event.y - touchStart.y).toInt()
+                        )
                     )
-                    postInvalidate()
                 }
             }
             true
@@ -74,8 +90,8 @@ class KeysLayoutView(context: Context) : View(context) {
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         canvas.drawARGB(50, 0, 0, 0)
-        val fx = indicator.x.toFloat()
-        val fy = indicator.y.toFloat()
+        val fx = marker.x.toFloat()
+        val fy = marker.y.toFloat()
         // 绘制全部点位
         points.forEachIndexed { i, p ->
             val pfx = p.x.toFloat()
@@ -90,9 +106,9 @@ class KeysLayoutView(context: Context) : View(context) {
                 canvas.drawCircle(pfx, pfy, smallRadius, strokePaint)
             }
         }
-        // 绘制指示器
-        canvas.drawLine(0f, fy, width.toFloat(), fy, indicatorPaint)
-        canvas.drawLine(fx, 0f, fx, height.toFloat(), indicatorPaint)
+        // 绘制定位线
+        canvas.drawLine(0f, fy, width.toFloat(), fy, markerPaint)
+        canvas.drawLine(fx, 0f, fx, height.toFloat(), markerPaint)
     }
 
     private fun toggleColor(i: Int) {
@@ -112,47 +128,19 @@ class KeysLayoutView(context: Context) : View(context) {
         strokePaint.color = Color.WHITE
     }
 
-    fun isIndicatorOutOfView(): Boolean {
-        if (indicator.x < 0 || indicator.x >= width) return true
-        return indicator.y < 0 || indicator.y >= height
+    fun isMarkerOutOfView(): Boolean {
+        if (marker.x < 0 || marker.x >= width) return true
+        return marker.y < 0 || marker.y >= height
     }
 
-    fun resetIndicator() {
-        setIndicator(Point(width / 2, height / 2))
+    fun resetMarker() {
+        setMarker(Point(width / 2, height / 2))
     }
 
-    fun getIndicator() = indicator
+    fun getMarker() = marker
 
-    fun setIndicator(p: Point) {
-        indicator.set(p.x, p.y)
-        postInvalidate()
-    }
-
-    fun getPoints() = points
-
-    fun setPoints(p: List<Point>) {
-        points = p
-        postInvalidate()
-    }
-
-    fun getSemitone() = semitone
-
-    fun setSemitone(s: Boolean) {
-        semitone = s
-        postInvalidate()
-    }
-
-    fun getPointOffset() = pointOffset
-
-    fun setPointOffset(o: Int) {
-        pointOffset = o
-        postInvalidate()
-    }
-
-    fun isShowNum() = showNum
-
-    fun setShowNum(s: Boolean) {
-        showNum = s
+    fun setMarker(p: Point) {
+        marker.set(p.x, p.y)
         postInvalidate()
     }
 }

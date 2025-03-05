@@ -34,22 +34,22 @@ package pansong291.piano.wizard.entity
  * ]
  * ```
  */
-class SkyStudioSheet {
-    var name: String? = null
-    var author: String? = null
-    var arrangedBy: String? = null
-    var transcribedBy: String? = null
-    var permission: String? = null
-    var bpm: Double? = null
-    var bitsPerPage: Double? = null
-    var pitchLevel: Double? = null
-    var isComposed: Boolean? = null
-    var isEncrypted: Boolean? = null
-    var keyVersion: Double? = null
-    var songNotes: List<SongNote>? = null
-
-    class SongNote {
-        var time: Double? = null
-        var key: String? = null
-    }
+class SkyStudioSheet(
+    var name: String? = null,
+    var author: String? = null,
+    var arrangedBy: String? = null,
+    var transcribedBy: String? = null,
+    var permission: String? = null,
+    var bpm: Double? = null,
+    var bitsPerPage: Double? = null,
+    var pitchLevel: Double? = null,
+    var isComposed: Boolean? = null,
+    var isEncrypted: Boolean? = null,
+    var keyVersion: Double? = null,
+    var songNotes: List<SongNote>? = null,
+) {
+    class SongNote(
+        var time: Double? = null,
+        var key: String? = null,
+    )
 }
