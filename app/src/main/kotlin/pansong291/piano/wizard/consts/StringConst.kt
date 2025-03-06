@@ -1,6 +1,13 @@
 package pansong291.piano.wizard.consts
 
+import android.os.Environment
+
 object StringConst {
+    /**
+     * 外部存储路径
+     */
+    val EXTERNAL_PATH: String by lazy { Environment.getExternalStorageDirectory().path }
+
     /**
      * 乐谱后缀
      */

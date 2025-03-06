@@ -3,7 +3,6 @@ package pansong291.piano.wizard.dialog.contents
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
-import android.os.Environment
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
@@ -11,9 +10,12 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.hjq.toast.Toaster
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
 import pansong291.piano.wizard.R
 import pansong291.piano.wizard.consts.ColorConst
+import pansong291.piano.wizard.consts.StringConst
+import pansong291.piano.wizard.dialog.TextInputDialog
 import pansong291.piano.wizard.dialog.base.IDialog
 import java.io.File
 import java.io.FileFilter
@@ -32,9 +34,23 @@ object DialogFileChooseContent {
             ellipsize = TextUtils.TruncateAt.START
             setOnClickListener { adapter.backwardFolder() }
             setOnLongClickListener {
-                // TODO 支持路径跳转, 如果其不以内部存储路径开头, 则不关闭输入框并提示路径非法,
-                //  如果目标是文件, 则跳转至其父目录, 否则跳转至其内
-                false
+                val tid = TextInputDialog(context)
+                tid.setIcon(R.drawable.outline_turn_right_32)
+                tid.setTitle(R.string.go_to)
+                tid.setText(adapter.basePath)
+                tid.onTextConfirmed = {
+                    val p = it.trim().toString()
+                    if (p.startsWith(StringConst.EXTERNAL_PATH)) {
+                        val f = File(p)
+                        if (f.isFile) adapter.gotoFolder(f.parentFile)
+                        else adapter.gotoFolder(f)
+                        tid.destroy()
+                    } else {
+                        Toaster.show(R.string.invalid_path_message)
+                    }
+                }
+                tid.show()
+                true
             }
         }
         val recyclerView = content.findViewById<FastScrollRecyclerView>(android.R.id.list)
@@ -68,7 +84,7 @@ object DialogFileChooseContent {
         private lateinit var infoList: List<FileInfo>
         private lateinit var filteredList: List<FileInfo>
         var highlight: File? = null
-        var basePath: String = Environment.getExternalStorageDirectory().path
+        var basePath: String = StringConst.EXTERNAL_PATH
         var fileFilter: FileFilter = FileFilter { true }
         var onFileChose: ((path: String, file: String) -> Unit)? = null
         var onPathLoaded: ((path: String) -> Unit)? = null
@@ -88,14 +104,17 @@ object DialogFileChooseContent {
         }
 
         fun backwardFolder() {
-            val cur = File(basePath)
-            if (Environment.getExternalStorageDirectory() == cur) return
-            loadFileList(cur.parentFile)
+            if (basePath == StringConst.EXTERNAL_PATH) return
+            loadFileList(File(basePath).parentFile)
         }
 
         fun forwardFolder(folder: String) {
             val file = File(basePath, folder)
             loadFileList(file)
+        }
+
+        fun gotoFolder(folder: File?) {
+            loadFileList(folder)
         }
 
         fun findItemPosition(predicate: (FileInfo) -> Boolean): Int {
