@@ -67,7 +67,7 @@
     <string name="early_release">Early release</string>
     <string name="tap_interval">Tap interval</string>
     <string name="playing_settings">Playing settings</string>
-    <string name="filter">Filter</string>
+    <string name="search">Search</string>
     <string name="pre_play_delay">Pre-play\ndelay</string>
     <string name="post_play_delay">Post-play\ndelay</string>
     <string name="hide_window">Hide window</string>

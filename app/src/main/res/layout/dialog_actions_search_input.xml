@@ -10,7 +10,7 @@
         style="@style/DialogButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/filter" />
+        android:text="@string/search" />
 
     <Space
         android:layout_width="8dp"

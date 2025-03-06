@@ -7,7 +7,7 @@ import android.widget.Button
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
 import pansong291.piano.wizard.R
 import pansong291.piano.wizard.consts.StringConst
-import pansong291.piano.wizard.dialog.actions.DialogFilterInputActions
+import pansong291.piano.wizard.dialog.actions.DialogSearchInputActions
 import pansong291.piano.wizard.dialog.base.BaseDialog
 import pansong291.piano.wizard.dialog.contents.DialogFileChooseContent
 import pansong291.piano.wizard.utils.ViewUtil
@@ -32,7 +32,7 @@ open class FileChooseDialog(context: Context) : BaseDialog(context) {
         val pair = DialogFileChooseContent.loadIn(this)
         recyclerView = pair.first
         adapter = pair.second
-        DialogFilterInputActions.loadIn(this) { ok, _, input ->
+        DialogSearchInputActions.loadIn(this) { ok, _, input ->
             initOk(ok)
             ViewUtil.debounceInputChanges(input, 300L) { query ->
                 adapter.setInfoFilter(if (query.isNullOrEmpty()) null else { info ->

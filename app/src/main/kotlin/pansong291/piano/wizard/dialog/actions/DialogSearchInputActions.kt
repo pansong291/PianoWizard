@@ -10,23 +10,23 @@ import pansong291.piano.wizard.R
 import pansong291.piano.wizard.dialog.base.IDialog
 
 
-object DialogFilterInputActions {
+object DialogSearchInputActions {
     fun loadIn(dialog: IDialog, block: (ok: Button, cancel: Button, input: EditText) -> Unit) {
         val context = dialog.getContext()
         val actions = View.inflate(
             context,
-            R.layout.dialog_actions_filter_input,
+            R.layout.dialog_actions_search_input,
             dialog.findActionsWrapper()
         )
-        // 操作区：过滤、取消和确定按钮，以及输入框
-        val filter = actions.findViewById<Button>(android.R.id.button1)
+        // 操作区：搜索、取消和确定按钮，以及输入框
+        val search = actions.findViewById<Button>(android.R.id.button1)
         val input = actions.findViewById<EditText>(android.R.id.input)
         val frame = actions.findViewById<LinearLayout>(android.R.id.widget_frame)
         val cancel = actions.findViewById<Button>(android.R.id.button2)
         val ok = actions.findViewById<Button>(android.R.id.button3)
-        filter.setOnClickListener {
-            val toFilter = input.visibility == View.GONE
-            if (toFilter) {
+        search.setOnClickListener {
+            val toSearch = input.visibility == View.GONE
+            if (toSearch) {
                 input.visibility = View.VISIBLE
                 frame.visibility = View.GONE
                 input.post {
