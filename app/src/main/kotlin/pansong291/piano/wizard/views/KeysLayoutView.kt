@@ -12,7 +12,7 @@ import android.view.View
 import pansong291.piano.wizard.utils.MusicUtil
 import pansong291.piano.wizard.utils.ViewUtil.dp
 import pansong291.piano.wizard.utils.ViewUtil.sp
-import kotlin.math.absoluteValue
+import kotlin.math.abs
 
 @SuppressLint("ClickableViewAccessibility")
 class KeysLayoutView(context: Context) : View(context) {
@@ -49,8 +49,9 @@ class KeysLayoutView(context: Context) : View(context) {
     private val marker = Point(-1, -1)
     private val touchStart = PointF()
     private val markerStart = Point()
-    private val handleThickness = 24.dp()
+    private val handleArea = 24.dp()
     private var activeMaker = ActiveMaker.NONE
+    private val snapArea = 8.dp()
     val rawOffset = PointF()
 
     init {
@@ -74,27 +75,33 @@ class KeysLayoutView(context: Context) : View(context) {
                     rawOffset.set(event.rawX - event.x, event.rawY - event.y)
                     touchStart.set(event.x, event.y)
                     markerStart.set(marker.x, marker.y)
-                    val offsetX = (markerStart.x - touchStart.x).absoluteValue
-                    val offsetY = (markerStart.y - touchStart.y).absoluteValue
-                    activeMaker = if (offsetX <= handleThickness && offsetY > handleThickness)
+                    val offsetX = abs(markerStart.x - touchStart.x)
+                    val offsetY = abs(markerStart.y - touchStart.y)
+                    activeMaker = if (offsetX <= handleArea && offsetY > handleArea)
                         ActiveMaker.VERTICAL
-                    else if (offsetY <= handleThickness && offsetX > handleThickness)
+                    else if (offsetY <= handleArea && offsetX > handleArea)
                         ActiveMaker.HORIZONTAL
                     else ActiveMaker.BOTH
                     postInvalidate()
                 }
 
                 MotionEvent.ACTION_MOVE -> {
-                    val newPoint = Point(
+                    val mp = Point(
                         (event.x + markerStart.x - touchStart.x).toInt(),
                         (event.y + markerStart.y - touchStart.y).toInt()
                     )
                     when (activeMaker) {
-                        ActiveMaker.VERTICAL -> newPoint.y = markerStart.y
-                        ActiveMaker.HORIZONTAL -> newPoint.x = markerStart.x
-                        else -> {}
+                        ActiveMaker.VERTICAL -> mp.y = markerStart.y
+                        ActiveMaker.HORIZONTAL -> mp.x = markerStart.x
+                        else -> for (it in points) {
+                            if (abs(it.x - mp.x) <= snapArea && abs(it.y - mp.y) <= snapArea) {
+                                mp.x = it.x
+                                mp.y = it.y
+                                break
+                            }
+                        }
                     }
-                    setMarker(newPoint)
+                    setMarker(mp)
                 }
 
                 MotionEvent.ACTION_UP -> {
