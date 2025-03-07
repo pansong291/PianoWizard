@@ -12,10 +12,12 @@ import pansong291.piano.wizard.R
 import pansong291.piano.wizard.dialog.actions.DialogConfirmActions
 import pansong291.piano.wizard.dialog.base.BaseDialog
 import pansong291.piano.wizard.entity.MusicPlayingSettings
+import pansong291.piano.wizard.entity.PlayMode
 import pansong291.piano.wizard.entity.TapMode
 import pansong291.piano.wizard.utils.ViewUtil.dpInt
 
 class MusicPlayingSettingsDialog(context: Context) : BaseDialog(context) {
+    private val rgPlayMode: RadioGroup
     private val bsbPlaybackRate: BubbleSeekBar
     private val rgTapMode: RadioGroup
     private val bsbEarlyRelease: BubbleSeekBar
@@ -41,6 +43,7 @@ class MusicPlayingSettingsDialog(context: Context) : BaseDialog(context) {
         findContentWrapper().addView(scrollView)
         val root = LayoutInflater.from(context)
             .inflate(R.layout.dialog_content_music_playing_settings, scrollView)
+        rgPlayMode = root.findViewById(R.id.rg_play_mode)
         bsbPlaybackRate = root.findViewById(R.id.bsb_playback_rate)
         rgTapMode = root.findViewById(R.id.rg_tap_mode)
         bsbEarlyRelease = root.findViewById(R.id.bsb_early_release)
@@ -63,6 +66,12 @@ class MusicPlayingSettingsDialog(context: Context) : BaseDialog(context) {
     }
 
     fun setSettings(settings: MusicPlayingSettings) {
+        rgPlayMode.check(
+            when (settings.playMode) {
+                PlayMode.Single -> R.id.rb_single_mode
+                PlayMode.List -> R.id.rb_list_mode
+            }
+        )
         bsbPlaybackRate.setProgress(settings.playbackRate)
         rgTapMode.check(
             when (settings.tapMode) {
@@ -82,6 +91,10 @@ class MusicPlayingSettingsDialog(context: Context) : BaseDialog(context) {
 
     fun getSettings(): MusicPlayingSettings {
         return MusicPlayingSettings(
+            playMode = when (rgPlayMode.checkedRadioButtonId) {
+                R.id.rb_list_mode -> PlayMode.List
+                else -> PlayMode.Single
+            },
             playbackRate = bsbPlaybackRate.progressFloat,
             tapMode = when (rgTapMode.checkedRadioButtonId) {
                 android.R.id.button2 -> TapMode.TapAndHold

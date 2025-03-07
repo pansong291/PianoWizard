@@ -6,12 +6,13 @@
     app:alignmentMode="alignMargins"
     app:columnCount="3"
     app:orientation="horizontal"
-    app:rowCount="13">
+    app:rowCount="15">
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/tempo_rate"
+        android:layout_height="32dp"
+        android:gravity="center"
+        android:text="@string/play_mode"
         app:layout_column="0"
         app:layout_row="0" />
 
@@ -20,6 +21,43 @@
         android:layout_height="8dp"
         app:layout_column="1"
         app:layout_row="0" />
+
+    <RadioGroup
+        android:id="@+id/rg_play_mode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_column="2"
+        app:layout_gravity="fill_horizontal"
+        app:layout_row="0">
+
+        <RadioButton
+            android:id="@+id/rb_single_mode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="0dp"
+            android:text="@string/single_mode" />
+
+        <RadioButton
+            android:id="@+id/rb_list_mode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="0dp"
+            android:text="@string/list_mode" />
+    </RadioGroup>
+
+    <Space
+        android:layout_width="8dp"
+        android:layout_height="16dp"
+        app:layout_column="0"
+        app:layout_row="1" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tempo_rate"
+        app:layout_column="0"
+        app:layout_row="2" />
 
     <com.xw.repo.BubbleSeekBar
         android:id="@+id/bsb_playback_rate"
@@ -39,13 +77,13 @@
         app:bsb_touch_to_seek="true"
         app:layout_column="2"
         app:layout_gravity="fill_horizontal"
-        app:layout_row="0" />
+        app:layout_row="2" />
 
     <Space
         android:layout_width="8dp"
         android:layout_height="16dp"
         app:layout_column="0"
-        app:layout_row="1" />
+        app:layout_row="3" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -53,7 +91,7 @@
         android:gravity="center"
         android:text="@string/tap_mode"
         app:layout_column="0"
-        app:layout_row="2" />
+        app:layout_row="4" />
 
     <RadioGroup
         android:id="@+id/rg_tap_mode"
@@ -62,7 +100,7 @@
         android:orientation="vertical"
         app:layout_column="2"
         app:layout_gravity="fill_horizontal"
-        app:layout_row="2">
+        app:layout_row="4">
 
         <RadioButton
             android:id="@android:id/button1"
@@ -90,48 +128,17 @@
         android:layout_width="8dp"
         android:layout_height="16dp"
         app:layout_column="0"
-        app:layout_row="3" />
+        app:layout_row="5" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/early_release"
         app:layout_column="0"
-        app:layout_row="4" />
-
-    <com.xw.repo.BubbleSeekBar
-        android:id="@+id/bsb_early_release"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="3dp"
-        android:alpha=".2"
-        android:enabled="false"
-        android:paddingHorizontal="4dp"
-        app:bsb_max="1000"
-        app:bsb_min="10"
-        app:bsb_progress="100"
-        app:bsb_section_text_position="sides"
-        app:bsb_show_thumb_text="true"
-        app:bsb_touch_to_seek="true"
-        app:layout_column="2"
-        app:layout_gravity="fill_horizontal"
-        app:layout_row="4" />
-
-    <Space
-        android:layout_width="8dp"
-        android:layout_height="16dp"
-        app:layout_column="0"
-        app:layout_row="5" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/tap_interval"
-        app:layout_column="0"
         app:layout_row="6" />
 
     <com.xw.repo.BubbleSeekBar
-        android:id="@+id/bsb_tap_interval"
+        android:id="@+id/bsb_early_release"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="3dp"
@@ -157,19 +164,21 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/pre_play_delay"
+        android:text="@string/tap_interval"
         app:layout_column="0"
         app:layout_row="8" />
 
     <com.xw.repo.BubbleSeekBar
-        android:id="@+id/bsb_pre_play_delay"
+        android:id="@+id/bsb_tap_interval"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="3dp"
+        android:alpha=".2"
+        android:enabled="false"
         android:paddingHorizontal="4dp"
-        app:bsb_max="60"
-        app:bsb_min="0"
-        app:bsb_progress="0"
+        app:bsb_max="1000"
+        app:bsb_min="10"
+        app:bsb_progress="100"
         app:bsb_section_text_position="sides"
         app:bsb_show_thumb_text="true"
         app:bsb_touch_to_seek="true"
@@ -186,12 +195,12 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/post_play_delay"
+        android:text="@string/pre_play_delay"
         app:layout_column="0"
         app:layout_row="10" />
 
     <com.xw.repo.BubbleSeekBar
-        android:id="@+id/bsb_post_play_delay"
+        android:id="@+id/bsb_pre_play_delay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="3dp"
@@ -215,18 +224,47 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/hide_window"
+        android:text="@string/post_play_delay"
         app:layout_column="0"
         app:layout_row="12" />
+
+    <com.xw.repo.BubbleSeekBar
+        android:id="@+id/bsb_post_play_delay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:paddingHorizontal="4dp"
+        app:bsb_max="60"
+        app:bsb_min="0"
+        app:bsb_progress="0"
+        app:bsb_section_text_position="sides"
+        app:bsb_show_thumb_text="true"
+        app:bsb_touch_to_seek="true"
+        app:layout_column="2"
+        app:layout_gravity="fill_horizontal"
+        app:layout_row="12" />
+
+    <Space
+        android:layout_width="8dp"
+        android:layout_height="16dp"
+        app:layout_column="0"
+        app:layout_row="13" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/hide_window"
+        app:layout_column="0"
+        app:layout_row="14" />
 
     <CheckBox
         android:id="@+id/cb_hide_window"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:minHeight="0dp"
         android:minWidth="0dp"
+        android:minHeight="0dp"
         android:text="@string/hide_window_when_playing"
         app:layout_column="2"
         app:layout_gravity="fill_horizontal"
-        app:layout_row="12" />
+        app:layout_row="14" />
 </androidx.gridlayout.widget.GridLayout>

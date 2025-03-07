@@ -27,11 +27,13 @@ import pansong291.piano.wizard.dialog.ConfirmDialog
 import pansong291.piano.wizard.dialog.KeyLayoutListDialog
 import pansong291.piano.wizard.dialog.MessageDialog
 import pansong291.piano.wizard.dialog.MusicFileChooseDialog
+import pansong291.piano.wizard.dialog.MusicFolderChooseDialog
 import pansong291.piano.wizard.dialog.MusicPlayingSettingsDialog
 import pansong291.piano.wizard.dialog.TextInputDialog
 import pansong291.piano.wizard.entity.KeyLayout
 import pansong291.piano.wizard.entity.MusicNotation
 import pansong291.piano.wizard.entity.MusicPlayingSettings
+import pansong291.piano.wizard.entity.PlayMode
 import pansong291.piano.wizard.exceptions.MissingKeyException
 import pansong291.piano.wizard.exceptions.ServiceException
 import pansong291.piano.wizard.utils.FileUtil
@@ -42,154 +44,115 @@ import java.io.File
 class MainService : Service() {
     private lateinit var sharedPreferences: SharedPreferences
 
-    /**
-     * 控制器窗口
-     */
+    /** 控制器窗口 */
     private lateinit var controllerWindow: EasyWindow<*>
 
-    /**
-     * 布局窗口
-     */
+    /** 布局窗口 */
     private lateinit var layoutWindow: EasyWindow<*>
 
-    /**
-     * 布局视图
-     */
+    /** 布局视图 */
     private lateinit var keysLayoutView: KeysLayoutView
 
-    /**
-     * 收起 / 展开 按钮
-     */
+    /** 收起 / 展开 按钮 */
     private lateinit var btnCollapse: Button
 
-    /**
-     * 切换控制器按钮
-     */
+    /** 切换控制器按钮 */
     private lateinit var btnControllerSwitch: Button
 
-    /**
-     * 停止播放按钮
-     */
+    /** 停止播放按钮 */
     private lateinit var btnStopMusic: Button
 
-    /**
-     * 控制器父容器
-     */
+    /** 控制器父容器 */
     private lateinit var vgControllerWrapper: ViewGroup
 
-    /**
-     * 乐谱控制器父容器
-     */
+    /** 乐谱控制器父容器 */
     private lateinit var vgMusicScoreControllerWrapper: ViewGroup
 
-    /**
-     * 暂停弹奏按钮
-     */
+    /** 切换歌曲按钮 */
+    private lateinit var btnSkipMusic: Button
+
+    /** 暂停弹奏按钮 */
     private lateinit var btnPauseMusic: Button
 
-    /**
-     * 布局控制器父容器
-     */
+    /** 布局控制器父容器 */
     private lateinit var vgKeyLayoutControllerWrapper: ViewGroup
 
-    /**
-     * 选择布局按钮
-     */
+    /** 选择布局按钮 */
     private lateinit var btnChooseLayout: Button
 
-    /**
-     * 重置定位线按钮
-     */
+    /** 重置定位线按钮 */
     private lateinit var btnResetMarker: Button
 
-    /**
-     * 显示序号复选框
-     */
+    /** 显示序号复选框 */
     private lateinit var cbDisplayNumber: CheckBox
 
-    /**
-     * 半音复选框
-     */
+    /** 半音复选框 */
     private lateinit var cbEnableSemitone: CheckBox
 
-    /**
-     * 按键偏移按钮
-     */
+    /** 按键偏移按钮 */
     private lateinit var btnKeyLayoutOffset: Button
 
-    /**
-     * 移除点位按钮
-     */
+    /** 移除点位按钮 */
     private lateinit var btnPointRemove: Button
 
-    /**
-     * 增加点位按钮
-     */
+    /** 增加点位按钮 */
     private lateinit var btnPointAdd: Button
 
-    /**
-     * 选择乐谱按钮
-     */
+    /** 选择乐谱按钮 */
     private lateinit var btnChooseMusic: Button
 
-    /**
-     * 其他设置按钮
-     */
+    /** 选择目录按钮 */
+    private lateinit var btnChooseFolder: Button
+
+    /** 其他设置按钮 */
     private lateinit var btnOtherSettings: Button
 
-    /**
-     * 显示变调按钮
-     */
+    /** 显示变调按钮 */
     private lateinit var btnModulation: Button
 
-    /**
-     * 变调 -1 按钮
-     */
+    /** 变调 1 父容器 */
+    private lateinit var vgToneWrapper1: ViewGroup
+
+    /** 变调 12 父容器 */
+    private lateinit var vgToneWrapper12: ViewGroup
+
+    /** 变调 -1 按钮 */
     private lateinit var btnToneMinus1: Button
 
-    /**
-     * 变调 +1 按钮
-     */
+    /** 变调 +1 按钮 */
     private lateinit var btnTonePlus1: Button
 
-    /**
-     * 变调 -12 按钮
-     */
+    /** 变调 -12 按钮 */
     private lateinit var btnToneMinus12: Button
 
-    /**
-     * 变调 -12 按钮
-     */
+    /** 变调 -12 按钮 */
     private lateinit var btnTonePlus12: Button
 
-    /**
-     * 开始弹奏按钮
-     */
+    /** 循环复选框 */
+    private lateinit var cbRepeatAll: CheckBox
+
+    /** 随机复选框 */
+    private lateinit var cbRandom: CheckBox
+
+    /** 开始弹奏按钮 */
     private lateinit var btnStartMusic: Button
 
-    /**
-     * 全部布局
-     */
+    /** 全部布局 */
     private lateinit var keyLayouts: List<KeyLayout>
 
-    /**
-     * 当前布局
-     */
+    /** 当前布局 */
     private var currentLayout: KeyLayout? = null
 
-    /**
-     * 当前乐谱
-     */
+    /** 当前乐谱 */
     private var currentMusic: MusicNotation? = null
 
-    /**
-     * 音乐弹奏设置
-     */
+    /** 当前目录 */
+    private var currentFolder: File? = null
+
+    /** 音乐弹奏设置 */
     private var musicPlayingSettings = MusicPlayingSettings()
 
-    /**
-     * 变调值
-     */
+    /** 变调值 */
     private var toneModulation = -1
 
     private val gson = GsonFactory.getSingletonGson()
@@ -226,6 +189,7 @@ class MainService : Service() {
             vgControllerWrapper = contentView.findViewById(R.id.controller_wrapper)
             vgMusicScoreControllerWrapper =
                 contentView.findViewById(R.id.music_score_controller_wrapper)
+            btnSkipMusic = contentView.findViewById(R.id.btn_skip_music)
             btnPauseMusic = contentView.findViewById(R.id.btn_pause_music)
             vgKeyLayoutControllerWrapper =
                 contentView.findViewById(R.id.key_layout_controller_wrapper)
@@ -237,12 +201,17 @@ class MainService : Service() {
             btnPointRemove = contentView.findViewById(R.id.btn_point_remove)
             btnPointAdd = contentView.findViewById(R.id.btn_point_add)
             btnChooseMusic = contentView.findViewById(R.id.btn_choose_music)
+            btnChooseFolder = contentView.findViewById(R.id.btn_choose_folder)
             btnOtherSettings = contentView.findViewById(R.id.btn_other_settings)
             btnModulation = contentView.findViewById(R.id.btn_modulation)
+            vgToneWrapper1 = contentView.findViewById(R.id.tone_wrapper_1)
+            vgToneWrapper12 = contentView.findViewById(R.id.tone_wrapper_12)
             btnToneMinus1 = contentView.findViewById(R.id.btn_tone_minus_1)
             btnTonePlus1 = contentView.findViewById(R.id.btn_tone_plus_1)
             btnToneMinus12 = contentView.findViewById(R.id.btn_tone_minus_12)
             btnTonePlus12 = contentView.findViewById(R.id.btn_tone_plus_12)
+            cbRepeatAll = contentView.findViewById(R.id.cb_repeat_all)
+            cbRandom = contentView.findViewById(R.id.cb_random)
             btnStartMusic = contentView.findViewById(R.id.btn_start_music)
         }
         layoutWindow = EasyWindow.with(application).apply {
@@ -256,19 +225,19 @@ class MainService : Service() {
 
         setupBasicController()
         setupMusicScoreController()
-        // 暂停弹奏
-        btnPauseMusic.setOnClickListener {
-            if (MusicPlayer.isPlaying) {
-                if (MusicPlayer.isPaused) MusicPlayer.resume()
-                else MusicPlayer.pause()
-            }
-        }
         setupKeysLayoutController()
 
         // 初始化布局
         sharedPreferences.getInt(StringConst.SP_DATA_KEY_LAST_LAYOUT, 0).takeIf {
             it >= 0 && it < keyLayouts.size
         }?.let { updateCurrentLayout(keyLayouts[it]) }
+        // 初始化目录
+        updateCurrentFolder(
+            sharedPreferences.getString(
+                StringConst.SP_DATA_KEY_DEFAULT_FOLDER,
+                null
+            )
+        )
     }
 
     private fun setupBasicController() {
@@ -276,12 +245,18 @@ class MainService : Service() {
         updateCollapse(false)
         // 初始切换到乐谱控制器
         updateSwitchMusic(true)
+        // 初始化演奏模式
+        updatePlayModeState(musicPlayingSettings.playMode)
         // 初始化为未弹奏状态
         updatePlayingState(false)
         // 初始化变调为 0
         updateToneModulation(0)
         // 初始勾选显示序号
         cbDisplayNumber.isChecked = keysLayoutView.showNum
+        // 初始勾选循环
+        cbRepeatAll.isChecked = true
+        // 初始勾选随机
+        cbRandom.isChecked = true
         // 展开、收起
         btnCollapse.setOnClickListener {
             updateCollapse(vgControllerWrapper.visibility == View.VISIBLE)
@@ -294,6 +269,17 @@ class MainService : Service() {
         btnStopMusic.setOnClickListener {
             MusicPlayer.stop()
         }
+        // 切换歌曲
+        btnSkipMusic.setOnClickListener {
+            MusicPlayer.skip()
+        }
+        // 暂停弹奏
+        btnPauseMusic.setOnClickListener {
+            if (MusicPlayer.isPlaying) {
+                if (MusicPlayer.isPaused) MusicPlayer.resume()
+                else MusicPlayer.pause()
+            }
+        }
     }
 
     private fun setupMusicScoreController() {
@@ -301,10 +287,14 @@ class MainService : Service() {
         btnChooseMusic.setOnClickListener {
             withCurrentLayout {
                 val mfcd = MusicFileChooseDialog(application)
+                currentFolder?.let { mfcd.setFolder(it.path) }
                 mfcd.setOnFileChose { path, filename ->
+                    updateCurrentFolder(path)
                     tryAlert {
-                        val index =
-                            filename.lastIndexOf(StringConst.MUSIC_NOTATION_FILE_EXT, 0, true)
+                        val index = filename.lastIndexOf(
+                            StringConst.MUSIC_NOTATION_FILE_EXT,
+                            ignoreCase = true
+                        )
                         val file = File(path, filename)
                         // 解析乐谱并置为当前
                         updateCurrentMusic(
@@ -334,6 +324,18 @@ class MainService : Service() {
                 mfcd.show()
             }
         }
+        // 选择目录
+        btnChooseFolder.setOnClickListener {
+            withCurrentLayout {
+                val mfcd = MusicFolderChooseDialog(application)
+                currentFolder?.let { mfcd.setFolder(it.path) }
+                mfcd.onFolderChose = {
+                    updateCurrentFolder(it)
+                    mfcd.destroy()
+                }
+                mfcd.show()
+            }
+        }
         // 其他设置
         btnOtherSettings.setOnClickListener {
             val mpsd = MusicPlayingSettingsDialog(application)
@@ -344,6 +346,7 @@ class MainService : Service() {
                     StringConst.SP_DATA_KEY_MUSIC_PLAYING_SETTINGS,
                     gson.toJson(musicPlayingSettings)
                 ).apply()
+                updatePlayModeState(musicPlayingSettings.playMode)
                 mpsd.destroy()
             }
             mpsd.show()
@@ -384,9 +387,21 @@ class MainService : Service() {
         }
         // 开始弹奏
         btnStartMusic.setOnClickListener {
-            withCurrentMusic {
+            if (musicPlayingSettings.playMode == PlayMode.List) withCurrentFolder {
+                if (!MusicPlayer.isPlaying) {
+                    MusicPlayer.startList(
+                        serviceScope,
+                        it,
+                        currentLayout!!,
+                        musicPlayingSettings,
+                        cbRepeatAll.isChecked,
+                        cbRandom.isChecked
+                    )
+                    updatePlayingState(MusicPlayer.isPlaying)
+                }
+            } else withCurrentMusic {
                 if (!MusicPlayer.isPlaying) try {
-                    MusicPlayer.startPlay(
+                    MusicPlayer.startSingle(
                         serviceScope,
                         it,
                         currentLayout!!,
@@ -400,7 +415,7 @@ class MainService : Service() {
                     cd.setText(R.string.missing_key_note_confirm_message)
                     cd.onOk = {
                         cd.destroy()
-                        MusicPlayer.startPlay(
+                        MusicPlayer.startSingle(
                             serviceScope,
                             it,
                             currentLayout!!,
@@ -422,6 +437,9 @@ class MainService : Service() {
         }
         MusicPlayer.onResume = {
             updatePauseState(false)
+        }
+        MusicPlayer.onMusicSkip = {
+            btnSkipMusic.text = it
         }
         ClickAccessibilityService.onVolumeKeyDown = {
             MusicPlayer.pause()
@@ -626,20 +644,52 @@ class MainService : Service() {
         btnModulation.text = getString(R.string.modulation, t)
     }
 
+    private fun updateCurrentFolder(p: String?) {
+        if (p != null) {
+            val f = File(p)
+            if (currentFolder?.path != f.path) sharedPreferences.edit()
+                .putString(StringConst.SP_DATA_KEY_DEFAULT_FOLDER, f.path).apply()
+            currentFolder = f
+            btnChooseFolder.text = f.name
+        } else {
+            btnChooseFolder.setText(R.string.select_folder)
+        }
+    }
+
+    private fun updatePlayModeState(playMode: PlayMode) {
+        if (playMode == PlayMode.List) {
+            btnChooseMusic.visibility = View.GONE
+            btnChooseFolder.visibility = View.VISIBLE
+            btnModulation.visibility = View.GONE
+            vgToneWrapper1.visibility = View.GONE
+            vgToneWrapper12.visibility = View.GONE
+            cbRepeatAll.visibility = View.VISIBLE
+            cbRandom.visibility = View.VISIBLE
+        } else {
+            btnChooseMusic.visibility = View.VISIBLE
+            btnChooseFolder.visibility = View.GONE
+            btnModulation.visibility = View.VISIBLE
+            vgToneWrapper1.visibility = View.VISIBLE
+            vgToneWrapper12.visibility = View.VISIBLE
+            cbRepeatAll.visibility = View.GONE
+            cbRandom.visibility = View.GONE
+        }
+    }
+
     private fun updatePlayingState(p: Boolean) {
         if (p) {
             btnControllerSwitch.visibility = View.GONE
             btnStopMusic.visibility = View.VISIBLE
             vgMusicScoreControllerWrapper.visibility = View.GONE
+            btnSkipMusic.visibility =
+                if (musicPlayingSettings.playMode == PlayMode.List) View.VISIBLE else View.GONE
             btnPauseMusic.visibility = View.VISIBLE
-            setWinVisible(
-                controllerWindow,
-                if (musicPlayingSettings.hideWindow) View.GONE else View.VISIBLE
-            )
+            updatePauseState(false) // 强制取消暂停，里面已经有设置悬浮窗显隐了
         } else {
             btnControllerSwitch.visibility = vgControllerWrapper.visibility
             btnStopMusic.visibility = View.GONE
             vgMusicScoreControllerWrapper.visibility = View.VISIBLE
+            btnSkipMusic.visibility = View.GONE
             btnPauseMusic.visibility = View.GONE
             setWinVisible(controllerWindow, View.VISIBLE)
         }
@@ -707,6 +757,10 @@ class MainService : Service() {
         } catch (e: MissingKeyException) {
             if (showError) Toaster.show(R.string.key_note_absent_message)
         }
+    }
+
+    private inline fun withCurrentFolder(block: (c: File) -> Unit) {
+        currentFolder?.also(block) ?: Toaster.show(R.string.folder_empty_warn_message)
     }
 
     private fun setWinVisible(win: EasyWindow<*>, visibility: Int) {

@@ -27,8 +27,6 @@
     <string name="save">Save</string>
     <string name="save_all_layouts_message">All layouts have been saved</string>
     <string name="stop">Stop</string>
-    <string name="make_as_default_folder">Make default</string>
-    <string name="make_default_folder_feedback_message">The current folder has been set as the default folder</string>
     <string name="music_empty_warn_message">The current sheet music is empty. Please select a sheet music first</string>
     <string name="enter_layout_name_hint">Enter layout name</string>
     <string name="music_syntax_error_message">The sheet music format is incorrect, parsing failed</string>
@@ -83,4 +81,11 @@
     <string name="link_midi_demo_video">https://youtu.be/gurdiKIJNsI</string>
     <string name="go_to">Go to</string>
     <string name="invalid_path_message">Invalid path</string>
+    <string name="select_folder">Select folder</string>
+    <string name="folder_empty_warn_message">The current folder is empty. Please select a folder first</string>
+    <string name="repeat_all">Repeat all</string>
+    <string name="random">Random</string>
+    <string name="play_mode">Play mode</string>
+    <string name="single_mode">Single</string>
+    <string name="list_mode">List</string>
 </resources>

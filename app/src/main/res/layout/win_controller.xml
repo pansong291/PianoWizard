@@ -55,6 +55,13 @@
                 android:text="@string/select_music" />
 
             <Button
+                android:id="@+id/btn_choose_folder"
+                style="@style/WindowButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/select_folder" />
+
+            <Button
                 android:id="@+id/btn_other_settings"
                 style="@style/WindowButtonStyle"
                 android:layout_width="match_parent"
@@ -91,7 +98,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/tone_wrapper_7"
+                android:id="@+id/tone_wrapper_12"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -113,6 +120,20 @@
                     android:text="+12" />
             </LinearLayout>
 
+            <CheckBox
+                android:id="@+id/cb_repeat_all"
+                style="@style/WindowCheckBoxStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/repeat_all" />
+
+            <CheckBox
+                android:id="@+id/cb_random"
+                style="@style/WindowCheckBoxStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/random" />
+
             <Button
                 android:id="@+id/btn_start_music"
                 style="@style/WindowButtonStyle"
@@ -120,6 +141,12 @@
                 android:layout_height="wrap_content"
                 android:text="@string/start" />
         </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_skip_music"
+            style="@style/WindowButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/btn_pause_music"

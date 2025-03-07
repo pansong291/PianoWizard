@@ -28,8 +28,6 @@
     <string name="save">保存</string>
     <string name="save_all_layouts_message">已保存全部布局</string>
     <string name="stop">停止</string>
-    <string name="make_as_default_folder">设为默认</string>
-    <string name="make_default_folder_feedback_message">已将当前目录设为默认目录</string>
     <string name="music_empty_warn_message">当前乐谱为空，请先选择一个乐谱</string>
     <string name="enter_layout_name_hint">输入布局名称</string>
     <string name="music_syntax_error_message">琴谱格式不正确，解析失败</string>
@@ -84,4 +82,11 @@
     <string name="link_midi_demo_video">https://www.bilibili.com/video/BV15j1MYPEtT</string>
     <string name="go_to">跳转</string>
     <string name="invalid_path_message">无效路径</string>
+    <string name="select_folder">选择目录</string>
+    <string name="folder_empty_warn_message">当前目录为空，请先选择一个目录</string>
+    <string name="repeat_all">循环</string>
+    <string name="random">随机</string>
+    <string name="play_mode">演奏模式</string>
+    <string name="single_mode">单曲</string>
+    <string name="list_mode">列表</string>
 </resources>
