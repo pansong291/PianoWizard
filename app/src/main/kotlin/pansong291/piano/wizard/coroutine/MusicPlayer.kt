@@ -94,13 +94,8 @@ object MusicPlayer {
                     if (extInd < 0) return@mapNotNull null
                     val mf = File(playMode.folder, it)
                     if (!mf.isFile) return@mapNotNull null
-                    runCatching {
-                        MusicUtil.parseMusicNotation(
-                            mf.path,
-                            it.substring(0, extInd),
-                            FileUtil.readNoBOMText(mf)
-                        )
-                    }.getOrNull()
+                    // 乐谱未解析，标记 keyNote 为 -1
+                    MusicNotation(name = it.substring(0, extInd), filepath = mf.path, keyNote = -1)
                 }.orEmpty().sortedBy { it.name }.toMutableList()
 
                 else -> mutableListOf()
@@ -114,6 +109,21 @@ object MusicPlayer {
                 // 打乱列表
                 if (random) musicList.shuffle()
                 musicEach@ for (mn in musicList) {
+                    // 若乐谱未解析则先进行解析
+                    if (mn.keyNote < 0) runCatching {
+                        val parsed = MusicUtil.parseMusicNotation(
+                            mn.filepath,
+                            mn.name,
+                            FileUtil.readNoBOMText(File(mn.filepath))
+                        )
+                        mn.keyNote = parsed.keyNote
+                        mn.bpm = parsed.bpm
+                        mn.beats = parsed.beats
+                    }.onFailure {
+                        mn.keyNote = 0  // 移除未解析标记
+                    }
+                    // 解析失败则跳过
+                    if (mn.beats.isEmpty()) continue@musicEach
                     val offset = if (playMode is SingleMode) playMode.offset
                     else runCatching { MusicUtil.findSuitableOffset(mn, kl) }.getOrDefault(0)
                     val hitActions =

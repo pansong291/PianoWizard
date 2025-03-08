@@ -17,12 +17,12 @@ class MusicNotation(
     /**
      * 基准音调
      */
-    var keyNote: Int = 1,
+    var keyNote: Int = 0,
 
     /**
      * 每分钟节拍数
      */
-    var bpm: Int = 0,
+    var bpm: Int = 1,
 
     /**
      * 节拍
