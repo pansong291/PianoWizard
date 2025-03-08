@@ -230,7 +230,7 @@ object MusicUtil {
         }
         val minProducer = producer.firstOrNull() ?: throw MissingKeyException()
         val maxProducer = producer.last()
-        val minConsumer = consumer.first()
+        val minConsumer = consumer.firstOrNull() ?: return 0
         val maxConsumer = consumer.last()
         // minOffset 是使 consumer 的最小值对齐 producer 的最小值，maxOffset 同理
         val minOffset = minProducer - minConsumer
