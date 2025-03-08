@@ -51,7 +51,8 @@
     <string name="convert_sky_studio_sheet">转换 SkyStudio 乐谱</string>
     <string name="select_sky_studio_sheet_file">选择 SkyStudio 乐谱文件</string>
     <string name="current_folder">当前目录</string>
-    <string name="target_must_gte_zero_message">%s 必须大于等于 0 ：%s</string>
+    <string name="target_must_gte_zero_message">%s 必须大于等于零：%s</string>
+    <string name="target_must_gt_zero_message">%s 必须大于零：%s</string>
     <string name="target_cannot_empty_message">%s 不能为空</string>
     <string name="target_format_incorrect_message">%s 格式不正确：%s</string>
     <string name="convert_current_folder_confirm_message">此操作将转换当前目录下的全部文件，是否继续？</string>

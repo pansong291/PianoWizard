@@ -101,8 +101,15 @@ object MusicUtil {
             name = name,
             filepath = filepath,
             keyNote = keyNote,
-            bpm = triple.second.toInt(),
-            beats = triple.third.split(",").filter(String::isNotEmpty).map(::parseBeat),
+            bpm = triple.second.toInt().also {
+                if (it <= 0) throw ServiceException(R.string.target_must_gt_zero_message, "bpm", it)
+            },
+            beats = triple.third.split(",").filter(String::isNotEmpty).map(::parseBeat).also {
+                if (it.isEmpty()) throw ServiceException(
+                    R.string.target_cannot_empty_message,
+                    "beats"
+                )
+            },
         )
     }
 
