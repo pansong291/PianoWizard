@@ -78,9 +78,16 @@ object MusicPlayer {
         if (mps.tapMode == TapMode.RepeatedlyTap && mps.tapInterval <= 0)
             throw IllegalArgumentException("tapInterval must be greater than 0")
 
-        val ignoreMissingKey = if (playMode is SingleMode) playMode.ignoreMissingKey else true
         val repeatAll = if (playMode is ListMode) playMode.repeatAll else false
         val random = if (playMode is ListMode) playMode.random else false
+        // 为了及时判断是否缺少按键，需要在协程外执行
+        val singleHitActions = if (playMode is SingleMode) MusicUtil.getHitActions(
+            playMode.mn,
+            kl,
+            playMode.offset,
+            playMode.ignoreMissingKey,
+            mps.playbackRate
+        ) else null
 
         val pointList = kl.points.map {
             Point((it.x + kl.rawOffset.x).toInt(), (it.y + kl.rawOffset.y).toInt())
@@ -124,10 +131,13 @@ object MusicPlayer {
                     }
                     // 解析失败则跳过
                     if (mn.beats.isEmpty()) continue@musicEach
-                    val offset = if (playMode is SingleMode) playMode.offset
-                    else runCatching { MusicUtil.findSuitableOffset(mn, kl) }.getOrDefault(0)
-                    val hitActions =
-                        MusicUtil.getHitActions(mn, kl, offset, ignoreMissingKey, mps.playbackRate)
+                    val hitActions = singleHitActions ?: MusicUtil.getHitActions(
+                        mn,
+                        kl,
+                        MusicUtil.findSuitableOffset(mn, kl, 0),
+                        true,
+                        mps.playbackRate
+                    )
                     // 切歌通知
                     if (playMode is ListMode) onMusicSkip?.let { handler.post { it(mn.name) } }
                     delay(200)

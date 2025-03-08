@@ -227,7 +227,7 @@ object MusicUtil {
         }
     }
 
-    fun findSuitableOffset(mn: MusicNotation, kl: KeyLayout): Int {
+    fun findSuitableOffset(mn: MusicNotation, kl: KeyLayout, def: Int? = null): Int {
         val producer = kl.points.mapIndexedTo(TreeSet()) { index, _ ->
             val note = index + kl.keyOffset
             if (kl.semitone) note else basicNoteTo12TET(note)
@@ -235,7 +235,7 @@ object MusicUtil {
         val consumer = mn.beats.flatMapTo(TreeSet()) {
             it.tones.map { it + mn.keyNote }
         }
-        val minProducer = producer.firstOrNull() ?: throw MissingKeyException()
+        val minProducer = producer.firstOrNull() ?: def ?: throw MissingKeyException()
         val maxProducer = producer.last()
         val minConsumer = consumer.firstOrNull() ?: return 0
         val maxConsumer = consumer.last()
@@ -252,7 +252,7 @@ object MusicUtil {
             if (consumer.all { producer.contains(it + offset) }) return offset
             offset--
         }
-        throw MissingKeyException()
+        return def ?: throw MissingKeyException()
     }
 
     fun getHitActions(
