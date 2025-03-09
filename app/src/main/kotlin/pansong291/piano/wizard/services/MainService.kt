@@ -685,6 +685,7 @@ class MainService : Service() {
                 if (musicPlayingSettings.playMode == PlayMode.List) View.VISIBLE else View.GONE
             btnPauseMusic.visibility = View.VISIBLE
             updatePauseState(false) // 强制取消暂停，里面已经有设置悬浮窗显隐了
+            if (musicPlayingSettings.playMode == PlayMode.List) btnSkipMusic.text = ""
         } else {
             btnControllerSwitch.visibility = vgControllerWrapper.visibility
             btnStopMusic.visibility = View.GONE

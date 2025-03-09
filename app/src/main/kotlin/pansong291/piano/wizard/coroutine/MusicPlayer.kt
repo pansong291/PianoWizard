@@ -113,9 +113,11 @@ object MusicPlayer {
             while (!controlChannel.isEmpty) controlChannel.tryReceive()
             pausableDelay(mps.prePlayDelay * 2)
             listLoop@ do {
+                pausableDelay(delayUnit = 100)
                 // 打乱列表
                 if (random) musicList.shuffle()
                 musicEach@ for (mn in musicList) {
+                    pausableDelay(delayUnit = 100)
                     // 若乐谱未解析则先进行解析
                     if (mn.keyNote < 0) runCatching {
                         val parsed = MusicUtil.parseMusicNotation(
@@ -144,7 +146,7 @@ object MusicPlayer {
                     actionEach@ for (hit in hitActions) {
                         if (!isActive) break@listLoop
                         try {
-                            checkPauseSignal(200)
+                            checkPauseSignal(200, checkSkip = true)
                             val time = System.currentTimeMillis()
                             if (hit.locations.isNotEmpty()) {
                                 val holdTime = when (mps.tapMode) {
@@ -167,7 +169,7 @@ object MusicPlayer {
                             }
                             val rest = hit.postDelay + time - System.currentTimeMillis()
                             val chunk = rest / BLOCKED_UNIT
-                            pausableDelay(chunk.toInt())
+                            pausableDelay(chunk.toInt(), checkSkip = true)
                             delay(rest % BLOCKED_UNIT)
                         } catch (e: SkipMusicException) {
                             break@actionEach
@@ -183,30 +185,35 @@ object MusicPlayer {
         }
     }
 
-    private suspend fun pausableDelay(count: Int, delayUnit: Long = BLOCKED_UNIT) {
+    private suspend fun pausableDelay(
+        count: Int = 1,
+        delayUnit: Long = BLOCKED_UNIT,
+        checkSkip: Boolean = false
+    ) {
         repeat(count) {
             delay(delayUnit)
-            checkPauseSignal()
+            checkPauseSignal(checkSkip = checkSkip)
         }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private suspend fun checkPauseSignal(delayWhenResume: Long = 0) {
+    private suspend fun checkPauseSignal(delayWhenResume: Long = 0, checkSkip: Boolean = false) {
         if (!controlChannel.isEmpty) {
-            checkAndUpdatePausedState()
+            checkAndUpdatePausedState(checkSkip)
             if (isPaused) onPaused?.let { handler.post(it) }
         }
         while (isPaused) {
-            checkAndUpdatePausedState()
+            checkAndUpdatePausedState(checkSkip)
             if (!isPaused) onResume?.let { handler.post(it) }
             delay(delayWhenResume)
         }
     }
 
-    private suspend fun checkAndUpdatePausedState() {
+    private suspend fun checkAndUpdatePausedState(checkSkip: Boolean = false) {
         val signal = controlChannel.receive()
-        if (signal == Signal.SKIP) throw SkipMusicException()
-        isPaused = signal == Signal.PAUSE
+        if (signal == Signal.SKIP) {
+            if (checkSkip) throw SkipMusicException()
+        } else isPaused = signal == Signal.PAUSE
     }
 
     fun pause() {
@@ -223,7 +230,6 @@ object MusicPlayer {
 
     fun stop() {
         job?.cancel()
-        job = null
         isPaused = false
     }
 
