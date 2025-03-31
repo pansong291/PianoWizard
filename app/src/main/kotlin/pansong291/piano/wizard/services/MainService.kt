@@ -3,7 +3,6 @@ package pansong291.piano.wizard.services
 import android.app.Service
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.Color
 import android.graphics.Point
 import android.os.IBinder
 import android.view.Gravity
@@ -36,7 +35,6 @@ import pansong291.piano.wizard.entity.MusicPlayingSettings
 import pansong291.piano.wizard.entity.PlayMode
 import pansong291.piano.wizard.exceptions.MissingKeyException
 import pansong291.piano.wizard.exceptions.ServiceException
-import pansong291.piano.wizard.utils.FileUtil
 import pansong291.piano.wizard.utils.LangUtil
 import pansong291.piano.wizard.utils.MusicUtil
 import pansong291.piano.wizard.views.KeysLayoutView
@@ -296,6 +294,7 @@ class MainService : Service() {
                 mfcd.setOnFileChose { path, filename ->
                     updateCurrentFolder(path)
                     tryAlert {
+                        if (filename != StringConst.TRIAL_MUSIC_NAME) throw Exception()
                         val index = filename.lastIndexOf(
                             StringConst.MUSIC_NOTATION_FILE_EXT,
                             ignoreCase = true
@@ -306,20 +305,14 @@ class MainService : Service() {
                             MusicUtil.parseMusicNotation(
                                 file.path,
                                 if (index > 0) filename.substring(0, index) else filename,
-                                FileUtil.readNoBOMText(file)
+                                StringConst.TRIAL_MUSIC_CONTENT
                             )
                         )
                         // 尝试找到可完整演奏的最小变调值
                         try {
                             updateToneModulation(MusicUtil.findSuitableOffset(currentMusic!!, it))
-                            btnStartMusic.setTextColor(Color.WHITE)
                         } catch (e: MissingKeyException) {
                             updateToneModulation(0)
-                            btnStartMusic.setTextColor(Color.RED)
-                            MessageDialog(application).apply {
-                                setIcon(R.drawable.outline_error_problem_32)
-                                setText(R.string.layout_lack_key_message)
-                            }.show()
                         } finally {
                             mfcd.destroy()
                         }
@@ -411,7 +404,8 @@ class MainService : Service() {
                         it,
                         currentLayout!!,
                         musicPlayingSettings,
-                        toneModulation
+                        toneModulation,
+                        true
                     )
                     updatePlayingState(MusicPlayer.isPlaying)
                 } catch (e: MissingKeyException) {
