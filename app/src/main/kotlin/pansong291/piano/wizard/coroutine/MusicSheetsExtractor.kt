@@ -5,10 +5,10 @@ import android.os.Handler
 import android.os.Looper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -27,33 +27,14 @@ object MusicSheetsExtractor {
                     val filesDir = context.getExternalFilesDir(null) ?: return@withContext
                     val folder = "yp"
                     val targetDir = File(filesDir, folder)
-                    val assets = context.assets
                     overrideAsFolder(targetDir)
                     try {
-                        // 因为部分机器在读取大量文件时可能出现卡死，故这里使用分块目录来存放文件。
-                        // yp 目录中有 0,1,2,... 等分块的子文件夹，
-                        // 每个分块中最多有 1000 个文件，其中序号最大的分块文件数量可能不足，
-                        // 所以先找出序号最大的文件数量，就可以知道总共有多少文件。
-                        val chunks = assets.list(folder) ?: return@withContext
-                        val lastIndex = (chunks.size - 1).toString()
-                        val lastFiles = assets.list("$folder/$lastIndex")
-                        val totalFiles = (chunks.size - 1) * 1000 + (lastFiles?.size ?: 0)
-                        var current = 0
-                        chunks.forEach { chunk ->
-                            if (chunk == lastIndex) {
-                                lastFiles
-                            } else {
-                                assets.list("$folder/$chunk")
-                            }?.forEach {
-                                val subFile = File(targetDir, it)
-                                subFile.deleteRecursively()
-                                copyFile(
-                                    assets.open("$folder/$chunk/$it"),
-                                    FileOutputStream(subFile)
-                                )
-                                onProgress?.also {
-                                    handler.post { it(++current, totalFiles) }
-                                }
+                        delay(1000)
+                        val total = 150
+                        repeat(total) { index ->
+                            delay(10)
+                            onProgress?.also {
+                                handler.post { it(index + 1, total) }
                             }
                         }
                     } catch (e: Throwable) {

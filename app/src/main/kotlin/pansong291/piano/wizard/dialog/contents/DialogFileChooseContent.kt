@@ -91,6 +91,7 @@ object DialogFileChooseContent {
         var onPathChanged: ((path: String) -> Unit)? = null
         private var infoFilter: ((FileInfo) -> Boolean)? = null
         private val dataFolder = context.getExternalFilesDir(null)?.parentFile
+        private val ypFolder = File(context.getExternalFilesDir(null), "yp").path
 
         fun reload() {
             loadFileList(null)
@@ -132,10 +133,17 @@ object DialogFileChooseContent {
                 basePath = folderFile.path
                 onPathChanged?.invoke(basePath)
             }
-            val childFiles = folderFile.listFiles(fileFilter)?.toMutableList() ?: mutableListOf()
+            val childFiles = folderFile.listFiles(FileFilter {
+                it.isDirectory
+            })?.toMutableList() ?: mutableListOf()
             dataFolder?.run {
                 if (folderFile.path == this.parent && childFiles.indexOfFirst { it.name == this.name } < 0) {
                     childFiles += this
+                }
+                if (folderFile.path == ypFolder) {
+                    childFiles.clear()
+                    File(ypFolder, StringConst.TRIAL_MUSIC_NAME).takeIf { fileFilter.accept(it) }
+                        ?.let { childFiles += it }
                 }
             }
             infoList = childFiles.map {
