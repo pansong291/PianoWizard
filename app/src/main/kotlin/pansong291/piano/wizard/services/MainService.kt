@@ -37,6 +37,7 @@ import pansong291.piano.wizard.entity.PlayMode
 import pansong291.piano.wizard.exceptions.MissingKeyException
 import pansong291.piano.wizard.exceptions.ServiceException
 import pansong291.piano.wizard.utils.FileUtil
+import pansong291.piano.wizard.utils.LangUtil
 import pansong291.piano.wizard.utils.MusicUtil
 import pansong291.piano.wizard.views.KeysLayoutView
 import java.io.File
@@ -561,7 +562,7 @@ class MainService : Service() {
                 tid.setTitle(R.string.key_offset)
                 tid.setHint(R.string.enter_key_offset_hint)
                 tid.onTextConfirmed = onTextConfirmed@{
-                    val o = it.toString().toIntOrNull()
+                    val o = LangUtil.parseInteger(it)
                     if (o == null) {
                         Toaster.show(R.string.require_correct_integer_message)
                         return@onTextConfirmed

@@ -1,6 +1,8 @@
 package pansong291.piano.wizard.utils
 
 object LangUtil {
+    private val shortLineRegex = Regex("[-—–－ㄧ一─━]+")
+
     /**
      * 插入排序，在输入几乎是已经排好序的情况下时间复杂度最小
      */
@@ -31,5 +33,12 @@ object LangUtil {
             big = temp
         }
         return big
+    }
+
+    /**
+     * 用户无法准确分辨负号，此函数尝试替换为正确的负号。
+     */
+    fun parseInteger(str: CharSequence): Int? {
+        return str.trim().replace(shortLineRegex, "-").toIntOrNull()
     }
 }
