@@ -1,6 +1,7 @@
 package pansong291.piano.wizard.dialog
 
 import android.content.Context
+import android.graphics.Color
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.EditText
@@ -17,6 +18,7 @@ class TextInputDialog(context: Context) : BaseDialog(context) {
     init {
         dialog.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
         val horizontalMargin = 16.dpInt()
+        textInput.setTextColor(Color.BLACK)
         textInput.layoutParams = LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT

@@ -1,5 +1,6 @@
 package pansong291.piano.wizard.dialog.contents
 
+import android.graphics.Color
 import android.util.TypedValue
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -24,6 +25,7 @@ object DialogMessageContent {
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
+        textView.setTextColor(Color.BLACK)
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
         scrollView.addView(textView)
         dialog.findContentWrapper().addView(scrollView)

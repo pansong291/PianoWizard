@@ -15,5 +15,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="false"
-        android:focusable="false" />
+        android:focusable="false"
+        android:textColor="@android:color/black" />
 </LinearLayout>
