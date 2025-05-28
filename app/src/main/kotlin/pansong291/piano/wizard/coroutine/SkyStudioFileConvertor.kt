@@ -150,18 +150,18 @@ object SkyStudioFileConvertor {
         }
     }
 
-    private fun convert(text: String, file: File): Pair<Boolean, String> {
+    private fun convert(str: String, file: File): Pair<Boolean, String> {
         return tryResult {
+            val text = str.replace("\r\n", "\n").replace('\r', '\n')
             val gtInd = text.indexOf('>')
             if (gtInd < 0) throw Exception("symbol '>' not found")
             val lfInd = text.indexOf('\n', gtInd)
             if (lfInd < 0) throw Exception("line separator '\\n' not found")
             val firstLine = text.substring(gtInd + 1, lfInd).trim()
-            val rest = text.substring(lfInd + 1).trim()
-            if (rest.isEmpty())
+            val keysLine = text.substring(lfInd + 1)
+            if (keysLine.isEmpty())
                 throw ServiceException(R.string.target_cannot_empty_message, "songNotes")
             val infoList = firstLine.split(' ').filterNot { it.isBlank() }
-            val keyList = rest.split(' ').filterNot { it.isBlank() }
 
             val bpm = infoList.getOrNull(0)?.toDoubleOrNull()?.takeIf { it > 0 } ?: 120.0
             val pitchLevel = (infoList.getOrNull(1)?.toInt() ?: 0).takeIf { it >= 0 } ?: 0
@@ -191,29 +191,53 @@ object SkyStudioFileConvertor {
 
             var dotCount = 0
             val notes = mutableListOf<Int>()
-            keyList.forEach { key ->
-                if (key == ".") {
-                    dotCount++
-                    return@forEach
-                }
-                appendNotes(notes, strBuilder, dotCount)
-                dotCount = 0
-                var note: Int? = null
-                key.forEach { ch ->
-                    note?.also {
-                        if (ch in '1'..'5') {
-                            notes.add(it * 5 + (ch - '1'))
-                            note = null
-                        } else throw keyFormatException(key)
-                    } ?: run {
-                        note = if (ch in 'A'..'C') ch - 'A'
-                        else throw keyFormatException(key)
+            var lineNum = 2
+            var lineIdx = -1
+            var i = 0
+            while (i < keysLine.length) {
+                val ch = keysLine[i]
+                when (ch) {
+                    '\n' -> {
+                        lineIdx = i
+                        lineNum++
                     }
+
+                    '.' -> {
+                        dotCount++
+                    }
+
+                    ' ' -> {}
+
+                    in 'A'..'C' -> {
+                        transferNotes(notes, strBuilder, dotCount)
+                        dotCount = 0
+                        var abc = -1
+                        while (i < keysLine.length) {
+                            val ch = keysLine[i]
+                            if (abc < 0) {
+                                if (ch in 'A'..'C') {
+                                    abc = ch - 'A'
+                                } else {
+                                    i--
+                                    break
+                                }
+                            } else {
+                                if (ch in '1'..'5') {
+                                    notes.add(abc * 5 + (ch - '1'))
+                                    abc = -1
+                                } else formatErrorAt(lineNum, i - lineIdx)
+                            }
+                            i++
+                        }
+                        if (abc >= 0) formatErrorAt(lineNum, i - lineIdx)
+                    }
+
+                    else -> formatErrorAt(lineNum, i - lineIdx)
                 }
-                if (note != null) throw keyFormatException(key)
+                i++
             }
             // 结尾节拍至少一个全音符
-            appendNotes(notes, strBuilder, maxOf(dotCount, 3))
+            if (notes.isNotEmpty()) transferNotes(notes, strBuilder, maxOf(dotCount, 3))
             if (author.isNotEmpty()) name += " - $author"
             if (transcribedBy.isNotEmpty()) name += " ~ $transcribedBy"
             val filename = FileUtil.findAvailableFileName(
@@ -226,13 +250,21 @@ object SkyStudioFileConvertor {
         }
     }
 
-    private fun appendNotes(notes: MutableList<Int>, strBuilder: StringBuilder, dotCount: Int) {
-        if (notes.isNotEmpty()) {
-            strBuilder.append(notes.joinToString("&") { MusicUtil.compileBasicNote(it) })
-            if (dotCount > 0) strBuilder.append('*').append(dotCount + 1)
-            strBuilder.append(',')
-            notes.clear()
-        }
+    private fun transferNotes(notes: MutableList<Int>, strBuilder: StringBuilder, dotCount: Int) {
+        // notes 本身算作一个点
+        val count = if (notes.isEmpty()) dotCount else dotCount + 1
+        if (count <= 0) return
+        strBuilder.append(
+            notes.joinToString("&") { MusicUtil.compileBasicNote(it) }.ifEmpty { "0" }
+        )
+        if (count > 1) strBuilder.append('*').append(count)
+        strBuilder.append(',')
+        // 此处需要清空 notes
+        notes.clear()
+    }
+
+    private fun formatErrorAt(line: Int, column: Int) {
+        throw ServiceException(R.string.format_error_at_message, line, column)
     }
 
     private fun keyFormatException(key: String): Exception {

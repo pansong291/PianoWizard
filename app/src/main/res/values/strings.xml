@@ -54,6 +54,7 @@
     <string name="target_must_gt_zero_message">The %s must be greater than zero: %s</string>
     <string name="target_cannot_empty_message">The %s cannot be empty</string>
     <string name="target_format_incorrect_message">The format of %s is incorrect: %s</string>
+    <string name="format_error_at_message">Format error (line: %d, column: %d)</string>
     <string name="convert_current_folder_confirm_message">This operation will convert all files in the current folder. Do you wish to continue?</string>
     <string name="processing">Processing</string>
     <string name="convert_result">Convert result</string>
