@@ -2,13 +2,14 @@ package pansong291.piano.wizard.dialog
 
 import android.content.Context
 import android.view.View
+import kotlinx.coroutines.CoroutineScope
 import pansong291.piano.wizard.R
 import pansong291.piano.wizard.consts.StringConst
 import java.io.FileFilter
 
-class MusicFileChooseDialog(context: Context) : FileChooseDialog(context) {
+class MusicFileChooseDialog(context: Context, scope: CoroutineScope) : FileChooseDialog(context) {
     init {
-        initialize { ok ->
+        initialize(scope) { ok ->
             ok.visibility = View.GONE
         }
         setIcon(R.drawable.outline_music_file_32)

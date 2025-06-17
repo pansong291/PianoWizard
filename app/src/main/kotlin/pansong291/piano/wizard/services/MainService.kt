@@ -159,7 +159,7 @@ class MainService : Service() {
     private val gson = GsonFactory.getSingletonGson()
 
     // 创建一个与 Service 生命周期绑定的 CoroutineScope
-    private val serviceScope = CoroutineScope(Dispatchers.Default + Job())
+    private val serviceScope = CoroutineScope(Dispatchers.IO + Job())
 
     override fun onBind(p0: Intent?): IBinder? = null
 
@@ -287,7 +287,7 @@ class MainService : Service() {
         // 选择乐谱
         btnChooseMusic.setOnClickListener {
             withCurrentLayout {
-                val mfcd = MusicFileChooseDialog(application)
+                val mfcd = MusicFileChooseDialog(application, serviceScope)
                 currentFolder?.let { mfcd.setFolder(it.path) }
                 mfcd.setOnFileChose { path, filename ->
                     updateCurrentFolder(path)
@@ -328,7 +328,7 @@ class MainService : Service() {
         // 选择目录
         btnChooseFolder.setOnClickListener {
             withCurrentLayout {
-                val mfcd = MusicFolderChooseDialog(application)
+                val mfcd = MusicFolderChooseDialog(application, serviceScope)
                 currentFolder?.let { mfcd.setFolder(it.path) }
                 mfcd.onFolderChose = {
                     updateCurrentFolder(it)

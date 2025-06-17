@@ -4,13 +4,14 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import kotlinx.coroutines.CoroutineScope
 import pansong291.piano.wizard.R
 import pansong291.piano.wizard.consts.StringConst
 import java.io.FileFilter
 
-class MidiFileChooseDialog(context: Context) : FileChooseDialog(context) {
+class MidiFileChooseDialog(context: Context, scope: CoroutineScope) : FileChooseDialog(context) {
     init {
-        initialize { ok ->
+        initialize(scope) { ok ->
             ok.setText(R.string.demo_video)
             ok.setOnClickListener {
                 if (context is Activity) {

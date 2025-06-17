@@ -116,7 +116,7 @@ class MainActivity : AppCompatActivity() {
                 .show()
         }
         btnConvertSkyStudio.setOnClickListener {
-            val ssscd = SkyStudioSheetChooseDialog(this)
+            val ssscd = SkyStudioSheetChooseDialog(this, activityScope)
             ssscd.setOnFileChose { path, file ->
                 showLoadingAndConvertSkyStudioFile(File(path, file), ssscd::reload)
             }
@@ -132,7 +132,7 @@ class MainActivity : AppCompatActivity() {
             ssscd.show()
         }
         btnConvertMidiFile.setOnClickListener {
-            val mfcd = MidiFileChooseDialog(this)
+            val mfcd = MidiFileChooseDialog(this, activityScope)
             mfcd.setOnFileChose { path, file ->
                 MidiConvertor.onParseFinished = LoadingDialog(this).apply { show() }::destroy
                 MidiConvertor.onParseResult = { result, message ->

@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.widget.Button
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
+import kotlinx.coroutines.CoroutineScope
 import pansong291.piano.wizard.R
 import pansong291.piano.wizard.consts.StringConst
 import pansong291.piano.wizard.dialog.actions.DialogSearchInputActions
@@ -28,8 +29,8 @@ open class FileChooseDialog(context: Context) : BaseDialog(context) {
         setIcon(R.drawable.outline_file_24)
     }
 
-    protected fun initialize(initOk: (Button) -> Unit) {
-        val pair = DialogFileChooseContent.loadIn(this)
+    protected fun initialize(scope: CoroutineScope, initOk: (Button) -> Unit) {
+        val pair = DialogFileChooseContent.loadIn(this, scope)
         recyclerView = pair.first
         adapter = pair.second
         DialogSearchInputActions.loadIn(this) { ok, _, input ->
@@ -38,7 +39,6 @@ open class FileChooseDialog(context: Context) : BaseDialog(context) {
                 adapter.setInfoFilter(if (query.isNullOrEmpty()) null else { info ->
                     info.name.contains(query, true)
                 })
-                adapter.notifyDataSetChanged()
             }
         }
     }

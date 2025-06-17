@@ -7,11 +7,16 @@ import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hjq.toast.Toaster
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import pansong291.piano.wizard.R
 import pansong291.piano.wizard.consts.ColorConst
 import pansong291.piano.wizard.consts.StringConst
@@ -21,43 +26,50 @@ import java.io.File
 import java.io.FileFilter
 
 object DialogFileChooseContent {
-    fun loadIn(dialog: IDialog): Pair<FastScrollRecyclerView, FileListAdapter> {
+    fun loadIn(
+        dialog: IDialog,
+        scope: CoroutineScope
+    ): Pair<FastScrollRecyclerView, FileListAdapter> {
         val context = dialog.getContext()
         val content = View.inflate(
             context,
             R.layout.dialog_content_file_choose,
             dialog.findContentWrapper()
         )
-        val adapter = FileListAdapter(context)
+        val adapter = FileListAdapter(context, scope)
         // 主内容：一个回退按钮和文件列表
-        val backwardItem = content.findViewById<AppCompatTextView>(android.R.id.undo).apply {
-            ellipsize = TextUtils.TruncateAt.START
-            setOnClickListener { adapter.backwardFolder() }
-            setOnLongClickListener {
-                val tid = TextInputDialog(context)
-                tid.setIcon(R.drawable.outline_turn_right_32)
-                tid.setTitle(R.string.go_to)
-                tid.setText(adapter.basePath)
-                tid.onTextConfirmed = {
-                    val p = it.trim().toString()
-                    if (p.startsWith(StringConst.EXTERNAL_PATH)) {
-                        val f = File(p)
-                        if (f.isFile) adapter.gotoFolder(f.parentFile)
-                        else adapter.gotoFolder(f)
-                        tid.destroy()
-                    } else {
-                        Toaster.show(R.string.invalid_path_message)
-                    }
-                }
-                tid.show()
-                true
-            }
-        }
+        val backwardItem = content.findViewById<AppCompatTextView>(android.R.id.undo)
         val recyclerView = content.findViewById<FastScrollRecyclerView>(android.R.id.list)
+        val listWrapper = recyclerView.parent as ViewGroup
+        val progressView = content.findViewById<ProgressBar>(android.R.id.progress)
+
+        backwardItem.ellipsize = TextUtils.TruncateAt.START
+        backwardItem.setOnClickListener { adapter.backwardFolder() }
+        backwardItem.setOnLongClickListener {
+            val tid = TextInputDialog(context)
+            tid.setIcon(R.drawable.outline_turn_right_32)
+            tid.setTitle(R.string.go_to)
+            tid.setText(adapter.basePath)
+            tid.onTextConfirmed = {
+                val p = it.trim().toString()
+                if (p.startsWith(StringConst.EXTERNAL_PATH)) {
+                    val f = File(p)
+                    if (f.isFile) adapter.gotoFolder(f.parentFile)
+                    else adapter.gotoFolder(f)
+                    tid.destroy()
+                } else {
+                    Toaster.show(R.string.invalid_path_message)
+                }
+            }
+            tid.show()
+            true
+        }
+
         recyclerView.layoutManager = LinearLayoutManager(context).apply {
             orientation = LinearLayoutManager.VERTICAL
         }
         recyclerView.adapter = adapter
+
         adapter.onPathLoaded = {
             backwardItem.text = it
             // 滚动到高亮条目使其在列表的可见范围内
@@ -66,6 +78,15 @@ object DialogFileChooseContent {
                     adapter.highlight?.name == info.name
                 }
                 if (position >= 0) recyclerView.scrollToPosition(position)
+            }
+        }
+        adapter.onLoading = {
+            if (it) {
+                progressView.visibility = View.VISIBLE
+                listWrapper.visibility = View.GONE
+            } else {
+                progressView.visibility = View.GONE
+                listWrapper.visibility = View.VISIBLE
             }
         }
         return recyclerView to adapter
@@ -78,8 +99,10 @@ object DialogFileChooseContent {
 
     class FileViewHolder(val textView: AppCompatTextView) : RecyclerView.ViewHolder(textView)
 
+    @SuppressLint("NotifyDataSetChanged")
     class FileListAdapter(
-        private val context: Context
+        private val context: Context,
+        private val scope: CoroutineScope
     ) : RecyclerView.Adapter<FileViewHolder>() {
         private lateinit var infoList: List<FileInfo>
         private lateinit var filteredList: List<FileInfo>
@@ -89,6 +112,12 @@ object DialogFileChooseContent {
         var onFileChose: ((path: String, file: String) -> Unit)? = null
         var onPathLoaded: ((path: String) -> Unit)? = null
         var onPathChanged: ((path: String) -> Unit)? = null
+        var onLoading: ((loading: Boolean) -> Unit)? = null
+        var loading = false
+            private set(v) {
+                field = v
+                onLoading?.invoke(v)
+            }
         private var infoFilter: ((FileInfo) -> Boolean)? = null
         private val dataFolder = context.getExternalFilesDir(null)?.parentFile
 
@@ -97,10 +126,15 @@ object DialogFileChooseContent {
         }
 
         fun setInfoFilter(filter: ((FileInfo) -> Boolean)?) {
-            infoFilter = filter
-            filteredList = filter?.let {
-                infoList.filter(it)
-            } ?: infoList
+            if (loading) return
+            loading = true
+            scope.launch {
+                loadFilteredList(filter)
+                withContext(Dispatchers.Main) {
+                    loading = false
+                    notifyDataSetChanged()
+                }
+            }
         }
 
         fun backwardFolder() {
@@ -109,8 +143,7 @@ object DialogFileChooseContent {
         }
 
         fun forwardFolder(folder: String) {
-            val file = File(basePath, folder)
-            loadFileList(file)
+            loadFileList(File(basePath, folder))
         }
 
         fun gotoFolder(folder: File?) {
@@ -118,42 +151,58 @@ object DialogFileChooseContent {
         }
 
         fun findItemPosition(predicate: (FileInfo) -> Boolean): Int {
+            if (loading) return -1
             return filteredList.indexOfFirst(predicate)
         }
 
         fun getItem(position: Int): FileInfo? {
+            if (loading) return null
             return filteredList.getOrNull(position)
         }
 
-        @SuppressLint("NotifyDataSetChanged")
+        private fun loadFilteredList(filter: ((FileInfo) -> Boolean)?) {
+            infoFilter = filter
+            filteredList = filter?.let {
+                infoList.filter(it)
+            } ?: infoList
+        }
+
         private fun loadFileList(folder: File?) {
+            if (loading) return
             val folderFile = folder ?: File(basePath)
             if (folderFile.path != basePath) {
                 basePath = folderFile.path
                 onPathChanged?.invoke(basePath)
             }
-            val childFiles = folderFile.listFiles(fileFilter)?.toMutableList() ?: mutableListOf()
-            dataFolder?.run {
-                if (folderFile.path == this.parent && childFiles.indexOfFirst { it.name == this.name } < 0) {
-                    childFiles += this
+            loading = true
+            scope.launch {
+                val childFiles =
+                    folderFile.listFiles(fileFilter)?.toMutableList() ?: mutableListOf()
+                dataFolder?.run {
+                    if (folderFile.path == this.parent && childFiles.indexOfFirst { it.name == this.name } < 0) {
+                        childFiles += this
+                    }
+                }
+                infoList = childFiles.map {
+                    FileInfo().apply {
+                        icon = if (it.isDirectory) R.drawable.outline_folder_24
+                        else R.drawable.outline_file_24
+                        name = it.name
+                    }
+                }.sortedWith { p, q ->
+                    when (p.icon) {
+                        q.icon -> p.name.compareTo(q.name)
+                        R.drawable.outline_folder_24 -> -1
+                        else -> 1
+                    }
+                }
+                loadFilteredList(infoFilter)
+                withContext(Dispatchers.Main) {
+                    loading = false
+                    notifyDataSetChanged()
+                    onPathLoaded?.invoke(folderFile.path)
                 }
             }
-            infoList = childFiles.map {
-                FileInfo().apply {
-                    icon = if (it.isDirectory) R.drawable.outline_folder_24
-                    else R.drawable.outline_file_24
-                    name = it.name
-                }
-            }.sortedWith { p, q ->
-                when (p.icon) {
-                    q.icon -> p.name.compareTo(q.name)
-                    R.drawable.outline_folder_24 -> -1
-                    else -> 1
-                }
-            }
-            setInfoFilter(infoFilter)
-            notifyDataSetChanged()
-            onPathLoaded?.invoke(folderFile.path)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FileViewHolder {
@@ -163,6 +212,7 @@ object DialogFileChooseContent {
         }
 
         override fun getItemCount(): Int {
+            if (loading) return 0
             return filteredList.size
         }
 
