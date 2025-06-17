@@ -7,6 +7,7 @@ import android.graphics.Path
 import android.graphics.Point
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
+import pansong291.piano.wizard.R
 
 class ClickAccessibilityService : AccessibilityService() {
     companion object {
@@ -16,16 +17,20 @@ class ClickAccessibilityService : AccessibilityService() {
         fun click(points: List<Point>, duration: Long) {
             catching {
                 if (points.isEmpty()) return
-                aService?.apply {
-                    dispatchGesture(GestureDescription.Builder().apply {
-                        points.forEach {
-                            addStroke(GestureDescription.StrokeDescription(Path().apply {
-                                moveTo(it.x.toFloat(), it.y.toFloat())
-                            }, 0, duration))
-                        }
-                    }.build(), null, null)
-                }
+                aService?.dispatchGesture(GestureDescription.Builder().apply {
+                    points.forEach {
+                        addStroke(GestureDescription.StrokeDescription(Path().apply {
+                            moveTo(it.x.toFloat(), it.y.toFloat())
+                        }, 0, duration))
+                    }
+                }.build(), null, null)
             }
+        }
+
+        fun checkAccessibility(viewId: String): Boolean {
+            return aService?.rootInActiveWindow?.findAccessibilityNodeInfosByViewId(viewId)?.find {
+                it.actionList.find { it.id == R.id.action_accessibility_check } != null
+            }?.performAction(R.id.action_accessibility_check) ?: false
         }
 
         private inline fun catching(block: () -> Unit) {

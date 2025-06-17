@@ -1,21 +1,24 @@
 package pansong291.piano.wizard
 
-import android.accessibilityservice.AccessibilityService
 import android.content.ClipData
 import android.content.ClipboardManager
-import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.text.TextUtils
+import android.view.View
 import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.AccessibilityDelegateCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
 import com.hjq.toast.Toaster
@@ -38,6 +41,7 @@ import pansong291.piano.wizard.services.MainService
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
+    private val handler = Handler(Looper.getMainLooper())
     private lateinit var btnFilePerm: Button
     private lateinit var btnWinPerm: Button
     private lateinit var btnAccessibilityPerm: Button
@@ -46,6 +50,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnConvertMidiFile: Button
     private lateinit var btnStart: Button
     private lateinit var btnStop: Button
+    private var accessibilityEnabled = false
 
     // 创建一个与 Activity 生命周期绑定的 CoroutineScope
     private val activityScope = CoroutineScope(Dispatchers.IO + Job())
@@ -76,7 +81,7 @@ class MainActivity : AppCompatActivity() {
                 .request { _, _ -> updatePermState(2, true) }
         }
         btnAccessibilityPerm.setOnClickListener {
-            if (isAccessibilitySettingsOn(this, ClickAccessibilityService::class.java)) {
+            if (isAccessibilityEnabled()) {
                 updatePermState(4, true)
             } else {
                 startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
@@ -161,11 +166,36 @@ class MainActivity : AppCompatActivity() {
         btnStop.setOnClickListener {
             stopService(Intent(this, MainService::class.java))
         }
+        ViewCompat.setAccessibilityDelegate(
+            btnAccessibilityPerm,
+            object : AccessibilityDelegateCompat() {
+                override fun onInitializeAccessibilityNodeInfo(
+                    host: View,
+                    info: AccessibilityNodeInfoCompat
+                ) {
+                    super.onInitializeAccessibilityNodeInfo(host, info)
+                    val checkAction = AccessibilityNodeInfoCompat.AccessibilityActionCompat(
+                        R.id.action_accessibility_check,
+                        "Check Accessibility"
+                    )
+                    info.addAction(checkAction)
+                }
+
+                override fun performAccessibilityAction(
+                    host: View,
+                    action: Int,
+                    args: Bundle?
+                ): Boolean {
+                    if (action == R.id.action_accessibility_check) return true
+                    return super.performAccessibilityAction(host, action, args)
+                }
+            }
+        )
     }
 
-    override fun onStart() {
-        super.onStart()
-        updatePermState(7)
+    override fun onResume() {
+        super.onResume()
+        handler.postDelayed({ updatePermState(7) }, 100)
     }
 
     override fun onDestroy() {
@@ -210,7 +240,7 @@ class MainActivity : AppCompatActivity() {
         }
         if (flags and 4 == 4) {
             val s =
-                success ?: isAccessibilitySettingsOn(this, ClickAccessibilityService::class.java)
+                success ?: isAccessibilityEnabled()
             btnAccessibilityPerm.text =
                 getString(R.string.btn_req_accessibility_perm, getOnOffString(s))
             btnAccessibilityPerm.backgroundTintList =
@@ -219,24 +249,35 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getOnOffString(b: Boolean): String {
-        if (b) return getString(R.string.common_on)
-        return getString(R.string.common_off)
+        return getString(if (b) R.string.common_on else R.string.common_off)
     }
 
-    private fun isAccessibilitySettingsOn(
-        mContext: Context, clazz: Class<out AccessibilityService>
-    ): Boolean {
+    private fun isAccessibilityEnabled(): Boolean {
+        isAccessibilitySettingsOn().also {
+            if (!it) {
+                accessibilityEnabled = false
+                return false
+            }
+        }
+        if (accessibilityEnabled) return true
+        return isAccessibilityPerformSuccess().also {
+            if (it) accessibilityEnabled = true
+        }
+    }
+
+    private fun isAccessibilitySettingsOn(): Boolean {
         try {
             if (Settings.Secure.getInt(
-                    mContext.applicationContext.contentResolver,
+                    applicationContext.contentResolver,
                     Settings.Secure.ACCESSIBILITY_ENABLED
                 ) == 1
             ) {
                 Settings.Secure.getString(
-                    mContext.applicationContext.contentResolver,
+                    applicationContext.contentResolver,
                     Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
                 )?.let {
-                    val service = mContext.packageName + "/" + clazz.canonicalName
+                    val service =
+                        packageName + "/" + ClickAccessibilityService::class.java.canonicalName
                     TextUtils.SimpleStringSplitter(':').apply {
                         setString(it)
                         while (hasNext()) {
@@ -251,5 +292,9 @@ class MainActivity : AppCompatActivity() {
             e.printStackTrace()
         }
         return false
+    }
+
+    private fun isAccessibilityPerformSuccess(): Boolean {
+        return ClickAccessibilityService.checkAccessibility(resources.getResourceName(R.id.btn_main_accessibility_perm))
     }
 }
