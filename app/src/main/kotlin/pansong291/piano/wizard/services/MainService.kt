@@ -612,8 +612,11 @@ class MainService : Service() {
             keysLayoutView.semitone = it.semitone
             keysLayoutView.pointOffset = it.keyOffset
             oldKl?.apply {
-                // 键盘的键数或半音不一样，则置空当前乐谱
-                if (this.points.size != it.points.size || this.semitone != it.semitone)
+                // 以下情况置空当前乐谱：
+                //  1. 半音不一样；
+                //  2. 按键偏移不一样；
+                //  3. 按键数变少；
+                if (it.semitone != this.semitone || it.keyOffset != this.keyOffset || it.points.size < this.points.size)
                     updateCurrentMusic(null)
             } ?: run {
                 updateCurrentMusic(null)
