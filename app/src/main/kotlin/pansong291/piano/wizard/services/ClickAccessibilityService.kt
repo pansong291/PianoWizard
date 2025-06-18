@@ -28,9 +28,13 @@ class ClickAccessibilityService : AccessibilityService() {
         }
 
         fun checkAccessibility(viewId: String): Boolean {
-            return aService?.rootInActiveWindow?.findAccessibilityNodeInfosByViewId(viewId)?.find {
-                it.actionList.find { it.id == R.id.action_accessibility_check } != null
-            }?.performAction(R.id.action_accessibility_check) ?: false
+            catching {
+                return aService?.rootInActiveWindow?.findAccessibilityNodeInfosByViewId(viewId)
+                    ?.find {
+                        it.actionList.find { it.id == R.id.action_accessibility_check } != null
+                    }?.performAction(R.id.action_accessibility_check) ?: false
+            }
+            return false
         }
 
         private inline fun catching(block: () -> Unit) {
