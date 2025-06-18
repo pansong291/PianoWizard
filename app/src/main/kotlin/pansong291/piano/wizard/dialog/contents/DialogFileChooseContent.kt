@@ -7,7 +7,7 @@ import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
+import android.view.animation.AccelerateInterpolator
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -40,8 +40,7 @@ object DialogFileChooseContent {
         // 主内容：一个回退按钮和文件列表
         val backwardItem = content.findViewById<AppCompatTextView>(android.R.id.undo)
         val recyclerView = content.findViewById<FastScrollRecyclerView>(android.R.id.list)
-        val listWrapper = recyclerView.parent as ViewGroup
-        val progressView = content.findViewById<ProgressBar>(android.R.id.progress)
+        val spinWrapper = content.findViewById<View>(android.R.id.progress)
 
         backwardItem.ellipsize = TextUtils.TruncateAt.START
         backwardItem.setOnClickListener { adapter.backwardFolder() }
@@ -82,11 +81,12 @@ object DialogFileChooseContent {
         }
         adapter.onLoading = {
             if (it) {
-                progressView.visibility = View.VISIBLE
-                listWrapper.visibility = View.GONE
+                spinWrapper.visibility = View.VISIBLE
+                spinWrapper.alpha = 0f
+                spinWrapper.animate().alpha(1f).setDuration(2_000)
+                    .setInterpolator(AccelerateInterpolator()).start()
             } else {
-                progressView.visibility = View.GONE
-                listWrapper.visibility = View.VISIBLE
+                spinWrapper.visibility = View.INVISIBLE
             }
         }
         return recyclerView to adapter

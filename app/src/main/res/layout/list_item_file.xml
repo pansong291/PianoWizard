@@ -14,5 +14,6 @@
     android:paddingTop="8dp"
     android:paddingRight="16dp"
     android:paddingBottom="8dp"
+    android:text="..."
     android:textColor="@android:color/black"
     app:drawableStartCompat="@drawable/outline_folder_open_24" />
