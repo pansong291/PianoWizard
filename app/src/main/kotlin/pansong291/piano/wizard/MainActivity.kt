@@ -186,7 +186,10 @@ class MainActivity : AppCompatActivity() {
                     action: Int,
                     args: Bundle?
                 ): Boolean {
-                    if (action == R.id.action_accessibility_check) return true
+                    if (action == R.id.action_accessibility_check) {
+                        accessibilityEnabled = true
+                        return true
+                    }
                     return super.performAccessibilityAction(host, action, args)
                 }
             }
@@ -239,8 +242,7 @@ class MainActivity : AppCompatActivity() {
                 ColorStateList.valueOf(if (s) ColorConst.GREEN_800 else ColorConst.RED_800)
         }
         if (flags and 4 == 4) {
-            val s =
-                success ?: isAccessibilityEnabled()
+            val s = success ?: isAccessibilityEnabled()
             btnAccessibilityPerm.text =
                 getString(R.string.btn_req_accessibility_perm, getOnOffString(s))
             btnAccessibilityPerm.backgroundTintList =
@@ -260,9 +262,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
         if (accessibilityEnabled) return true
-        return isAccessibilityPerformSuccess().also {
-            if (it) accessibilityEnabled = true
-        }
+        if (!isAccessibilityPerformSuccess()) return false
+        return accessibilityEnabled
     }
 
     private fun isAccessibilitySettingsOn(): Boolean {
